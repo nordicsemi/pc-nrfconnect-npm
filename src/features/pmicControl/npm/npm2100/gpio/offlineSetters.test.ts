@@ -70,7 +70,7 @@ describe('PMIC 2100 - Setters Offline tests', () => {
                 data: { openDrain: true },
                 index,
             });
-        }
+        },
     );
 });
 

@@ -32,8 +32,8 @@ describe('PMIC 2100 - Command callbacks', () => {
                     append: `set ${index} ${mode}`,
                     mode,
                 },
-            ]).flat()
-        ).flat()
+            ]).flat(),
+        ).flat(),
     )('npm2100 gpio mode %p', ({ index, append, mode }) => {
         const command = `npm2100 gpio mode ${append}`;
         const callback =
@@ -70,8 +70,8 @@ describe('PMIC 2100 - Command callbacks', () => {
                     append: `set ${index} ${pull}`,
                     pull,
                 },
-            ]).flat()
-        ).flat()
+            ]).flat(),
+        ).flat(),
     )('npm2100 gpio pull %p', ({ index, append, pull }) => {
         const command = `npm2100 gpio pull ${append}`;
         const callback =
@@ -99,8 +99,8 @@ describe('PMIC 2100 - Command callbacks', () => {
                     append: `set ${index} ${drive}`,
                     drive,
                 },
-            ]).flat()
-        ).flat()
+            ]).flat(),
+        ).flat(),
     )('npm2100 gpio drive %p', ({ index, append, drive }) => {
         const command = `npm2100 gpio drive ${append}`;
         const callback =
@@ -130,8 +130,8 @@ describe('PMIC 2100 - Command callbacks', () => {
                         debounce,
                     },
                 ])
-                .flat()
-        ).flat()
+                .flat(),
+        ).flat(),
     )('npm2100 gpio debounce %p', ({ index, append, debounce }) => {
         const command = `npm2100 gpio debounce ${append}`;
         const callback =
@@ -161,8 +161,8 @@ describe('PMIC 2100 - Command callbacks', () => {
                         openDrain,
                     },
                 ])
-                .flat()
-        ).flat()
+                .flat(),
+        ).flat(),
     )('npm2100 gpio opendrain %p', ({ index, append, openDrain }) => {
         const command = `npm2100 gpio opendrain ${append}`;
         const callback =
