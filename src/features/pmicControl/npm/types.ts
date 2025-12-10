@@ -603,7 +603,7 @@ export type ChargerModuleRanges = {
     vTermR: number[];
     jeita: Range;
     chipThermal: Range;
-    current: Range;
+    current: number[];
     nTCBeta: Range;
     iBatLim?: FixedListRange;
     vLowerCutOff: Range;
