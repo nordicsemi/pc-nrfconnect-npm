@@ -19,11 +19,9 @@ import {
     type IrqEvent,
     type LoggingEvent,
     type NpmExportLatest,
-    type NpmExportV2,
     type PmicDialog,
 } from '../types';
 import ChargerModule from './charger';
-import overlay from './overlay';
 
 export const npm1012FWVersion = '0.7.2+0';
 
@@ -264,7 +262,8 @@ export default class Npm1012 extends BaseNpmDevice {
         return false;
     }
 
-    generateOverlay(npmExport: NpmExportV2) {
-        return overlay(npmExport, this);
-    }
+    // TODO: Enable when overlay format is known
+    // generateOverlay(npmExport: NpmExportV2) {
+    //     return overlay(npmExport, this);
+    // }
 }
