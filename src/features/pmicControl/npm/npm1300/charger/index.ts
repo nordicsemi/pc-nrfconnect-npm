@@ -7,7 +7,10 @@
 /* eslint-disable no-underscore-dangle */
 import { type ShellParser } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
-import { getRange } from '../../../../../utils/helpers';
+import {
+    getMinValueOfRangeOrNumberArray,
+    getRange,
+} from '../../../../../utils/helpers';
 import { type NpmEventEmitter } from '../../pmicHelpers';
 import {
     type Charger,
@@ -67,7 +70,7 @@ export default class Module implements ChargerModuleBase {
         return {
             vTerm: this.ranges.voltage[0],
             vTrickleFast: 2.5,
-            iChg: this.ranges.current.min,
+            iChg: getMinValueOfRangeOrNumberArray(this.ranges.current),
             enabled: false,
             iTerm: 10,
             iBatLim: 1000,
