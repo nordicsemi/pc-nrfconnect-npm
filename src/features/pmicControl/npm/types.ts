@@ -176,6 +176,7 @@ export type Charger = {
     iChg: number;
     enabled: boolean;
     enableRecharging: boolean;
+    enableWeakBatteryCharging?: boolean;
     enableVBatLow: boolean;
     iTerm: ITerm;
     iBatLim?: number;
@@ -556,6 +557,7 @@ export abstract class ChargerModuleSetBase {
     abstract tHot(value: number): Promise<void>;
 
     batLim?(value: number): Promise<void>;
+    enabledWeakBatteryCharging?(value: boolean): Promise<void>;
     iTrickle?(value: ITrickle): Promise<void>;
 }
 
@@ -596,6 +598,7 @@ export abstract class ChargerModuleGetBase {
     abstract tHot(): void;
 
     batLim?(): void;
+    enabledWeakBatteryCharging?(): void;
     iTrickle?(): void;
 }
 
