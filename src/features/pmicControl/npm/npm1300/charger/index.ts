@@ -14,16 +14,17 @@ import {
 import { type NpmEventEmitter } from '../../pmicHelpers';
 import {
     type Charger,
+    ChargerJeitaILabel,
+    ChargerJeitaVLabel,
     type ChargerModule as ChargerModuleBase,
     type ChargerModuleGet,
     type ChargerModuleGetBase,
     type ChargerModuleRanges,
     type ChargerModuleSet,
     type ChargerModuleSetBase,
+    type ChargerModuleValues,
     type FixedListRange,
-    type ITerm,
     type ModuleParams,
-    type VTrickleFast,
 } from '../../types';
 import chargerCallbacks from './callbacks';
 import { ChargerGet } from './getters';
@@ -85,6 +86,16 @@ export default class Module implements ChargerModuleBase {
             tCool: 10,
             tWarm: 45,
             tHot: 60,
+            jeitaILabelCold: ChargerJeitaILabel.coldIOff,
+            jeitaILabelCool: ChargerJeitaILabel.coolICool,
+            jeitaILabelNominal: ChargerJeitaILabel.nominalIChg,
+            jeitaILabelWarm: ChargerJeitaILabel.warmIChg,
+            jeitaILabelHot: ChargerJeitaILabel.hotIOff,
+            jeitaVLabelCold: ChargerJeitaVLabel.coldVNA,
+            jeitaVLabelCool: ChargerJeitaVLabel.coolVTerm,
+            jeitaVLabelNominal: ChargerJeitaVLabel.nominalVTerm,
+            jeitaVLabelWarm: ChargerJeitaVLabel.warmVTermR,
+            jeitaVLabelHot: ChargerJeitaVLabel.hotVNA,
         };
     }
 
