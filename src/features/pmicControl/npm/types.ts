@@ -171,15 +171,12 @@ export type FuelGauge = {
 
 export type Charger = {
     vTerm: number;
-    iTrickle?: ITrickle;
     vTrickleFast: VTrickleFast;
     iChg: number;
     enabled: boolean;
     enableRecharging: boolean;
-    enableWeakBatteryCharging?: boolean;
     enableVBatLow: boolean;
     iTerm: ITerm;
-    iBatLim?: number;
     ntcThermistor: NTCThermistor;
     ntcBeta: number;
     tChgStop: number;
@@ -189,6 +186,14 @@ export type Charger = {
     tCool: number;
     tWarm: number;
     tHot: number;
+
+    enableWeakBatteryCharging?: boolean;
+    iBatLim?: number;
+    iChgCool?: number;
+    iChgWarm?: number;
+    iTrickle?: ITrickle;
+    vTermCool?: number;
+    vTermWarm?: number;
     vWeak?: number;
 
     jeitaILabelCold: ChargerJeitaILabel;
@@ -601,7 +606,11 @@ export abstract class ChargerModuleSetBase {
 
     batLim?(value: number): Promise<void>;
     enabledWeakBatteryCharging?(value: boolean): Promise<void>;
+    iChgCool?(value: number): Promise<void>;
+    iChgWarm?(value: number): Promise<void>;
     iTrickle?(value: ITrickle): Promise<void>;
+    vTermCool?(value: number): Promise<void>;
+    vTermWarm?(value: number): Promise<void>;
     vWeak?(value: number): Promise<void>;
 }
 
@@ -643,7 +652,11 @@ export abstract class ChargerModuleGetBase {
 
     batLim?(): void;
     enabledWeakBatteryCharging?(): void;
+    iChgCool?(): void;
+    iChgWarm?(): void;
     iTrickle?(): void;
+    vTermCool?(): void;
+    vTermWarm?(): void;
     vWeak?(): void;
 }
 
