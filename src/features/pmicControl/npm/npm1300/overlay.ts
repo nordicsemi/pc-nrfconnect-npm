@@ -78,9 +78,15 @@ const generateCharger = (
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             toMicro(vbus.currentLimiter!)
         }>;
-		thermistor-ohms = <${thermistorTypeToOverlay(charger.ntcThermistor)}>;
-		thermistor-beta = <${charger.ntcThermistor === 'Ignore NTC' ? '0' : charger.ntcBeta}>;
-		${charger.ntcThermistor !== 'Ignore NTC' ? generateJeita(charger, chargerModule) : ''}
+    ${
+        charger.ntcBeta !== undefined && charger.ntcThermistor !== undefined
+            ? `
+            thermistor-ohms = <${thermistorTypeToOverlay(charger.ntcThermistor)}>;
+            thermistor-beta = <${charger.ntcThermistor === 'Ignore NTC' ? '0' : charger.ntcBeta}>;
+            ${charger.ntcThermistor !== 'Ignore NTC' ? generateJeita(charger, chargerModule) : ''}
+            `
+            : ''
+    }
 		${charger.enabled ? 'charging-enable;' : ''}
 		trickle-microvolt = <${toMicro(charger.vTrickleFast)}>;
 		${charger.enableVBatLow ? 'vbatlow-charge-enable;' : ''}
@@ -91,7 +97,7 @@ const generateCharger = (
 		term-warm-microvolt = <${toMicro(charger.vTermR)}>;
 		current-microamp = <${toMicro(charger.iChg / 1000)}>;
 		${
-            charger.iBatLim
+            charger.iBatLim !== undefined
                 ? `dischg-limit-microamp = <${toMicro(charger.iBatLim / 1000)}>;`
                 : ''
         }
