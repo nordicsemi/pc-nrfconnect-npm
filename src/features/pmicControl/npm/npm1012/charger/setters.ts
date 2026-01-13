@@ -5,13 +5,13 @@
  */
 
 import {
-    Charger,
+    type Charger,
     ChargerJeitaILabel,
     ChargerJeitaVLabel,
     ChargerModuleSetBase,
-    ITerm,
-    ITrickle,
-    VTrickleFast,
+    type ITerm,
+    type ITrickle,
+    type VTrickleFast,
 } from '../../types';
 
 export class ChargerSet extends ChargerModuleSetBase {
