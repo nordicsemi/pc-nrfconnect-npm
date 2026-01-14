@@ -187,7 +187,6 @@ export type Charger = {
     jeitaVLabelNominal: ChargerJeitaVLabel;
     jeitaVLabelWarm: ChargerJeitaVLabel;
     jeitaVLabelHot: ChargerJeitaVLabel;
-    tChgStop: number;
     tChgResume: number;
     vTermR: number;
     tCold: number;
@@ -204,6 +203,8 @@ export type Charger = {
     iTrickle?: ITrickle;
     ntcBeta?: number;
     ntcThermistor?: NTCThermistor;
+    tChgReduce?: number;
+    tChgStop?: number;
     vTermCool?: number;
     vTermWarm?: number;
     vWeak?: number;
@@ -591,7 +592,6 @@ export abstract class ChargerModuleSetBase {
     abstract iTerm(iTerm: ITerm): Promise<void>;
     abstract enabledRecharging(value: boolean): Promise<void>;
     abstract enabledVBatLow(value: boolean): Promise<void>;
-    abstract tChgStop(value: number): Promise<void>;
     abstract tChgResume(value: number): Promise<void>;
     abstract vTermR(value: number): Promise<void>;
     abstract tCold(value: number): Promise<void>;
@@ -608,6 +608,8 @@ export abstract class ChargerModuleSetBase {
     iTrickle?(value: ITrickle): Promise<void>;
     nTCBeta?(value: number): Promise<void>;
     nTCThermistor?(mode: NTCThermistor, autoSetBeta?: boolean): Promise<void>;
+    tChgReduce?(value: number): Promise<void>;
+    tChgStop?(value: number): Promise<void>;
     vTermCool?(value: number): Promise<void>;
     vTermWarm?(value: number): Promise<void>;
     vWeak?(value: number): Promise<void>;
@@ -639,7 +641,6 @@ export abstract class ChargerModuleGetBase {
     abstract iTerm(): void;
     abstract enabledRecharging(): void;
     abstract enabledVBatLow(): void;
-    abstract tChgStop(): void;
     abstract tChgResume(): void;
     abstract vTermR(): void;
     abstract tCold(): void;
@@ -656,6 +657,8 @@ export abstract class ChargerModuleGetBase {
     iTrickle?(): void;
     nTCBeta?(): void;
     nTCThermistor?(): void;
+    tChgReduce?(): void;
+    tChgStop?(): void;
     vTermCool?(): void;
     vTermWarm?(): void;
     vWeak?(): void;
