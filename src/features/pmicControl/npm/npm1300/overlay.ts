@@ -92,7 +92,7 @@ const generateCharger = (
 		${charger.enableVBatLow ? 'vbatlow-charge-enable;' : ''}
 		${charger.enableRecharging ? '' : 'disable-recharge;'}
 		dietemp-resume-millidegrees = <${toMilli(charger.tChgResume)}>;
-		dietemp-stop-millidegrees = <${toMilli(charger.tChgStop)}>;
+        ${charger.tChgStop !== undefined ? `dietemp-stop-millidegrees = <${toMilli(charger.tChgStop)}>;` : ''}
 		term-microvolt = <${toMicro(charger.vTerm)}>;
 		term-warm-microvolt = <${toMicro(charger.vTermR)}>;
 		current-microamp = <${toMicro(charger.iChg / 1000)}>;
