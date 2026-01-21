@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { ShellParserCallbacks as Callbacks } from '@nordicsemiconductor/pc-nrfconnect-shared';
+import { type ShellParserCallbacks as Callbacks } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import { npm2100FWVersion } from '../pmic2100Device';
 import { setupMocksWithShellParser } from './helpers';
@@ -45,9 +45,9 @@ describe('PMIC 2100 - Request update commands', () => {
             (
                 command: string,
                 callbacks?: Callbacks,
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
                 _timeout?: number,
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
                 _unique?: boolean,
             ) => {
                 callbacks?.onSuccess('Uptime: 2945165 ms', command);
@@ -71,9 +71,9 @@ describe('PMIC 2100 - Request update commands', () => {
             (
                 command: string,
                 callbacks?: Callbacks,
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
                 _timeout?: number,
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
                 _unique?: boolean,
             ) => {
                 callbacks?.onSuccess(
@@ -103,9 +103,9 @@ describe('PMIC 2100 - Request update commands', () => {
             (
                 command: string,
                 callbacks?: Callbacks,
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
                 _timeout?: number,
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
                 _unique?: boolean,
             ) => {
                 callbacks?.onSuccess('app_version=0.0.0+9', command);

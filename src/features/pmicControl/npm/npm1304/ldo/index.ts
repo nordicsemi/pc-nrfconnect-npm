@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { RangeType } from '../../../../../utils/helpers';
+import { type RangeType } from '../../../../../utils/helpers';
 import nPM1300LdoModule from '../../npm1300/ldo';
-import { Ldo } from '../../types';
+import { type Ldo } from '../../types';
 
 const getLdoVoltageRange = () =>
     ({
