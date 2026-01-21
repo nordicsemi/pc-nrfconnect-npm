@@ -126,7 +126,7 @@ const generateBuck = (
                 : ''
         }
 		${buckInitialMode(buck)}
-		retention-microvolt = <${toMicro(buck.vOutRetention)}>;
+        ${buck.vOutRetention !== undefined ? `retention-microvolt = <${toMicro(buck.vOutRetention)}>;` : ''}
 		${
             buck.onOffControl !== 'Off'
                 ? `enable-gpio-config = <${GPIOValues.findIndex(
@@ -142,13 +142,14 @@ const generateBuck = (
                 : ''
         }
 		${
+            buck.retentionControl !== undefined &&
             buck.retentionControl !== 'Off'
                 ? `retention-gpio-config = <${GPIOValues.findIndex(
                       v => v === buck.retentionControl,
                   )} GPIO_ACTIVE_HIGH>;`
                 : ''
         }
-		${buck.activeDischarge ? 'active-discharge;' : ''}
+		${buck.activeDischarge === true ? 'active-discharge;' : ''}
 	};
 `;
 

@@ -9,9 +9,15 @@ import { type Range } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import {
     type Buck,
     type BuckExport,
+    type BuckMode,
+    BuckModeControlValues,
     type BuckModule,
+    type BuckOnOffControl,
+    BuckRetentionControlValues,
+    GPIOValues,
     type ModuleParams,
 } from '../../types';
+import { numGPIOs } from '../gpio/types';
 import buckCallbacks from './callbacks';
 import { BuckGet } from './getters';
 import { BuckSet } from './setters';
@@ -19,7 +25,7 @@ import { BuckSet } from './setters';
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-underscore-dangle */
 
-const buckDefaults = (): Buck => ({
+const buckDefaults = (index: number): Buck => ({
     vOutNormal: buckVoltageRange().min,
     vOutRetention: 1,
     mode: 'vSet',
@@ -29,6 +35,8 @@ const buckDefaults = (): Buck => ({
     onOffSoftwareControlEnabled: true,
     retentionControl: 'Off',
     activeDischarge: false,
+    cardLabel: `BUCK ${index + 1}`,
+    vSetLabel: `Vset${index + 1}`,
 });
 
 export const toBuckExport = (buck: Buck): BuckExport => ({
@@ -101,7 +109,35 @@ export default class Module implements BuckModule {
             retVOut: buckRetVOutRange(),
         };
     }
+
+    get values() {
+        const gpioNames = GPIOValues.slice(0, numGPIOs);
+
+        const onOffControlForBuckMode = (mode: BuckMode): BuckOnOffControl =>
+            mode === 'software'
+                ? 'Software'
+                : (`VSET${this.index + 1}` as BuckOnOffControl);
+
+        return {
+            modeControl: [...BuckModeControlValues, ...gpioNames].map(item => ({
+                label: item,
+                value: item,
+            })),
+            onOffControl: (mode: BuckMode) =>
+                [onOffControlForBuckMode(mode), ...gpioNames].map(item => ({
+                    label: item,
+                    value: item,
+                })),
+            retentionControl: [...BuckRetentionControlValues, ...gpioNames].map(
+                item => ({
+                    label: item,
+                    value: item,
+                }),
+            ),
+        };
+    }
+
     get defaults(): Buck {
-        return buckDefaults();
+        return buckDefaults(this.index);
     }
 }
