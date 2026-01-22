@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { type RangeType } from '../../../../../utils/helpers';
+import { type Range } from '@nordicsemiconductor/pc-nrfconnect-shared';
+
 import {
     type Ldo,
     type LdoExport,
@@ -32,7 +33,7 @@ const getLdoVoltageRange = () =>
         max: 3.3,
         decimals: 1,
         step: 0.1,
-    }) as RangeType;
+    }) as Range;
 
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable class-methods-use-this */
@@ -89,7 +90,7 @@ export default class Module implements LdoModule {
         };
     }
 
-    get ranges(): { voltage: RangeType } {
+    get ranges(): { voltage: Range } {
         return {
             voltage: getLdoVoltageRange(),
         };
