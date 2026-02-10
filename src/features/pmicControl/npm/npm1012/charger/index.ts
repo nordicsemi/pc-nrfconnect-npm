@@ -125,7 +125,6 @@ export default class Module implements ChargerModuleBase {
             enableVBatLow: false,
             tChgReduce: 110,
             tChgResume: 100,
-            vTermR: 3.6,
             tCold: 0,
             tCool: 10,
             tWarm: 45,
@@ -168,7 +167,6 @@ export default class Module implements ChargerModuleBase {
     protected static getRanges(): ChargerModuleRanges {
         return {
             voltage: Module.voltageRange,
-            vTermR: Module.voltageRange,
             jeita: {
                 min: -20,
                 max: 60,
