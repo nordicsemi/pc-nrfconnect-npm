@@ -94,7 +94,7 @@ const generateCharger = (
 		dietemp-resume-millidegrees = <${toMilli(charger.tChgResume)}>;
         ${charger.tChgStop !== undefined ? `dietemp-stop-millidegrees = <${toMilli(charger.tChgStop)}>;` : ''}
 		term-microvolt = <${toMicro(charger.vTerm)}>;
-		term-warm-microvolt = <${toMicro(charger.vTermR)}>;
+        ${charger.vTermR !== undefined ? `term-warm-microvolt = <${toMicro(charger.vTermR)}>;` : ''}
 		current-microamp = <${toMicro(charger.iChg / 1000)}>;
 		${
             charger.iBatLim !== undefined
