@@ -161,10 +161,18 @@ const generateLDO = (
 ) => `
 	${deviceType}_ldo${ldoModule.index + 1}: LDO${ldoModule.index + 1} {
 		${ldo.enabled ? 'regulator-boot-on;' : ''}
-		regulator-min-microvolt = <${toMicro(ldoModule.ranges.voltage.min)}>;
-		regulator-max-microvolt = <${toMicro(ldoModule.ranges.voltage.max)}>;
+        ${
+            ldoModule.ranges.voltage
+                ? `regulator-min-microvolt = <${toMicro(ldoModule.ranges.voltage.min)}>;`
+                : ''
+        }
+        ${
+            ldoModule.ranges.voltage
+                ? `regulator-max-microvolt = <${toMicro(ldoModule.ranges.voltage.max)}>;`
+                : ''
+        }
 		${
-            ldo.mode === 'LDO'
+            ldo.mode === 'LDO' && ldo.voltage !== undefined
                 ? `regulator-init-microvolt = <${toMicro(ldo.voltage)}>;`
                 : ''
         }

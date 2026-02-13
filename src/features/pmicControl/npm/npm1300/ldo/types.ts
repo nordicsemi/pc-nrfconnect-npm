@@ -4,16 +4,16 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-export enum SoftStart {
+export enum SoftStartCurrent {
     '25 mA' = 25,
     '50 mA' = 50,
     '75 mA' = 75,
     '100 mA' = 100,
 }
 
-export const SoftStartValues = Object.keys(SoftStart)
+export const SoftStartCurrentValues = Object.keys(SoftStartCurrent)
     .filter(key => !Number.isNaN(Number(key)))
     .map(Number);
-export const SoftStartKeys = Object.values(SoftStart).filter(key =>
-    Number.isNaN(Number(key)),
+export const SoftStartCurrentKeys = Object.values(SoftStartCurrent).filter(
+    key => Number.isNaN(Number(key)),
 );

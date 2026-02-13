@@ -19,17 +19,17 @@ const getLdoVoltageRange = () =>
 
 export default class Module extends nPM1300LdoModule {
     get defaults(): Ldo {
-        return {
-            voltage: getLdoVoltageRange().min,
-            mode: 'Load_switch',
-            enabled: false,
-            softStartEnabled: true,
-            softStart: 25,
+        return ((index: number) => ({
             activeDischarge: false,
+            cardLabel: `Load Switch/LDO ${index + 1}`,
+            enabled: false,
+            mode: 'Load_switch',
             onOffControl: 'SW',
             onOffSoftwareControlEnabled: true,
-            ldoSoftStartEnable:
+            softStart:
                 this.pmicRevision !== undefined && this.pmicRevision >= 1.1,
-        };
+            softStartCurrentLoadSwitchMode: 25,
+            voltage: getLdoVoltageRange().min,
+        }))(this.index);
     }
 }

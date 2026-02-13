@@ -15,16 +15,16 @@ import {
 import ldoCallbacks from './callbacks';
 import { LdoGet } from './getters';
 import { LdoSet } from './setters';
-import { type SoftStart, SoftStartValues } from './types';
+import { SoftStartCurrentValues } from './types';
 
 export const toLdoExport = (ldo: Ldo): LdoExport => ({
-    voltage: ldo.voltage,
+    activeDischarge: ldo.activeDischarge,
     enabled: ldo.enabled,
     mode: ldo.mode,
-    softStartEnabled: ldo.softStartEnabled,
-    softStart: ldo.softStart,
-    activeDischarge: ldo.activeDischarge,
     onOffControl: ldo.onOffControl,
+    softStart: ldo.softStart,
+    softStartCurrentLoadSwitchMode: ldo.softStartCurrentLoadSwitchMode,
+    voltage: ldo.voltage,
 });
 
 const getLdoVoltageRange = () =>
@@ -79,14 +79,14 @@ export default class Module implements LdoModule {
         return this._callbacks;
     }
 
-    get values(): {
-        softstart: { label: string; value: SoftStart }[];
-    } {
+    get values(): LdoModule['values'] {
         return {
-            softstart: [...SoftStartValues].map((item, i) => ({
-                label: `${SoftStartValues[i]} mA`,
-                value: item,
-            })),
+            onOffControl: [{ label: 'SW', value: 'SW' }],
+            softStartCurrent: () =>
+                SoftStartCurrentValues.map((item, i) => ({
+                    label: `${SoftStartCurrentValues[i]} mA`,
+                    value: item,
+                })),
         };
     }
 
@@ -97,17 +97,17 @@ export default class Module implements LdoModule {
     }
 
     get defaults(): Ldo {
-        return {
-            voltage: getLdoVoltageRange().min,
-            mode: 'Load_switch',
-            enabled: false,
-            softStartEnabled: true,
-            softStart: 25,
+        return ((index: number) => ({
             activeDischarge: false,
+            cardLabel: `Load Switch/LDO ${index + 1}`,
+            enabled: false,
+            mode: 'Load_switch',
             onOffControl: 'SW',
             onOffSoftwareControlEnabled: true,
-            ldoSoftStartEnable:
+            softStart:
                 this.pmicRevision !== undefined && this.pmicRevision >= 2.3,
-        };
+            softStartCurrentLoadSwitchMode: 25,
+            voltage: getLdoVoltageRange().min,
+        }))(this.index);
     }
 }
