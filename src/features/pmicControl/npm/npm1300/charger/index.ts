@@ -172,17 +172,13 @@ export default class Module implements ChargerModuleBase {
     }
 
     // eslint-disable-next-line class-methods-use-this
-    get values(): {
-        iTerm: (iChg: number) => { label: string; value: ITerm }[];
-        vTrickleFast: { label: string; value: VTrickleFast }[];
-    } {
+    get values(): ChargerModuleValues {
         return {
-            iTerm: () =>
-                [...ITermValues].map((item, i) => ({
-                    label: `${ITermKeys[i]}`,
-                    value: item,
-                })),
-            vTrickleFast: [...VTrickleFastValues].map((item, i) => ({
+            iTerm: ITermValues.map((item, i) => ({
+                label: `${ITermKeys[i]}`,
+                value: item,
+            })),
+            vTrickleFast: VTrickleFastValues.map((item, i) => ({
                 label: `${VTrickleFastKeys[i]}`,
                 value: item,
             })),
