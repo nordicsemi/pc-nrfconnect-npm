@@ -558,7 +558,9 @@ export default () => {
             dispatch(
                 setGPIOs(npmDevice.gpioModule.map(module => module.defaults)),
             );
-            dispatch(setLEDs(npmDevice.ledDefaults()));
+            dispatch(
+                setLEDs(npmDevice.ledModule.map(module => module.defaults)),
+            );
             dispatch(setPOFs(npmDevice.pofModule?.defaults));
             dispatch(setLowPowerConfig(npmDevice.lowPowerModule?.defaults));
             dispatch(setUsbPower(npmDevice.usbCurrentLimiterModule?.defaults));
@@ -729,8 +731,10 @@ export default () => {
             );
             dispatch(
                 setPaneHidden({
-                    name: 'GPIOs',
-                    hidden: !npmDevice?.gpioModule?.length,
+                    name: 'GPIOs & LEDs',
+                    hidden:
+                        !npmDevice?.gpioModule?.length &&
+                        !npmDevice?.ledModule?.length,
                 }),
             );
             dispatch(
