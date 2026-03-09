@@ -33,6 +33,7 @@ import type {
     GPIOPull1300,
 } from './npm1300/gpio/types';
 import type { SoftStartCurrent as LdoSoftStartCurrent1300 } from './npm1300/ldo/types';
+import type { Mode as LEDMode1300 } from './npm1300/led/types';
 import { npm1300TimerMode } from './npm1300/timerConfig/types';
 import { ITermNpm1304 } from './npm1304/charger/types';
 import type { PowerID2100 } from './npm2100/battery';
@@ -320,16 +321,18 @@ export type GPIO = {
     debounceEnabled: boolean;
 };
 
-export const LEDModeValues = [
-    'Charger error',
-    'Charging',
-    'Host',
-    'Not used',
-] as const;
-export type LEDMode = (typeof LEDModeValues)[number];
+export type LEDMode = LEDMode1300;
 
 export type LED = {
-    mode: LEDMode;
+    cardLabel: string;
+
+    blinkContinuous?: boolean;
+    blinkDouble?: boolean;
+    blinkTimeOff?: number;
+    blinkTimeOn?: number;
+    mode?: LEDMode;
+    pwmFrequency?: number;
+    rgbPhaseShifting?: boolean;
 };
 
 export const POFPolarityValues = ['Active low', 'Active high'] as const;
@@ -975,6 +978,45 @@ export type GpioModule = {
     defaults: GPIO;
 };
 
+export interface LedModule {
+    defaults: LED;
+    index: number;
+
+    actions: {
+        blink?: () => void;
+    };
+    callbacks: (() => void)[];
+    get: {
+        all: () => void;
+
+        blinkContinuous?: () => void;
+        blinkDouble?: () => void;
+        blinkTimeOff?: () => void;
+        blinkTimeOn?: () => void;
+        mode?: () => void;
+        pwmFrequency?: () => void;
+        rgbPhaseShifting?: () => void;
+    };
+    ranges: {
+        blinkTime?: RangeType;
+    };
+    set: {
+        all: (config: LedExport) => Promise<void>;
+
+        blinkContinuous?: (value: boolean) => Promise<void>;
+        blinkDouble?: (value: boolean) => Promise<void>;
+        blinkTimeOff?: (value: number) => Promise<void>;
+        blinkTimeOn?: (value: number) => Promise<void>;
+        mode?: (mode: LEDMode) => Promise<void>;
+        pwmFrequency?: (freq: number) => Promise<void>;
+        rgbPhaseShifting?: (value: boolean) => Promise<void>;
+    };
+    values: {
+        mode?: { label: string; value: LEDMode }[];
+        pwmFrequency?: { label: string; value: number }[];
+    };
+}
+
 export interface PofModule {
     get: {
         all: () => void;
@@ -1144,6 +1186,7 @@ export type GPIOExport = Omit<
     'pullEnabled' | 'driveEnabled' | 'openDrainEnabled' | 'debounceEnabled'
 >;
 export type USBPowerExport = Omit<USBPower, 'detectStatus'>;
+export type LedExport = Omit<LED, 'cardLabel'>;
 
 export interface NpmExportV1 {
     boosts: BoostExport[];
@@ -1170,7 +1213,7 @@ export interface NpmExportV2 {
     bucks?: BuckExport[];
     ldos: LdoExport[];
     gpios: GPIOExport[];
-    leds: LED[];
+    leds?: LedExport[];
     pof?: POF;
     onBoardLoad?: OnBoardLoad;
     lowPower?: LowPowerConfig;
@@ -1269,7 +1312,6 @@ export type Documentation = {
 export type NpmPeripherals = {
     ChargerModule?: IModule<ChargerModule>;
     maxEnergyExtraction: boolean;
-    noOfLEDs: number;
     noOfBatterySlots: number;
     ldos?: {
         Module: IModule<LdoModule>;
@@ -1285,6 +1327,10 @@ export type NpmPeripherals = {
     };
     boosts?: {
         Module: IModule<BoostModule>;
+        count: number;
+    };
+    leds?: {
+        Module: IModule<LedModule>;
         count: number;
     };
     BatteryProfiler?: IModule<BatteryProfiler>;
