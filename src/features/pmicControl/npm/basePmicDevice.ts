@@ -37,8 +37,7 @@ import {
     Ldo,
     LdoModule,
     LED,
-    LEDMode,
-    LEDModeValues,
+    LedModule,
     LoggingEvent,
     LowPowerModule,
     ModuleParams,
@@ -151,6 +150,16 @@ export default abstract class BaseNpmDevice {
     protected set gpioModule(gpioModule: GpioModule[]) {
         this.releaseAll.push(...gpioModule.map(gpio => gpio.callbacks).flat());
         this.#gpioModule = gpioModule;
+    }
+
+    #ledModule: LedModule[] = [];
+    get ledModule() {
+        return this.#ledModule;
+    }
+
+    protected set ledModule(ledModule: LedModule[]) {
+        this.releaseAll.push(...ledModule.map(led => led.callbacks).flat());
+        this.#ledModule = ledModule;
     }
 
     #fuelGaugeModule?: FuelGaugeModule;
@@ -325,6 +334,17 @@ export default abstract class BaseNpmDevice {
             this.boostModule = [...Array(boosts.count ?? 0).keys()].map(
                 index =>
                     new boosts.Module({
+                        ...args,
+                        index,
+                    }),
+            );
+        }
+
+        if (this.peripherals.leds) {
+            const leds = this.peripherals.leds;
+            this.ledModule = [...Array(leds.count ?? 0).keys()].map(
+                index =>
+                    new leds.Module({
                         ...args,
                         index,
                     }),
@@ -515,73 +535,11 @@ export default abstract class BaseNpmDevice {
                     noop,
                 ),
             );
-
-            for (let i = 0; i < this.peripherals.noOfLEDs; i += 1) {
-                this.releaseAll.push(
-                    shellParser.registerCommandCallback(
-                        toRegex('npmx led mode', true, i, '[0-3]'),
-                        res => {
-                            const mode = LEDModeValues[parseToNumber(res)];
-                            if (mode) {
-                                this.eventEmitter.emitPartialEvent<LED>(
-                                    'onLEDUpdate',
-                                    {
-                                        mode,
-                                    },
-                                    i,
-                                );
-                            }
-                        },
-                        noop,
-                    ),
-                );
-            }
         }
 
         this.updateUptimeOverflowCounter();
 
         this.initPeripherals();
-    }
-
-    // Return a set of default LED settings
-    ledDefaults(): LED[] {
-        const defaultLEDs: LED[] = [];
-        for (let i = 0; i < this.peripherals.noOfLEDs; i += 1) {
-            defaultLEDs.push({
-                mode: LEDModeValues[i],
-            });
-        }
-        return defaultLEDs;
-    }
-
-    getLedMode(index: number) {
-        return this.sendCommand(`npmx led mode get ${index}`);
-    }
-
-    setLedMode(index: number, mode: LEDMode) {
-        return new Promise<void>((resolve, reject) => {
-            if (this.pmicState === 'ek-disconnected') {
-                this.eventEmitter.emitPartialEvent<LED>(
-                    'onLEDUpdate',
-                    {
-                        mode,
-                    },
-                    index,
-                );
-                resolve();
-            } else {
-                this.sendCommand(
-                    `npmx led mode set ${index} ${LEDModeValues.findIndex(
-                        m => m === mode,
-                    )}`,
-                    () => resolve(),
-                    () => {
-                        this.getLedMode(index);
-                        reject();
-                    },
-                );
-            }
-        });
     }
 
     requestUpdate() {
@@ -593,10 +551,7 @@ export default abstract class BaseNpmDevice {
         this.ldoModule.forEach(ldo => ldo.get.all());
         this.gpioModule.forEach(module => module.get.all());
         this.boostModule.forEach(boost => boost.get.all());
-
-        for (let i = 0; i < this.peripherals.noOfLEDs; i += 1) {
-            this.getLedMode(i);
-        }
+        this.ledModule.forEach(module => module.get.all());
 
         this.batteryModule?.get.all();
         this.usbCurrentLimiterModule?.get.all();
@@ -870,9 +825,6 @@ export default abstract class BaseNpmDevice {
     hasMaxEnergyExtraction() {
         return this.peripherals.maxEnergyExtraction;
     }
-    getNumberOfLEDs() {
-        return this.peripherals.noOfLEDs;
-    }
     getNumberOfBatteryModelSlots() {
         return this.peripherals.noOfBatterySlots;
     }
@@ -1026,15 +978,17 @@ export default abstract class BaseNpmDevice {
                         ),
                     );
 
-                    await Promise.all(
-                        config.leds.map((led, index) =>
-                            (() => {
-                                this.setLedMode(index, led.mode).catch(
-                                    () => {},
-                                );
-                            })(),
-                        ),
-                    );
+                    if (config.leds) {
+                        await Promise.all(
+                            config.leds.map((led, index) =>
+                                (() => {
+                                    this.ledModule[index].set
+                                        .all(led)
+                                        .catch(() => {});
+                                })(),
+                            ),
+                        );
+                    }
 
                     if (config.pof) {
                         await this.pofModule?.set
