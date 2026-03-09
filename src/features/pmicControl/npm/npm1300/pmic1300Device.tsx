@@ -30,6 +30,7 @@ import FuelGaugeModule from './fuelGauge';
 import GpioModule from './gpio';
 import { numGPIOs } from './gpio/types';
 import LdoModule, { toLdoExport } from './ldo';
+import LedModule from './led';
 import LowPowerModule from './lowPower';
 import overlay from './overlay';
 import PofModule from './pof';
@@ -56,7 +57,6 @@ export default class Npm1300 extends BaseNpmDevice {
             new NpmEventEmitter(),
             {
                 ChargerModule,
-                noOfLEDs: 3,
                 noOfBatterySlots: 3,
                 maxEnergyExtraction: false,
                 ldos: {
@@ -70,6 +70,10 @@ export default class Npm1300 extends BaseNpmDevice {
                 gpios: {
                     Module: GpioModule,
                     count: numGPIOs,
+                },
+                leds: {
+                    Module: LedModule,
+                    count: 3,
                 },
                 BatteryProfiler,
                 PofModule,
