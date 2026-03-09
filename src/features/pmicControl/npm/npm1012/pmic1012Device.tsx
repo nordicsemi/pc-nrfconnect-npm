@@ -24,6 +24,7 @@ import {
 import BuckModule from './buck';
 import ChargerModule from './charger';
 import LdoModule from './ldo';
+import LedModule from './led';
 
 export const npm1012FWVersion = '0.0.1+0';
 
@@ -45,8 +46,11 @@ export default class Npm1012 extends BaseNpmDevice {
                 ldos: { Module: LdoModule, count: 2 },
                 ChargerModule,
                 maxEnergyExtraction: true,
-                noOfLEDs: 0,
                 noOfBatterySlots: 3,
+                leds: {
+                    Module: LedModule,
+                    count: 1,
+                },
             },
             0,
             {
