@@ -18,7 +18,7 @@ import {
 } from '../../features/pmicControl/pmicControlSlice';
 import useIsUIDisabled from '../../features/useIsUIDisabled';
 import GPIO from './GPIO';
-import LEDs from './LEDs';
+import LED from './LED';
 
 export default ({ active }: PaneProps) => {
     const disabled = useIsUIDisabled();
@@ -37,9 +37,15 @@ export default ({ active }: PaneProps) => {
                         disabled={disabled}
                     />
                 ))}
-            {npmDevice && !!npmDevice.getNumberOfLEDs() && (
-                <LEDs npmDevice={npmDevice} leds={leds} disabled={disabled} />
-            )}
+            {npmDevice &&
+                leds.map((led, index) => (
+                    <LED
+                        led={led}
+                        ledModule={npmDevice.ledModule[index]}
+                        key={`LED${1 + index}`}
+                        disabled={disabled}
+                    />
+                ))}
         </MasonryLayout>
     ) : null;
 };
