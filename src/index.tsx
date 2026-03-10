@@ -61,7 +61,7 @@ render(
                 Main: Regulators,
             },
             {
-                name: 'GPIOs',
+                name: 'GPIOs & LEDs',
                 Main: GPIOs,
             },
             {
