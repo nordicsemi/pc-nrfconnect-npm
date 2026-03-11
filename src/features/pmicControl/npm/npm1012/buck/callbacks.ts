@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Nordic Semiconductor ASA
+ * Copyright (c) 2025 Nordic Semiconductor ASA
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
@@ -210,7 +210,7 @@ export default (
                 res => {
                     const result = parseColonBasedAnswer(res).toLowerCase();
 
-                    let onOffControl: BuckOnOffControl1012 = 'Software';
+                    let onOffControl: BuckOnOffControl1012 | undefined;
                     switch (result) {
                         case 'gpio':
                             onOffControl = 'GPIO';
@@ -221,8 +221,10 @@ export default (
                         case 'vset':
                             onOffControl = 'VSET';
                             break;
-                        default:
-                            return;
+                    }
+
+                    if (onOffControl === undefined) {
+                        return;
                     }
 
                     eventEmitter.emitPartialEvent<Buck>(

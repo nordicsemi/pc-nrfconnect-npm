@@ -19,7 +19,7 @@ describe('PMIC 1012 - Setters Offline tests', () => {
 
         expect(mockOnBuckUpdate).toBeCalledTimes(1);
         expect(mockOnBuckUpdate).toBeCalledWith({
-            data: { vOutNormal: 1.2 },
+            data: { mode: 'software', vOutNormal: 1.2 },
             index,
         });
     });
