@@ -38,6 +38,9 @@ describe('PMIC 1012 - Setters Online tests', () => {
                 undefined,
                 true,
             );
+
+            // Expect update on slider value immediately
+            expect(mockOnChargerUpdate).toBeCalledTimes(1);
         });
 
         test('Set setChargerIChg', async () => {
@@ -58,6 +61,8 @@ describe('PMIC 1012 - Setters Online tests', () => {
                 undefined,
                 true,
             );
+
+            expect(mockOnChargerUpdate).toBeCalledTimes(1);
         });
 
         test('Set setChargerVTrickleFast', async () => {
@@ -69,17 +74,32 @@ describe('PMIC 1012 - Setters Online tests', () => {
                 undefined,
                 true,
             );
+
+            // Updates should only be emitted when we get response
+            expect(mockOnChargerUpdate).toBeCalledTimes(0);
         });
 
         test('Set setChargerITerm', async () => {
             await pmic.chargerModule?.set.iTerm(3.125);
 
-            expect(mockEnqueueRequest).toBeCalledWith(
-                'npm1012 charger current termination set 3.125',
+            // Expect charger to be turned off before changing the voltage
+            expect(mockEnqueueRequest).toBeCalledTimes(2);
+            expect(mockEnqueueRequest).nthCalledWith(
+                1,
+                'npm1012 charger enable set off',
                 expect.anything(),
                 undefined,
                 true,
             );
+            expect(mockEnqueueRequest).nthCalledWith(
+                2,
+                'npm1012 charger current termination set 3.125%',
+                expect.anything(),
+                undefined,
+                true,
+            );
+
+            expect(mockOnChargerUpdate).toBeCalledTimes(0);
         });
 
         test.each([true, false])(
@@ -95,7 +115,6 @@ describe('PMIC 1012 - Setters Online tests', () => {
                     true,
                 );
 
-                // Updates should only be emitted when we get response
                 expect(mockOnChargerUpdate).toBeCalledTimes(0);
             },
         );
@@ -143,6 +162,8 @@ describe('PMIC 1012 - Setters Online tests', () => {
                 undefined,
                 true,
             );
+
+            expect(mockOnChargerUpdate).toBeCalledTimes(0);
         });
 
         test('Set setChargerTChgResume', async () => {
@@ -154,6 +175,8 @@ describe('PMIC 1012 - Setters Online tests', () => {
                 undefined,
                 true,
             );
+
+            expect(mockOnChargerUpdate).toBeCalledTimes(0);
         });
 
         test('Set setChargerTCold', async () => {
@@ -165,6 +188,8 @@ describe('PMIC 1012 - Setters Online tests', () => {
                 undefined,
                 true,
             );
+
+            expect(mockOnChargerUpdate).toBeCalledTimes(0);
         });
 
         test('Set setChargerTCool', async () => {
@@ -176,6 +201,8 @@ describe('PMIC 1012 - Setters Online tests', () => {
                 undefined,
                 true,
             );
+
+            expect(mockOnChargerUpdate).toBeCalledTimes(0);
         });
 
         test('Set setChargerTWarm', async () => {
@@ -187,6 +214,8 @@ describe('PMIC 1012 - Setters Online tests', () => {
                 undefined,
                 true,
             );
+
+            expect(mockOnChargerUpdate).toBeCalledTimes(0);
         });
 
         test('Set setChargerTHot', async () => {
@@ -198,6 +227,8 @@ describe('PMIC 1012 - Setters Online tests', () => {
                 undefined,
                 true,
             );
+
+            expect(mockOnChargerUpdate).toBeCalledTimes(0);
         });
 
         test('Set chargerVTermCool', async () => {
@@ -209,6 +240,8 @@ describe('PMIC 1012 - Setters Online tests', () => {
                 undefined,
                 true,
             );
+
+            expect(mockOnChargerUpdate).toBeCalledTimes(0);
         });
 
         test('Set chargerVTermWarm', async () => {
@@ -220,6 +253,8 @@ describe('PMIC 1012 - Setters Online tests', () => {
                 undefined,
                 true,
             );
+
+            expect(mockOnChargerUpdate).toBeCalledTimes(0);
         });
     });
 
@@ -261,6 +296,8 @@ describe('PMIC 1012 - Setters Online tests', () => {
                 undefined,
                 true,
             );
+
+            expect(mockOnChargerUpdate).toBeCalledTimes(1);
         });
 
         test('Set setChargerVTerm onError case 2 - Fail on second command', async () => {
@@ -296,6 +333,8 @@ describe('PMIC 1012 - Setters Online tests', () => {
                 undefined,
                 true,
             );
+
+            expect(mockOnChargerUpdate).toBeCalledTimes(1);
         });
 
         test('Set setChargerIChg onError case 1 - Fail immediately', async () => {
@@ -326,6 +365,8 @@ describe('PMIC 1012 - Setters Online tests', () => {
                 undefined,
                 true,
             );
+
+            expect(mockOnChargerUpdate).toBeCalledTimes(1);
         });
 
         test('Set setChargerIChg onError case 2 - Fail on second command', async () => {
@@ -360,6 +401,8 @@ describe('PMIC 1012 - Setters Online tests', () => {
                 undefined,
                 true,
             );
+
+            expect(mockOnChargerUpdate).toBeCalledTimes(1);
         });
 
         test('Set setChargerVTrickleFast onError case 1 - Fail immediately', async () => {
@@ -389,6 +432,8 @@ describe('PMIC 1012 - Setters Online tests', () => {
                 undefined,
                 true,
             );
+
+            expect(mockOnChargerUpdate).toBeCalledTimes(0);
         });
 
         test('Set setChargerVTrickleFast onError case 2 - Fail immediately', async () => {
@@ -423,6 +468,8 @@ describe('PMIC 1012 - Setters Online tests', () => {
                 undefined,
                 true,
             );
+
+            expect(mockOnChargerUpdate).toBeCalledTimes(0);
         });
 
         test('Set setChargerITerm  onError case 1 - Fail immediately', async () => {
@@ -453,6 +500,8 @@ describe('PMIC 1012 - Setters Online tests', () => {
                 undefined,
                 true,
             );
+
+            expect(mockOnChargerUpdate).toBeCalledTimes(0);
         });
 
         test('Set setChargerITerm  onError case 2 - Fail immediately', async () => {
@@ -474,7 +523,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
             );
             expect(mockEnqueueRequest).nthCalledWith(
                 2,
-                'npm1012 charger current termination set 3.125',
+                'npm1012 charger current termination set 3.125%',
                 expect.anything(),
                 undefined,
                 true,
@@ -487,6 +536,8 @@ describe('PMIC 1012 - Setters Online tests', () => {
                 undefined,
                 true,
             );
+
+            expect(mockOnChargerUpdate).toBeCalledTimes(0);
         });
 
         test.each([true, false])(
@@ -512,6 +563,8 @@ describe('PMIC 1012 - Setters Online tests', () => {
                     undefined,
                     true,
                 );
+
+                expect(mockOnChargerUpdate).toBeCalledTimes(0);
             },
         );
 
@@ -538,6 +591,8 @@ describe('PMIC 1012 - Setters Online tests', () => {
                     undefined,
                     true,
                 );
+
+                expect(mockOnChargerUpdate).toBeCalledTimes(0);
             },
         );
 
@@ -565,7 +620,6 @@ describe('PMIC 1012 - Setters Online tests', () => {
                     true,
                 );
 
-                // Updates should only be emitted when we get response
                 expect(mockOnChargerUpdate).toBeCalledTimes(0);
             },
         );
