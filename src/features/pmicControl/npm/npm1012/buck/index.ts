@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Nordic Semiconductor ASA
+ * Copyright (c) 2025 Nordic Semiconductor ASA
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
@@ -109,10 +109,17 @@ export default class Module implements BuckModule {
         eventEmitter,
         offlineMode,
         shellParser,
+        dialogHandler,
     }: ModuleParams) {
         this.index = index;
         this._get = new BuckGet(sendCommand);
-        this._set = new BuckSet(eventEmitter, sendCommand, offlineMode, index);
+        this._set = new BuckSet(
+            dialogHandler,
+            eventEmitter,
+            sendCommand,
+            offlineMode,
+            index,
+        );
         this._callbacks = buckCallbacks(shellParser, eventEmitter, index);
     }
     get get() {

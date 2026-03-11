@@ -5,11 +5,11 @@
  */
 
 import { helpers } from '../../tests/helpers';
-import { BuckModeControl } from '../../types';
+import { BuckModeControl, PmicDialog } from '../../types';
 import { PMIC_1012_BUCKS, setupMocksWithShellParser } from '../tests/helpers';
 
 describe('PMIC 1012 - Setters Online tests', () => {
-    const { mockOnBuckUpdate, mockEnqueueRequest, pmic } =
+    const { mockDialogHandler, mockOnBuckUpdate, mockEnqueueRequest, pmic } =
         setupMocksWithShellParser();
     describe('Setters and effects state - success', () => {
         beforeEach(() => {
@@ -20,13 +20,27 @@ describe('PMIC 1012 - Setters Online tests', () => {
             );
         });
 
-        test.each(PMIC_1012_BUCKS)('Set setBuckVOut index: %p', async index => {
+        test.each(PMIC_1012_BUCKS)('Set buckVOut index: %p', async index => {
             await pmic.buckModule[index].set.vOutNormal(1.85);
 
-            expect(mockEnqueueRequest).toBeCalledTimes(1);
+            expect(mockEnqueueRequest).toBeCalledTimes(3);
             expect(mockEnqueueRequest).nthCalledWith(
                 1,
                 `npm1012 buck vout software set 0 1.85`,
+                expect.anything(),
+                undefined,
+                true,
+            );
+            expect(mockEnqueueRequest).nthCalledWith(
+                2,
+                `npm1012 buck voutselctrl set SOFTWARE`,
+                expect.anything(),
+                undefined,
+                true,
+            );
+            expect(mockEnqueueRequest).nthCalledWith(
+                3,
+                `npm1012 buck enablectrl set SOFTWARE`,
                 expect.anything(),
                 undefined,
                 true,
@@ -36,7 +50,73 @@ describe('PMIC 1012 - Setters Online tests', () => {
         });
 
         test.each(PMIC_1012_BUCKS)(
-            'Set setBuckAlternateVOut index: %p',
+            'Set buckVOut index with warning dialog - cancel: %p',
+            async index => {
+                mockDialogHandler.mockImplementationOnce(
+                    (dialog: PmicDialog) => {
+                        dialog.onCancel?.();
+                    },
+                );
+
+                await expect(
+                    pmic.buckModule[index].set.vOutNormal(1.6),
+                ).rejects.toBeUndefined();
+
+                expect(mockDialogHandler).toBeCalledTimes(1);
+
+                expect(mockEnqueueRequest).toBeCalledTimes(1);
+                expect(mockEnqueueRequest).nthCalledWith(
+                    1,
+                    `npm1012 buck vout software get 0`,
+                    expect.anything(),
+                    undefined,
+                    true,
+                );
+
+                expect(mockOnBuckUpdate).toBeCalledTimes(0);
+            },
+        );
+
+        test.each(PMIC_1012_BUCKS)(
+            'Set buckVOut index with warning dialog - confirm: %p',
+            async index => {
+                mockDialogHandler.mockImplementationOnce(
+                    (dialog: PmicDialog) => {
+                        dialog.onConfirm();
+                    },
+                );
+
+                await pmic.buckModule[index].set.vOutNormal(1.6);
+
+                expect(mockEnqueueRequest).toBeCalledTimes(3);
+                expect(mockEnqueueRequest).nthCalledWith(
+                    1,
+                    `npm1012 buck vout software set 0 1.6`,
+                    expect.anything(),
+                    undefined,
+                    true,
+                );
+                expect(mockEnqueueRequest).nthCalledWith(
+                    2,
+                    `npm1012 buck voutselctrl set SOFTWARE`,
+                    expect.anything(),
+                    undefined,
+                    true,
+                );
+                expect(mockEnqueueRequest).nthCalledWith(
+                    3,
+                    `npm1012 buck enablectrl set SOFTWARE`,
+                    expect.anything(),
+                    undefined,
+                    true,
+                );
+
+                expect(mockOnBuckUpdate).toBeCalledTimes(0);
+            },
+        );
+
+        test.each(PMIC_1012_BUCKS)(
+            'Set buckAlternateVOut index: %p',
             async index => {
                 await pmic.buckModule[index].set.alternateVOut?.(1.85);
 
@@ -52,13 +132,20 @@ describe('PMIC 1012 - Setters Online tests', () => {
             },
         );
 
-        test.each(PMIC_1012_BUCKS)('Set setBuckMode - vSet', async index => {
+        test.each(PMIC_1012_BUCKS)('Set buckMode - vSet', async index => {
             await pmic.buckModule[index].set.mode('vSet');
 
-            expect(mockEnqueueRequest).toBeCalledTimes(1);
+            expect(mockEnqueueRequest).toBeCalledTimes(2);
             expect(mockEnqueueRequest).nthCalledWith(
                 1,
                 `npm1012 buck voutselctrl set VSET`,
+                expect.anything(),
+                undefined,
+                true,
+            );
+            expect(mockEnqueueRequest).nthCalledWith(
+                2,
+                `npm1012 buck enablectrl set VSET`,
                 expect.anything(),
                 undefined,
                 true,
@@ -68,7 +155,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
         });
 
         test.each(PMIC_1012_BUCKS)(
-            'Set setBuckModeControl index: %p',
+            'Set buckModeControl index: %p',
             async index => {
                 await pmic.buckModule[index].set.modeControl('LP');
 
@@ -85,7 +172,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
         );
 
         test.each(PMIC_1012_BUCKS)(
-            'Set setBuckOnOffControl index: %p',
+            'Set buckOnOffControl index: %p',
             async index => {
                 await pmic.buckModule[index].set.onOffControl('Software');
 
@@ -101,30 +188,82 @@ describe('PMIC 1012 - Setters Online tests', () => {
             },
         );
 
-        test.each(PMIC_1012_BUCKS)(
-            'Set setBuckEnabled index: %p',
-            async index => {
-                await pmic.buckModule[index].set.enabled(true);
+        test.each(PMIC_1012_BUCKS)('Set buckEnabled index: %p', async index => {
+            await pmic.buckModule[index].set.enabled(true);
 
-                expect(mockEnqueueRequest).toBeCalledTimes(1);
-                expect(mockEnqueueRequest).toBeCalledWith(
-                    `npm1012 buck enable set on`,
-                    expect.anything(),
-                    undefined,
-                    true,
+            expect(mockEnqueueRequest).toBeCalledTimes(3);
+            expect(mockEnqueueRequest).nthCalledWith(
+                1,
+                `npm1012 buck voutselctrl set SOFTWARE`,
+                expect.anything(),
+                undefined,
+                true,
+            );
+            expect(mockEnqueueRequest).nthCalledWith(
+                2,
+                `npm1012 buck enablectrl set SOFTWARE`,
+                expect.anything(),
+                undefined,
+                true,
+            );
+            expect(mockEnqueueRequest).nthCalledWith(
+                3,
+                `npm1012 buck enable set on`,
+                expect.anything(),
+                undefined,
+                true,
+            );
+
+            expect(mockOnBuckUpdate).toBeCalledTimes(0);
+        });
+
+        test.each(PMIC_1012_BUCKS)(
+            'Set buckEnabled index: %p false - with dialog cancel',
+            async index => {
+                mockDialogHandler.mockImplementationOnce(
+                    (dialog: PmicDialog) => {
+                        dialog.onCancel?.();
+                    },
                 );
+
+                await expect(
+                    pmic.buckModule[index].set.enabled(false),
+                ).rejects.toBeUndefined();
+
+                expect(mockEnqueueRequest).toBeCalledTimes(0);
 
                 expect(mockOnBuckUpdate).toBeCalledTimes(0);
             },
         );
 
         test.each(PMIC_1012_BUCKS)(
-            'Set setBuckEnabled index: %p false',
+            'Set buckEnabled index: %p false - with dialog confirm',
             async index => {
+                mockDialogHandler.mockImplementationOnce(
+                    (dialog: PmicDialog) => {
+                        dialog.onConfirm?.();
+                    },
+                );
+
                 await pmic.buckModule[index].set.enabled(false);
 
-                expect(mockEnqueueRequest).toBeCalledTimes(1);
-                expect(mockEnqueueRequest).toBeCalledWith(
+                expect(mockEnqueueRequest).toBeCalledTimes(3);
+                expect(mockEnqueueRequest).nthCalledWith(
+                    1,
+                    `npm1012 buck voutselctrl set SOFTWARE`,
+                    expect.anything(),
+                    undefined,
+                    true,
+                );
+                expect(mockEnqueueRequest).nthCalledWith(
+                    2,
+                    `npm1012 buck enablectrl set SOFTWARE`,
+                    expect.anything(),
+                    undefined,
+                    true,
+                );
+                expect(mockEnqueueRequest).nthCalledWith(
+                    3,
                     `npm1012 buck enable set off`,
                     expect.anything(),
                     undefined,
@@ -136,7 +275,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
         );
 
         test.each(PMIC_1012_BUCKS)(
-            'Set setBuckActiveDischargeResistance index: %p',
+            'Set buckActiveDischargeResistance index: %p',
             async index => {
                 await pmic.buckModule[index].set.activeDischargeResistance?.(
                     250,
@@ -144,7 +283,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
 
                 expect(mockEnqueueRequest).toBeCalledTimes(1);
                 expect(mockEnqueueRequest).toBeCalledWith(
-                    `npm1012 buck pulldown set 250`,
+                    `npm1012 buck pulldown set 250Ohm`,
                     expect.anything(),
                     undefined,
                     true,
@@ -155,7 +294,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
         );
 
         test.each(PMIC_1012_BUCKS)(
-            'Set setBuckActiveDischargeResistance index: %p - off',
+            'Set buckActiveDischargeResistance index: %p - off',
             async index => {
                 await pmic.buckModule[index].set.activeDischargeResistance?.(0);
 
@@ -172,7 +311,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
         );
 
         test.each(PMIC_1012_BUCKS)(
-            'Set setBuckAlternateVOutControl index: %p',
+            'Set buckAlternateVOutControl index: %p',
             async index => {
                 await pmic.buckModule[index].set.alternateVOutControl?.(
                     'Software',
@@ -191,7 +330,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
         );
 
         test.each(PMIC_1012_BUCKS)(
-            'Set setBuckAutomaticPassthrough index: %p',
+            'Set buckAutomaticPassthrough index: %p',
             async index => {
                 await pmic.buckModule[index].set.automaticPassthrough?.(true);
 
@@ -208,7 +347,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
         );
 
         test.each(PMIC_1012_BUCKS)(
-            'Set setBuckQuickVOutDischarge index: %p',
+            'Set buckQuickVOutDischarge index: %p',
             async index => {
                 await pmic.buckModule[index].set.quickVOutDischarge?.(true);
 
@@ -225,13 +364,13 @@ describe('PMIC 1012 - Setters Online tests', () => {
         );
 
         test.each(PMIC_1012_BUCKS)(
-            'Set setBuckPeakCurrentLimit index: %p',
+            'Set buckPeakCurrentLimit index: %p',
             async index => {
                 await pmic.buckModule[index].set.peakCurrentLimit?.(142);
 
                 expect(mockEnqueueRequest).toBeCalledTimes(1);
                 expect(mockEnqueueRequest).toBeCalledWith(
-                    `npm1012 buck peakilim set 142`,
+                    `npm1012 buck peakilim set 142mA`,
                     expect.anything(),
                     undefined,
                     true,
@@ -242,7 +381,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
         );
 
         test.each(PMIC_1012_BUCKS)(
-            'Set setBuckShortCircuitProtection index: %p',
+            'Set buckShortCircuitProtection index: %p',
             async index => {
                 await pmic.buckModule[index].set.shortCircuitProtection?.(true);
 
@@ -259,7 +398,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
         );
 
         test.each(PMIC_1012_BUCKS)(
-            'Set setBuckSoftStartPeakCurrentLimit index: %p',
+            'Set buckSoftStartPeakCurrentLimit index: %p',
             async index => {
                 await pmic.buckModule[index].set.softStartPeakCurrentLimit?.(
                     142,
@@ -267,7 +406,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
 
                 expect(mockEnqueueRequest).toBeCalledTimes(1);
                 expect(mockEnqueueRequest).toBeCalledWith(
-                    `npm1012 buck softstartilim set 142`,
+                    `npm1012 buck softstartilim set 142mA`,
                     expect.anything(),
                     undefined,
                     true,
@@ -300,7 +439,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
 
                 expect(mockEnqueueRequest).toBeCalledTimes(1);
                 expect(mockEnqueueRequest).toBeCalledWith(
-                    `npm1012 buck bias ${mode.toLowerCase()} set ${value}`,
+                    `npm1012 buck bias ${mode.toLowerCase()} set ${value}${mode === 'LP' ? 'uA' : 'nA'}`,
                     expect.anything(),
                     undefined,
                     true,
@@ -309,7 +448,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
         );
 
         test.each(PMIC_1012_BUCKS)(
-            'Set setBuckVOutRippleControl index: %p',
+            'Set buckVOutRippleControl index: %p',
             async index => {
                 await pmic.buckModule[index].set.vOutRippleControl?.('Low');
 
@@ -336,7 +475,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
         });
 
         test.each(PMIC_1012_BUCKS)(
-            'Set setBuckVOut - Fail immediately - index: %p',
+            'Set buckVOut - Fail immediately - index: %p',
             async index => {
                 await expect(
                     pmic.buckModule[index].set.vOutNormal(1.85),
@@ -350,7 +489,6 @@ describe('PMIC 1012 - Setters Online tests', () => {
                     undefined,
                     true,
                 );
-
                 expect(mockEnqueueRequest).nthCalledWith(
                     2,
                     `npm1012 buck vout software get 0`, // Request update on error
@@ -364,7 +502,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
         );
 
         test.each(PMIC_1012_BUCKS)(
-            'Set setBuckAlternateVOut - Fail immediately - index: %p',
+            'Set buckAlternateVOut - Fail immediately - index: %p',
             async index => {
                 await expect(
                     pmic.buckModule[index].set.alternateVOut?.(1.85),
@@ -378,7 +516,6 @@ describe('PMIC 1012 - Setters Online tests', () => {
                     undefined,
                     true,
                 );
-
                 expect(mockEnqueueRequest).nthCalledWith(
                     2,
                     `npm1012 buck vout software get 1`, // Request update on error
@@ -392,7 +529,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
         );
 
         test.each(PMIC_1012_BUCKS)(
-            'Set setBuckMode - Fail immediately - vSet',
+            'Set buckMode - Fail immediately - vSet',
             async index => {
                 await expect(
                     pmic.buckModule[index].set.mode('vSet'),
@@ -406,7 +543,6 @@ describe('PMIC 1012 - Setters Online tests', () => {
                     undefined,
                     true,
                 );
-
                 expect(mockEnqueueRequest).nthCalledWith(
                     2,
                     `npm1012 buck voutselctrl get`,
@@ -420,7 +556,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
         );
 
         test.each(PMIC_1012_BUCKS)(
-            'Set setBuckModeControl - Fail immediately - index: %p',
+            'Set buckModeControl - Fail immediately - index: %p',
             async index => {
                 await expect(
                     pmic.buckModule[index].set.modeControl('GPIO'),
@@ -434,7 +570,6 @@ describe('PMIC 1012 - Setters Online tests', () => {
                     undefined,
                     true,
                 );
-
                 expect(mockEnqueueRequest).nthCalledWith(
                     2,
                     `npm1012 buck pwrmode get`,
@@ -448,7 +583,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
         );
 
         test.each(PMIC_1012_BUCKS)(
-            'Set setBuckOnOffControl - Fail immediately - index: %p',
+            'Set buckOnOffControl - Fail immediately - index: %p',
             async index => {
                 await expect(
                     pmic.buckModule[index].set.onOffControl('GPIO'),
@@ -462,7 +597,6 @@ describe('PMIC 1012 - Setters Online tests', () => {
                     undefined,
                     true,
                 );
-
                 expect(mockEnqueueRequest).nthCalledWith(
                     2,
                     `npm1012 buck enablectrl get`,
@@ -476,23 +610,29 @@ describe('PMIC 1012 - Setters Online tests', () => {
         );
 
         test.each(PMIC_1012_BUCKS)(
-            'Set setBuckEnabled - Fail immediately - index: %p',
+            'Set buckEnabled - Fail immediately - index: %p',
             async index => {
                 await expect(
                     pmic.buckModule[index].set.enabled(true),
                 ).rejects.toBeUndefined();
 
-                expect(mockEnqueueRequest).toBeCalledTimes(2);
+                expect(mockEnqueueRequest).toBeCalledTimes(3);
                 expect(mockEnqueueRequest).nthCalledWith(
                     1,
-                    `npm1012 buck enable set on`,
+                    `npm1012 buck voutselctrl set SOFTWARE`,
                     expect.anything(),
                     undefined,
                     true,
                 );
-
                 expect(mockEnqueueRequest).nthCalledWith(
                     2,
+                    `npm1012 buck voutselctrl get`,
+                    expect.anything(),
+                    undefined,
+                    true,
+                );
+                expect(mockEnqueueRequest).nthCalledWith(
+                    3,
                     `npm1012 buck enable get`,
                     expect.anything(),
                     undefined,

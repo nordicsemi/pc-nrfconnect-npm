@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Nordic Semiconductor ASA
+ * Copyright (c) 2025 Nordic Semiconductor ASA
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
@@ -13,6 +13,7 @@ import {
     BuckModeControl,
     BuckOnOffControl,
     BuckVOutRippleControl,
+    PmicDialog,
 } from '../../types';
 import { BuckGet } from './getters';
 
@@ -20,6 +21,7 @@ export class BuckSet {
     private get: BuckGet;
 
     constructor(
+        private dialogHandler: ((dialog: PmicDialog) => void) | null,
         private eventEmitter: NpmEventEmitter,
         private sendCommand: (
             command: string,
@@ -102,28 +104,57 @@ export class BuckSet {
     }
 
     vOutNormal(value: number) {
-        return new Promise<void>((resolve, reject) => {
-            if (this.offlineMode) {
-                this.eventEmitter.emitPartialEvent<Buck>(
-                    'onBuckUpdate',
-                    {
-                        vOutNormal: value,
-                    },
-                    this.index,
-                );
+        const action = () =>
+            new Promise<void>((resolve, reject) => {
+                if (this.offlineMode) {
+                    this.eventEmitter.emitPartialEvent<Buck>(
+                        'onBuckUpdate',
+                        {
+                            mode: 'software',
+                            vOutNormal: value,
+                        },
+                        this.index,
+                    );
 
-                resolve();
-            } else {
+                    resolve();
+                    return;
+                }
+
                 this.sendCommand(
                     `npm1012 buck vout software set 0 ${value}`,
-                    () => resolve(),
+                    () => this.mode('software').then(resolve).catch(reject),
                     () => {
                         this.get.vOutNormal();
                         reject();
                     },
                 );
-            }
-        });
+            });
+
+        const dialogHandler = this.dialogHandler;
+        if (dialogHandler && !this.offlineMode && value < 1.65) {
+            return new Promise<void>((resolve, reject) => {
+                const warningDialog: PmicDialog = {
+                    type: 'alert',
+                    doNotAskAgainStoreID: 'pmic1012-setBuckVOut-1',
+                    message:
+                        'Please note that BUCK VOUT is used as VDDIO by default. Always ensure that VDDIO is above 1.62V. If you want to use another VDDIO source, please power down the EK and change VDDIO by configuring the jumper P18 on the EK, before powering the EK again. Are you sure you want to continue?',
+                    confirmLabel: 'Yes',
+                    optionalLabel: "Yes, don't ask again",
+                    cancelLabel: 'No',
+                    title: 'Warning',
+                    onConfirm: () => action().then(resolve).catch(reject),
+                    onCancel: () => {
+                        this.get.vOutNormal();
+                        reject();
+                    },
+                    onOptional: () => action().then(resolve).catch(reject),
+                };
+
+                dialogHandler(warningDialog);
+            });
+        }
+
+        return action();
     }
 
     mode(mode: BuckMode) {
@@ -140,7 +171,12 @@ export class BuckSet {
             } else {
                 this.sendCommand(
                     `npm1012 buck voutselctrl set ${mode.toUpperCase()}`,
-                    () => resolve(),
+                    () =>
+                        this.onOffControl(
+                            mode === 'software' ? 'Software' : 'VSET',
+                        )
+                            .then(resolve)
+                            .catch(reject),
                     () => {
                         this.get.mode();
                         reject();
@@ -201,27 +237,58 @@ export class BuckSet {
     }
 
     enabled(enabled: boolean) {
-        return new Promise<void>((resolve, reject) => {
-            if (this.offlineMode) {
-                this.eventEmitter.emitPartialEvent<Buck>(
-                    'onBuckUpdate',
-                    {
-                        enabled,
-                    },
-                    this.index,
-                );
-                resolve();
-            } else {
-                this.sendCommand(
-                    `npm1012 buck enable set ${enabled ? 'on' : 'off'}`,
-                    () => resolve(),
-                    () => {
-                        this.get.enabled();
-                        reject();
-                    },
-                );
-            }
-        });
+        const action = () =>
+            new Promise<void>((resolve, reject) => {
+                if (this.offlineMode) {
+                    this.eventEmitter.emitPartialEvent<Buck>(
+                        'onBuckUpdate',
+                        {
+                            enabled,
+                        },
+                        this.index,
+                    );
+                    resolve();
+                    return;
+                }
+
+                const onError = () => {
+                    this.get.enabled();
+                    reject();
+                };
+
+                this.mode('software')
+                    .then(() =>
+                        this.sendCommand(
+                            `npm1012 buck enable set ${enabled ? 'on' : 'off'}`,
+                            () => resolve(),
+                            onError,
+                        ),
+                    )
+                    .catch(onError);
+            });
+
+        const dialogHandler = this.dialogHandler;
+        if (dialogHandler && !this.offlineMode && !enabled) {
+            return new Promise<void>((resolve, reject) => {
+                const warningDialog: PmicDialog = {
+                    type: 'alert',
+                    doNotAskAgainStoreID: 'pmic1012-setBuckEnabled-1',
+                    message:
+                        'Please note that BUCK VOUT is used as VDDIO by default. Always ensure that VDDIO is above 1.62V. If you want to use another VDDIO source, please power down the EK and change VDDIO by configuring the jumper P18 on the EK, before powering the EK again. Are you sure you want to continue?',
+                    confirmLabel: 'Yes',
+                    optionalLabel: "Yes, don't ask again",
+                    cancelLabel: 'No',
+                    title: 'Warning',
+                    onConfirm: () => action().then(resolve).catch(reject),
+                    onCancel: reject,
+                    onOptional: () => action().then(resolve).catch(reject),
+                };
+
+                dialogHandler(warningDialog);
+            });
+        }
+
+        return action();
     }
 
     activeDischargeResistance(value: number) {
@@ -238,7 +305,7 @@ export class BuckSet {
                 resolve();
             } else {
                 this.sendCommand(
-                    `npm1012 buck pulldown set ${value === 0 ? 'off' : `${value}`}`,
+                    `npm1012 buck pulldown set ${value === 0 ? 'off' : `${value}Ohm`}`,
                     () => resolve(),
                     () => {
                         this.get.activeDischargeResistance();
@@ -379,7 +446,7 @@ export class BuckSet {
                 resolve();
             } else {
                 this.sendCommand(
-                    `npm1012 buck peakilim set ${value}`,
+                    `npm1012 buck peakilim set ${value}mA`,
                     () => resolve(),
                     () => {
                         this.get.peakCurrentLimit();
@@ -429,7 +496,7 @@ export class BuckSet {
                 resolve();
             } else {
                 this.sendCommand(
-                    `npm1012 buck softstartilim set ${value}`,
+                    `npm1012 buck softstartilim set ${value}mA`,
                     () => resolve(),
                     () => {
                         this.get.softStartPeakCurrentLimit();
@@ -443,13 +510,16 @@ export class BuckSet {
     vOutComparatorBiasCurrent(mode: BuckModeControl, value: number) {
         return new Promise<void>((resolve, reject) => {
             let update: Partial<Buck> = {};
+            let unit = '';
 
             switch (mode) {
                 case 'LP':
                     update = { vOutComparatorBiasCurrentLPMode: value };
+                    unit = 'uA';
                     break;
                 case 'ULP':
                     update = { vOutComparatorBiasCurrentULPMode: value };
+                    unit = 'nA';
                     break;
                 default:
                     reject();
@@ -466,7 +536,7 @@ export class BuckSet {
                 resolve();
             } else {
                 this.sendCommand(
-                    `npm1012 buck bias ${mode.toLowerCase()} set ${value}`,
+                    `npm1012 buck bias ${mode.toLowerCase()} set ${value}${unit}`,
                     () => resolve(),
                     () => {
                         this.get.vOutComparatorBiasCurrent(mode);

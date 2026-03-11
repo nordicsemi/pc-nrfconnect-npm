@@ -7,7 +7,7 @@
 export const BuckModeControlValues1012 = ['GPIO', 'LP', 'ULP'] as const;
 export type BuckModeControl1012 = (typeof BuckModeControlValues1012)[number];
 
-export const BuckOnOffControlValues1012 = ['GPIO', 'Software', 'VSET'] as const;
+export const BuckOnOffControlValues1012 = ['Software', 'VSET', 'GPIO'] as const;
 export type BuckOnOffControl1012 = (typeof BuckOnOffControlValues1012)[number];
 
 export const BuckAlternateVOutControlValues1012 = [
