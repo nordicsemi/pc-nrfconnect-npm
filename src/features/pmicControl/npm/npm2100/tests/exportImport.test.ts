@@ -90,6 +90,7 @@ test.skip('PMIC 2100 - Apply Config ', () => {
     };
 
     const initLed: LED = {
+        cardLabel: 'LED',
         mode: 'Charger error',
     };
 
