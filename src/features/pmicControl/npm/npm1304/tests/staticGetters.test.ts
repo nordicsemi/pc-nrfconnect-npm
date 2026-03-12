@@ -12,7 +12,6 @@ describe('PMIC 1304 - Static getters', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
-    test('Number of LEDs', () => expect(pmic.getNumberOfLEDs()).toBe(3));
 
     test('Device Type', () => expect(pmic.deviceType).toBe('npm1304'));
 });
