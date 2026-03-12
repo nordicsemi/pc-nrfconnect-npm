@@ -14,7 +14,7 @@ import {
     isNpm1300ResetConfig,
     type LdoExport,
     type LdoModule,
-    type LED,
+    type LedExport,
     type LEDMode,
     type NpmExportLatest,
     type NTCThermistor,
@@ -194,17 +194,33 @@ const generateLDO = (
 	};
 `;
 
-const generateLEDs = (leds: LED[], deviceType: string) => `
+const generateLEDs = (
+    leds: LedExport[] | undefined,
+    deviceType: string,
+): string => {
+    if (leds === undefined) {
+        return '';
+    }
+
+    const ledModes: LEDMode[] = leds
+        .map(led => led.mode)
+        .filter(mode => mode !== undefined);
+
+    if (ledModes.length === 0) {
+        return '';
+    }
+
+    return `
 	${deviceType}_leds: leds {
 		compatible = "nordic,${deviceType}-led";
-		${leds
+		${ledModes
             .map(
-                (led, index) =>
-                    `nordic,led${index}-mode = "${ledModeToOverlay(led.mode)}";`,
+                (mode, index) =>
+                    `nordic,led${index}-mode = "${ledModeToOverlay(mode)}";`,
             )
             .join('	\n')}
-	};
-`;
+	};`;
+};
 
 const longPressReset = (npmConfig: NpmExportLatest) => {
     if (!npmConfig.reset || !isNpm1300ResetConfig(npmConfig.reset)) {
