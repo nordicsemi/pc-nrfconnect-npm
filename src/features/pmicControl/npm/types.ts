@@ -25,6 +25,15 @@ import {
     ITrickle1012,
     VTrickleFast1012,
 } from './npm1012/charger/types';
+import type {
+    GPIODrive as GPIOLEDDrvGPIODrive1012,
+    GPIOModeInput as GPIOLEDDrvGPIOModeInput1012,
+    GPIOModeOutput as GPIOLEDDrvGPIOModeOutput1012,
+    GPIOPolarity as GPIOLEDDrvGPIOPolarity1012,
+    GPIOPull as GPIOLEDDrvGPIOPull1012,
+    LEDDrive as GPIOLEDDrvLEDDrive1012,
+    LEDMode as GPIOLEDDrvLEDMode1012,
+} from './npm1012/gpioleddrv/types';
 import { OnOffControl as LdoOnOffControl1012 } from './npm1012/ldo/types';
 import { ITermNpm1300, VTrickleFast1300 } from './npm1300/charger/types';
 import type {
@@ -333,6 +342,39 @@ export type LED = {
     mode?: LEDMode;
     pwmFrequency?: number;
     rgbPhaseShifting?: boolean;
+};
+
+export const GPIOLEDDrvStateValues = ['GPIO', 'LED'] as const;
+export type GPIOLEDDrvState = (typeof GPIOLEDDrvStateValues)[number];
+
+export const GPIOLEDDrvGPIOStateValues = ['Input', 'Output'] as const;
+export type GPIOLEDDrvGPIOState = (typeof GPIOLEDDrvGPIOStateValues)[number];
+
+export type GPIOLEDDrvGPIODrive = GPIOLEDDrvGPIODrive1012;
+export type GPIOLEDDrvGPIOMode =
+    | GPIOLEDDrvGPIOModeInput1012
+    | GPIOLEDDrvGPIOModeOutput1012;
+export type GPIOLEDDrvGPIOPolarity = GPIOLEDDrvGPIOPolarity1012;
+export type GPIOLEDDrvGPIOPull = GPIOLEDDrvGPIOPull1012;
+
+export type GPIOLEDDrvLEDDrive = GPIOLEDDrvLEDDrive1012;
+export type GPIOLEDDrvLEDMode = GPIOLEDDrvLEDMode1012;
+
+export type GPIOLEDDrv = {
+    gpioDebounce: boolean;
+    gpioDrive: GPIOLEDDrvGPIODrive;
+    gpioDutyCycle: number;
+    gpioMode: GPIOLEDDrvGPIOMode;
+    gpioOpenDrain: boolean;
+    gpioPolarity: GPIOLEDDrvGPIOPolarity;
+    gpioPull: GPIOLEDDrvGPIOPull;
+    gpioState: GPIOLEDDrvGPIOState;
+
+    ledDrive: GPIOLEDDrvLEDDrive;
+    ledDutyCycle: number;
+    ledMode: GPIOLEDDrvLEDMode;
+
+    state: GPIOLEDDrvState;
 };
 
 export const POFPolarityValues = ['Active low', 'Active high'] as const;
@@ -948,6 +990,68 @@ export interface OnBoardLoadModule {
     defaults: OnBoardLoad;
 }
 
+export interface GpioLedDrvModule {
+    defaults: GPIOLEDDrv;
+    index: number;
+
+    callbacks: (() => void)[];
+    get: {
+        all: () => void;
+
+        gpioDebounce: () => void;
+        gpioDrive: () => void;
+        gpioDutyCycle: () => void;
+        gpioMode: () => void;
+        gpioOpenDrain: () => void;
+        gpioPolarity: () => void;
+        gpioPull: () => void;
+        gpioState: () => void;
+
+        ledDrive: () => void;
+        ledDutyCycle: () => void;
+        ledMode: () => void;
+
+        state: () => void;
+    };
+    ranges: {
+        gpioDutyCycle: RangeType;
+
+        ledDutyCycle: RangeType;
+    };
+    set: {
+        all: (value: GPIOLEDDrv) => Promise<void>;
+
+        gpioDebounce: (value: boolean) => Promise<void>;
+        gpioDrive: (value: GPIOLEDDrvGPIODrive) => Promise<void>;
+        gpioDutyCycle: (value: number) => Promise<void>;
+        gpioMode: (
+            mode: GPIOLEDDrvGPIOMode,
+            state: GPIOLEDDrvGPIOState,
+        ) => Promise<void>;
+        gpioOpenDrain: (value: boolean) => Promise<void>;
+        gpioPolarity: (value: GPIOLEDDrvGPIOPolarity) => Promise<void>;
+        gpioPull: (value: GPIOLEDDrvGPIOPull) => Promise<void>;
+        gpioState: (value: GPIOLEDDrvGPIOState) => Promise<void>;
+
+        ledDrive: (value: GPIOLEDDrvLEDDrive) => Promise<void>;
+        ledDutyCycle: (value: number) => Promise<void>;
+        ledMode: (value: GPIOLEDDrvLEDMode) => Promise<void>;
+
+        state: (value: GPIOLEDDrvState) => Promise<void>;
+    };
+    values: {
+        gpioDrive: { label: string; value: GPIOLEDDrvGPIODrive }[];
+        gpioMode: (
+            state: GPIOLEDDrvGPIOState,
+        ) => { label: string; value: GPIOLEDDrvGPIOMode }[];
+        gpioPolarity: { label: string; value: GPIOLEDDrvGPIOPolarity }[];
+        gpioPull: { label: string; value: GPIOLEDDrvGPIOPull }[];
+
+        ledDrive: { label: string; value: GPIOLEDDrvLEDDrive }[];
+        ledMode: { label: string; value: GPIOLEDDrvLEDMode }[];
+    };
+}
+
 export type GpioModule = {
     index: number;
     get: {
@@ -1185,6 +1289,7 @@ export type GPIOExport = Omit<
     GPIO,
     'pullEnabled' | 'driveEnabled' | 'openDrainEnabled' | 'debounceEnabled'
 >;
+export type GPIOLEDDrvExport = Omit<GPIOLEDDrv, ''>;
 export type USBPowerExport = Omit<USBPower, 'detectStatus'>;
 export type LedExport = Omit<LED, 'cardLabel'>;
 
@@ -1213,6 +1318,7 @@ export interface NpmExportV2 {
     bucks?: BuckExport[];
     ldos: LdoExport[];
     gpios: GPIOExport[];
+    gpioLedDrvs?: GPIOLEDDrvExport[];
     leds?: LedExport[];
     pof?: POF;
     onBoardLoad?: OnBoardLoad;
@@ -1323,6 +1429,10 @@ export type NpmPeripherals = {
     };
     gpios?: {
         Module: IModule<GpioModule>;
+        count: number;
+    };
+    gpioLedDrvs?: {
+        Module: IModule<GpioLedDrvModule>;
         count: number;
     };
     boosts?: {
