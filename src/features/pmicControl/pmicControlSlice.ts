@@ -191,7 +191,7 @@ const pmicControlSlice = createSlice({
             state.leds = action.payload;
         },
         updateLEDs(state, action: PayloadAction<PartialUpdate<LED>>) {
-            if (state.leds.length >= action.payload.index) {
+            if (state.leds.length > action.payload.index) {
                 state.leds[action.payload.index] = {
                     ...state.leds[action.payload.index],
                     ...action.payload.data,
