@@ -33,6 +33,8 @@ import {
     FuelGauge,
     FuelGaugeModule,
     GPIO,
+    GPIOLEDDrv,
+    GpioLedDrvModule,
     GpioModule,
     Ldo,
     LdoModule,
@@ -150,6 +152,17 @@ export default abstract class BaseNpmDevice {
     protected set gpioModule(gpioModule: GpioModule[]) {
         this.releaseAll.push(...gpioModule.map(gpio => gpio.callbacks).flat());
         this.#gpioModule = gpioModule;
+    }
+
+    #gpioLedDrvModule: GpioLedDrvModule[] = [];
+    get gpioLedDrvModule() {
+        return [...this.#gpioLedDrvModule];
+    }
+    protected set gpioLedDrvModule(gpioLedDrvModule: GpioLedDrvModule[]) {
+        this.releaseAll.push(
+            ...gpioLedDrvModule.map(gpio => gpio.callbacks).flat(),
+        );
+        this.#gpioLedDrvModule = gpioLedDrvModule;
     }
 
     #ledModule: LedModule[] = [];
@@ -323,6 +336,17 @@ export default abstract class BaseNpmDevice {
             this.gpioModule = [...Array(gpios.count ?? 0).keys()].map(
                 index =>
                     new gpios.Module({
+                        ...args,
+                        index,
+                    }),
+            );
+        }
+
+        if (this.peripherals.gpioLedDrvs) {
+            const gpioLedDrv = this.peripherals.gpioLedDrvs;
+            this.gpioLedDrvModule = [...Array(gpioLedDrv.count).keys()].map(
+                index =>
+                    new gpioLedDrv.Module({
                         ...args,
                         index,
                     }),
@@ -550,6 +574,7 @@ export default abstract class BaseNpmDevice {
         this.buckModule.forEach(buck => buck.get.all());
         this.ldoModule.forEach(ldo => ldo.get.all());
         this.gpioModule.forEach(module => module.get.all());
+        this.gpioLedDrvModule.forEach(gpio => gpio.get.all());
         this.boostModule.forEach(boost => boost.get.all());
         this.ledModule.forEach(module => module.get.all());
 
@@ -739,6 +764,13 @@ export default abstract class BaseNpmDevice {
         return this.setupHandler<PartialUpdate<GPIO>, true>('onGPIOUpdate')(
             handler,
         );
+    }
+    onGpioLedDrvUpdate(
+        handler: (payload: PartialUpdate<GPIOLEDDrv>, error: string) => void,
+    ) {
+        return this.setupHandler<PartialUpdate<GPIOLEDDrv>, true>(
+            'onGpioLedDrvUpdate',
+        )(handler);
     }
     onLEDUpdate(handler: (payload: PartialUpdate<LED>, error: string) => void) {
         return this.setupHandler<PartialUpdate<LED>, true>('onLEDUpdate')(
@@ -977,6 +1009,18 @@ export default abstract class BaseNpmDevice {
                             })(),
                         ),
                     );
+
+                    if (config.gpioLedDrvs) {
+                        await Promise.all(
+                            config.gpioLedDrvs.map((gpio, index) =>
+                                (() => {
+                                    this.gpioLedDrvModule[index].set
+                                        .all(gpio)
+                                        .catch(() => {});
+                                })(),
+                            ),
+                        );
+                    }
 
                     if (config.leds) {
                         await Promise.all(
