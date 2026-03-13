@@ -23,6 +23,7 @@ import {
 } from '../types';
 import BuckModule from './buck';
 import ChargerModule from './charger';
+import GpioLedDrvModule from './gpioleddrv';
 import LdoModule from './ldo';
 import LedModule from './led';
 
@@ -44,6 +45,7 @@ export default class Npm1012 extends BaseNpmDevice {
             {
                 bucks: { Module: BuckModule, count: 1 },
                 ldos: { Module: LdoModule, count: 2 },
+                gpioLedDrvs: { Module: GpioLedDrvModule, count: 3 },
                 ChargerModule,
                 maxEnergyExtraction: true,
                 noOfBatterySlots: 3,
