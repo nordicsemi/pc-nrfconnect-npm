@@ -23,6 +23,7 @@ import {
 } from '../types';
 import BuckModule from './buck';
 import ChargerModule from './charger';
+import FuelGaugeModule from './fuelGauge';
 import GpioLedDrvModule from './gpioleddrv';
 import LdoModule from './ldo';
 import LedModule from './led';
@@ -53,6 +54,7 @@ export default class Npm1012 extends BaseNpmDevice {
                     Module: LedModule,
                     count: 1,
                 },
+                FuelGaugeModule,
             },
             0,
             {
