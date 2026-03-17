@@ -28,6 +28,7 @@ import FuelGaugeModule from './fuelGauge';
 import GpioLedDrvModule from './gpioleddrv';
 import LdoModule from './ldo';
 import LedModule from './led';
+import UsbCurrentLimiterModule from './universalSerialBusCurrentLimiter';
 
 export const npm1012FWVersion = '0.0.6+0';
 
@@ -57,6 +58,7 @@ export default class Npm1012 extends BaseNpmDevice {
                 },
                 BatteryProfiler,
                 FuelGaugeModule,
+                UsbCurrentLimiterModule,
             },
             0,
             {
