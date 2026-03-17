@@ -15,15 +15,15 @@ to the EK.
 ## Installation
 
 nPM PowerUP is installed from nRF Connect for Desktop. For detailed steps, see
-[Installing nRF Connect for Desktop apps](https://docs.nordicsemi.com/bundle/nrf-connect-desktop/page/installing_apps.html)
+[Installing nRF Connect for Desktop apps](https://docs.nordicsemi.com/bundle/swtools_docs/page/app/nrf-connect-desktop/installing_apps.html)
 in the nRF Connect from Desktop documentation.
 
 ## Documentation
 
 Read the
-[nRF Connect nPM PowerUP](https://docs.nordicsemi.com/bundle/nrf-connect-npm/page/index.html)
+[nRF Connect nPM PowerUP](https://docs.nordicsemi.com/bundle/swtools_docs/page/app/pc-nrfconnect-npm/index.html)
 official documentation, which includes information about the
-[application UI](https://docs.nordicsemi.com/bundle/nrf-connect-npm/page/overview.html).
+[application UI](https://docs.nordicsemi.com/bundle/swtools_docs/page/app/pc-nrfconnect-npm/overview.html).
 
 ## Development
 
