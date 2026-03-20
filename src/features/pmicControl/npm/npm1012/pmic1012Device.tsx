@@ -172,10 +172,13 @@ export default class Npm1012 extends BaseNpmDevice {
 
         const messageParts = message.split(',');
         const adcSample: AdcSample = {
-            timestamp,
-            vBat: 0,
+            iBat: NaN,
             soc: NaN,
-            tDie: 0,
+            tBat: 0,
+            timestamp,
+            tte: NaN,
+            ttf: NaN,
+            vBat: 0,
         };
 
         const fixed = (dp: number, value?: string | number) =>
@@ -184,17 +187,26 @@ export default class Npm1012 extends BaseNpmDevice {
         messageParts.forEach(part => {
             const pair = part.split('=');
             switch (pair[0]) {
-                case 'vbat':
-                    adcSample.vBat = fixed(2, pair[1]);
-                    break;
-                case 'tdie':
-                    adcSample.tDie = fixed(1, pair[1]);
+                case 'ibat':
+                    adcSample.iBat = fixed(2, Number(pair[1] ?? NaN) * 1000);
                     break;
                 case 'soc':
                     adcSample.soc = Math.min(
                         100,
                         Math.max(0, fixed(1, pair[1])),
                     );
+                    break;
+                case 'tbat':
+                    adcSample.tBat = fixed(1, pair[1]);
+                    break;
+                case 'tte':
+                    adcSample.tte = Number(pair[1] ?? NaN);
+                    break;
+                case 'ttf':
+                    adcSample.ttf = Number(pair[1] ?? NaN);
+                    break;
+                case 'vbat':
+                    adcSample.vBat = fixed(2, pair[1]);
                     break;
             }
         });
