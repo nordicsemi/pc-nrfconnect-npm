@@ -5,11 +5,19 @@
  */
 
 import { RangeType } from '../../../../../utils/helpers';
-import { Ldo, LdoExport, LdoModule, ModuleParams } from '../../types';
+import {
+    Ldo,
+    LdoExport,
+    LdoMode,
+    LdoModule,
+    LdoOnOffControl,
+    LdoVOutSel,
+    ModuleParams,
+} from '../../types';
 import ldoCallbacks from './callbacks';
 import { LdoGet } from './getters';
 import { LdoSet } from './setters';
-import { OnOffControl, onOffControlValues } from './types';
+import { onOffControlValues } from './types';
 
 const ldoDefaults = (index: number): Ldo => {
     const common: Ldo = {
@@ -96,14 +104,41 @@ export default class Module implements LdoModule {
     }
 
     get values(): LdoModule['values'] {
-        return {
-            onOffControl: (this.index === 1
-                ? ['GPIO', 'Software']
-                : onOffControlValues
-            ).map(val => ({
+        const onOffControlValueForUI = (
+            mode?: LdoMode,
+            vOutSel?: LdoVOutSel,
+        ) => {
+            const valuesWithoutSoftware = onOffControlValues.filter(
+                value => value !== 'Software',
+            );
+            const valuesWithoutSoftwareOrVset = onOffControlValues.filter(
+                value => value !== 'Software' && value !== 'VSET',
+            );
+            const valuesWithoutVset = onOffControlValues.filter(
+                value => value !== 'VSET',
+            );
+
+            let values: LdoOnOffControl[] = [];
+
+            // Filter out 'Software' and/or 'VSET' option
+            if (this.index === 1) {
+                values = valuesWithoutVset; // Load Switch 2
+            } else if (mode === 'Load_switch' && vOutSel === 'Vset') {
+                values = valuesWithoutSoftwareOrVset;
+            } else if (vOutSel === 'Software') {
+                values = valuesWithoutVset;
+            } else if (vOutSel === 'Vset') {
+                values = valuesWithoutSoftware;
+            }
+
+            return values.map(val => ({
                 label: val,
-                value: val as OnOffControl,
-            })),
+                value: val,
+            }));
+        };
+
+        return {
+            onOffControl: onOffControlValueForUI,
             softStartCurrent: () =>
                 softStartCurrentValues.map(val => ({
                     label: `${val} mA`,

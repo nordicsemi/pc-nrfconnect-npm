@@ -31,34 +31,57 @@ export class LdoGet {
     activeDischarge() {
         this.sendCommand(`npm1012 ldosw activedischarge get ${this.index}`);
     }
+
     enabled() {
         this.sendCommand(`npm1012 ldosw enable get ${this.index}`);
     }
+
     mode() {
+        if (this.index === 1) {
+            return; // Disabled for Load Switch 2
+        }
+
         this.sendCommand(`npm1012 ldosw mode get ${this.index}`);
     }
+
     overcurrentProtection() {
         this.sendCommand(`npm1012 ldosw ocp get ${this.index}`);
     }
+
     onOffControl() {
         this.sendCommand(`npm1012 ldosw enablectrl get ${this.index}`);
     }
+
     softStart() {
         this.sendCommand(`npm1012 ldosw softstart get ${this.index}`);
     }
+
     softStartCurrent() {
         this.sendCommand(`npm1012 ldosw softstartilim get ${this.index}`);
     }
+
     softStartTime() {
         this.sendCommand(`npm1012 ldosw softstarttime get ${this.index}`);
     }
+
     vOutSel() {
-        this.sendCommand(`npm1012 ldosw voutsel get ${this.index}`);
+        if (this.index === 1) {
+            return; // Disabled for Load Switch 2
+        }
+        this.sendCommand(`npm1012 ldosw voutselctrl get ${this.index}`);
     }
+
     voltage() {
+        if (this.index === 1) {
+            return; // Disabled for Load Switch 2
+        }
         this.sendCommand(`npm1012 ldosw vout software get ${this.index}`);
     }
+
     weakPullDown() {
+        if (this.index === 1) {
+            return; // Disabled for Load Switch 2
+        }
         this.sendCommand(`npm1012 ldosw weakpull get ${this.index}`);
     }
 }

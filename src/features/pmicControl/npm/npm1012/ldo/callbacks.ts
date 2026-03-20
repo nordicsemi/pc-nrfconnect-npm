@@ -189,7 +189,7 @@ export default (
 
         cleanupCallbacks.push(
             shellParser.registerCommandCallback(
-                toRegex('npm1012 ldosw voutsel', true, index, '(\\w+)'),
+                toRegex('npm1012 ldosw voutselctrl', true, index, '(\\w+)'),
                 res => {
                     if (index === 1) {
                         return; // Disabled for Load Switch 2

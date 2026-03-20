@@ -70,6 +70,11 @@ export class LdoSet {
 
     mode(mode: LdoMode) {
         return new Promise<void>((resolve, reject) => {
+            if (this.index === 1) {
+                resolve();
+                return; // Disabled for Load Switch 2
+            }
+
             if (this.offlineMode) {
                 this.eventEmitter.emitPartialEvent<Ldo>(
                     'onLdoUpdate',
@@ -79,26 +84,43 @@ export class LdoSet {
                     this.index,
                 );
                 resolve();
-            } else {
-                this.sendCommand(
-                    `npm1012 ldosw mode set ${this.index} ${mode}`,
-                    () => resolve(),
-                    () => {
-                        this.get.mode();
-                        reject();
-                    },
-                );
+                return;
             }
+
+            const onError = () => {
+                this.get.mode();
+                reject();
+            };
+
+            this.sendCommand(
+                `npm1012 ldosw mode set ${this.index} ${mode}`,
+                () => resolve(),
+                onError,
+            );
         });
     }
 
     voltage(voltage: number) {
         return new Promise<void>((resolve, reject) => {
+            if (this.index === 1) {
+                resolve();
+                return; // Disabled for Load Switch 2
+            }
+
+            this.eventEmitter.emitPartialEvent<Ldo>(
+                'onLdoUpdate',
+                {
+                    voltage,
+                },
+                this.index,
+            );
+
             if (this.offlineMode) {
                 this.eventEmitter.emitPartialEvent<Ldo>(
                     'onLdoUpdate',
                     {
-                        voltage,
+                        mode: 'LDO',
+                        vOutSel: 'Software',
                     },
                     this.index,
                 );
@@ -106,21 +128,23 @@ export class LdoSet {
                 return;
             }
 
+            const onError = () => {
+                this.get.voltage();
+                reject();
+            };
+
             this.mode('LDO')
                 .then(() => {
                     this.sendCommand(
                         `npm1012 ldosw vout software set ${this.index} ${voltage}`,
-                        () => resolve(),
-                        () => {
-                            this.get.voltage();
-                            reject();
-                        },
+                        () =>
+                            this.vOutSel('Software')
+                                .then(resolve)
+                                .catch(reject),
+                        onError,
                     );
                 })
-                .catch(() => {
-                    this.get.voltage();
-                    reject();
-                });
+                .catch(onError);
         });
     }
 
@@ -135,16 +159,20 @@ export class LdoSet {
                     this.index,
                 );
                 resolve();
-            } else {
-                this.sendCommand(
-                    `npm1012 ldosw enable set ${this.index} ${enabled ? 'on' : 'off'}`,
-                    () => resolve(),
-                    () => {
-                        this.get.enabled();
-                        reject();
-                    },
-                );
+                return;
             }
+
+            const command = `npm1012 ldosw enable set ${this.index} ${enabled ? 'on' : 'off'}`;
+
+            const onError = () => {
+                this.get.enabled();
+                reject();
+            };
+
+            this.onOffControl('Software')
+                .then(() => this.vOutSel('Software'))
+                .then(() => this.sendCommand(command, () => resolve(), onError))
+                .catch(onError);
         });
     }
 
@@ -159,16 +187,17 @@ export class LdoSet {
                     this.index,
                 );
                 resolve();
-            } else {
-                this.sendCommand(
-                    `npm1012 ldosw activedischarge set ${this.index} ${activeDischarge ? 'on' : 'off'}`,
-                    () => resolve(),
-                    () => {
-                        this.get.activeDischarge();
-                        reject();
-                    },
-                );
+                return;
             }
+
+            this.sendCommand(
+                `npm1012 ldosw activedischarge set ${this.index} ${activeDischarge ? 'on' : 'off'}`,
+                () => resolve(),
+                () => {
+                    this.get.activeDischarge();
+                    reject();
+                },
+            );
         });
     }
 
@@ -183,16 +212,17 @@ export class LdoSet {
                     this.index,
                 );
                 resolve();
-            } else {
-                this.sendCommand(
-                    `npm1012 ldosw ocp set ${this.index} ${ocp ? 'on' : 'off'}`,
-                    () => resolve(),
-                    () => {
-                        this.get.overcurrentProtection();
-                        reject();
-                    },
-                );
+                return;
             }
+
+            this.sendCommand(
+                `npm1012 ldosw ocp set ${this.index} ${ocp ? 'on' : 'off'}`,
+                () => resolve(),
+                () => {
+                    this.get.overcurrentProtection();
+                    reject();
+                },
+            );
         });
     }
 
@@ -207,16 +237,17 @@ export class LdoSet {
                     this.index,
                 );
                 resolve();
-            } else {
-                this.sendCommand(
-                    `npm1012 ldosw enablectrl set ${this.index} ${onOffControl}`,
-                    () => resolve(),
-                    () => {
-                        this.get.onOffControl();
-                        reject();
-                    },
-                );
+                return;
             }
+
+            this.sendCommand(
+                `npm1012 ldosw enablectrl set ${this.index} ${onOffControl}`,
+                () => resolve(),
+                () => {
+                    this.get.onOffControl();
+                    reject();
+                },
+            );
         });
     }
 
@@ -231,18 +262,19 @@ export class LdoSet {
                     this.index,
                 );
                 resolve();
-            } else {
-                this.sendCommand(
-                    `npm1012 ldosw softstart set ${this.index} ${
-                        enable ? 'on' : 'off'
-                    }`,
-                    () => resolve(),
-                    () => {
-                        this.get.softStart();
-                        reject();
-                    },
-                );
+                return;
             }
+
+            this.sendCommand(
+                `npm1012 ldosw softstart set ${this.index} ${
+                    enable ? 'on' : 'off'
+                }`,
+                () => resolve(),
+                () => {
+                    this.get.softStart();
+                    reject();
+                },
+            );
         });
     }
 
@@ -257,16 +289,17 @@ export class LdoSet {
                     this.index,
                 );
                 resolve();
-            } else {
-                this.sendCommand(
-                    `npm1012 ldosw softstartilim set ${this.index} ${value}`,
-                    () => resolve(),
-                    () => {
-                        this.get.softStartCurrent();
-                        reject();
-                    },
-                );
+                return;
             }
+
+            this.sendCommand(
+                `npm1012 ldosw softstartilim set ${this.index} ${value}mA`,
+                () => resolve(),
+                () => {
+                    this.get.softStartCurrent();
+                    reject();
+                },
+            );
         });
     }
 
@@ -281,45 +314,57 @@ export class LdoSet {
                     this.index,
                 );
                 resolve();
-            } else {
-                this.sendCommand(
-                    `npm1012 ldosw softstarttime set ${this.index} ${value}`,
-                    () => resolve(),
-                    () => {
-                        this.get.softStartTime();
-                        reject();
-                    },
-                );
+                return;
             }
+
+            this.sendCommand(
+                `npm1012 ldosw softstarttime set ${this.index} ${value}ms`,
+                () => resolve(),
+                () => {
+                    this.get.softStartTime();
+                    reject();
+                },
+            );
         });
     }
 
-    vOutSel(mode: LdoVOutSel) {
+    vOutSel(vOutSel: LdoVOutSel) {
         return new Promise<void>((resolve, reject) => {
+            if (this.index === 1) {
+                resolve();
+                return; // Disabled for Load Switch 2
+            }
+
             if (this.offlineMode) {
                 this.eventEmitter.emitPartialEvent<Ldo>(
                     'onLdoUpdate',
                     {
-                        vOutSel: mode,
+                        vOutSel,
                     },
                     this.index,
                 );
                 resolve();
-            } else {
-                this.sendCommand(
-                    `npm1012 ldosw voutsel set ${this.index} ${mode.toUpperCase()}`,
-                    () => resolve(),
-                    () => {
-                        this.get.vOutSel();
-                        reject();
-                    },
-                );
+                return;
             }
+
+            this.sendCommand(
+                `npm1012 ldosw voutselctrl set ${this.index} ${vOutSel.toUpperCase()}`,
+                () => resolve(),
+                () => {
+                    this.get.vOutSel();
+                    reject();
+                },
+            );
         });
     }
 
     weakPullDown(enable: boolean) {
         return new Promise<void>((resolve, reject) => {
+            if (this.index === 1) {
+                resolve();
+                return; // Disabled for Load Switch 2
+            }
+
             if (this.offlineMode) {
                 this.eventEmitter.emitPartialEvent<Ldo>(
                     'onLdoUpdate',
@@ -329,16 +374,17 @@ export class LdoSet {
                     this.index,
                 );
                 resolve();
-            } else {
-                this.sendCommand(
-                    `npm1012 ldosw weakpull set ${this.index} ${enable ? 'on' : 'off'}`,
-                    () => resolve(),
-                    () => {
-                        this.get.weakPullDown();
-                        reject();
-                    },
-                );
+                return;
             }
+
+            this.sendCommand(
+                `npm1012 ldosw weakpull set ${this.index} ${enable ? 'on' : 'off'}`,
+                () => resolve(),
+                () => {
+                    this.get.weakPullDown();
+                    reject();
+                },
+            );
         });
     }
 }
