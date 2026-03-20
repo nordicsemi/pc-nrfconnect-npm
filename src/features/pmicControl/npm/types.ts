@@ -962,7 +962,10 @@ export interface LdoModule {
     };
     values: {
         modeControl?: { label: string; value: LdoModeControl }[];
-        onOffControl?: { label: string; value: LdoOnOffControl }[];
+        onOffControl?: (
+            mode?: LdoMode,
+            vOutSel?: LdoVOutSel,
+        ) => { label: string; value: LdoOnOffControl }[];
         pinMode?: { label: string; value: LdoGPIOControlMode }[];
         pinSel?: { label: string; value: LdoGPIOControlPinSelect }[];
         softStartCurrent?: (mode?: LdoMode) => {
