@@ -319,8 +319,8 @@ describe('PMIC 1012 - Command callbacks', () => {
                 ].flat(),
             ),
         ]).flat(),
-    )('npm1012 ldosw voutsel %p', ({ index, append, value }) => {
-        const command = `npm1012 ldosw voutsel ${append}`;
+    )('npm1012 ldosw voutselctrl %p', ({ index, append, value }) => {
+        const command = `npm1012 ldosw voutselctrl ${append}`;
         const callback =
             eventHandlers.mockRegisterCommandCallbackHandler(command);
 

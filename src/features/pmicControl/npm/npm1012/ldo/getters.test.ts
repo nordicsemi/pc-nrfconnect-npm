@@ -16,6 +16,12 @@ describe('PMIC 1012 - Request update commands', () => {
     test.each(PMIC_1012_LDOS)('Request update ldoVoltage index: %p', index => {
         pmic.ldoModule[index].get.voltage?.();
 
+        // Disabled for Load Switch 2
+        if (index === 1) {
+            expect(mockEnqueueRequest).toBeCalledTimes(0);
+            return;
+        }
+
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
             `npm1012 ldosw vout software get ${index}`,
@@ -39,6 +45,12 @@ describe('PMIC 1012 - Request update commands', () => {
 
     test.each(PMIC_1012_LDOS)('Request update ldoMode index: %p', index => {
         pmic.ldoModule[index].get.mode?.();
+
+        // Disabled for Load Switch 2
+        if (index === 1) {
+            expect(mockEnqueueRequest).toBeCalledTimes(0);
+            return;
+        }
 
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
@@ -142,9 +154,15 @@ describe('PMIC 1012 - Request update commands', () => {
     test.each(PMIC_1012_LDOS)('Request update ldoVOutSel index: %p', index => {
         pmic.ldoModule[index].get.vOutSel?.();
 
+        // Disabled for Load Switch 2
+        if (index === 1) {
+            expect(mockEnqueueRequest).toBeCalledTimes(0);
+            return;
+        }
+
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
-            `npm1012 ldosw voutsel get ${index}`,
+            `npm1012 ldosw voutselctrl get ${index}`,
             expect.anything(),
             undefined,
             true,
@@ -155,6 +173,12 @@ describe('PMIC 1012 - Request update commands', () => {
         'Request update ldoWeakPullDown index: %p',
         index => {
             pmic.ldoModule[index].get.weakPullDown?.();
+
+            // Disabled for Load Switch 2
+            if (index === 1) {
+                expect(mockEnqueueRequest).toBeCalledTimes(0);
+                return;
+            }
 
             expect(mockEnqueueRequest).toBeCalledTimes(1);
             expect(mockEnqueueRequest).toBeCalledWith(

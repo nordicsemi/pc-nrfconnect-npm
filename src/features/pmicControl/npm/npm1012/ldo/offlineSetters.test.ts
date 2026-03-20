@@ -14,18 +14,34 @@ describe('PMIC 1012 - Setters Offline tests', () => {
         jest.clearAllMocks();
     });
 
-    test.each(PMIC_1012_LDOS)('Set setLdoVoltage index: %p', async index => {
+    test.each(PMIC_1012_LDOS)('Set ldoVoltage index: %p', async index => {
         await pmic.ldoModule[index].set.voltage?.(1.2);
 
-        expect(mockOnLdoUpdate).toBeCalledTimes(1);
-        expect(mockOnLdoUpdate).toBeCalledWith({
+        // Disabled for Load Switch 2
+        if (index === 1) {
+            expect(mockOnLdoUpdate).toBeCalledTimes(0);
+            return;
+        }
+
+        expect(mockOnLdoUpdate).toBeCalledTimes(2);
+        expect(mockOnLdoUpdate).nthCalledWith(1, {
             data: { voltage: 1.2 },
+            index,
+        });
+        expect(mockOnLdoUpdate).nthCalledWith(2, {
+            data: { mode: 'LDO', vOutSel: 'Software' },
             index,
         });
     });
 
-    test.each(PMIC_1012_LDOS)('Set setLdoEnabled index: %p', async index => {
+    test.each(PMIC_1012_LDOS)('Set ldoEnabled index: %p', async index => {
         await pmic.ldoModule[index].set.enabled(false);
+
+        // // Disabled for Load Switch 2
+        // if (index === 1) {
+        //     expect(mockOnLdoUpdate).toBeCalledTimes(0);
+        //     return;
+        // }
 
         expect(mockOnLdoUpdate).toBeCalledTimes(1);
         expect(mockOnLdoUpdate).toBeCalledWith({
@@ -34,7 +50,7 @@ describe('PMIC 1012 - Setters Offline tests', () => {
         });
     });
 
-    test.each(PMIC_1012_LDOS)('Set setLdoSoftStart index: %p', async index => {
+    test.each(PMIC_1012_LDOS)('Set ldoSoftStart index: %p', async index => {
         await pmic.ldoModule[index].set.softStart?.(true);
 
         expect(mockOnLdoUpdate).toBeCalledTimes(1);
@@ -45,7 +61,7 @@ describe('PMIC 1012 - Setters Offline tests', () => {
     });
 
     test.each(PMIC_1012_LDOS)(
-        'Set setLdoSoftStartCurrentLimit index: %p',
+        'Set ldoSoftStartCurrentLimit index: %p',
         async index => {
             await pmic.ldoModule[index].set.softStartCurrent?.(10, 'LDO');
             await pmic.ldoModule[index].set.softStartCurrent?.(
@@ -61,21 +77,18 @@ describe('PMIC 1012 - Setters Offline tests', () => {
         },
     );
 
-    test.each(PMIC_1012_LDOS)(
-        'Set setLdoSoftStartTime index: %p',
-        async index => {
-            await pmic.ldoModule[index].set.softStartTime?.(4.5);
+    test.each(PMIC_1012_LDOS)('Set ldoSoftStartTime index: %p', async index => {
+        await pmic.ldoModule[index].set.softStartTime?.(4.5);
 
-            expect(mockOnLdoUpdate).toBeCalledTimes(1);
-            expect(mockOnLdoUpdate).toBeCalledWith({
-                data: { softStartTime: 4.5 },
-                index,
-            });
-        },
-    );
+        expect(mockOnLdoUpdate).toBeCalledTimes(1);
+        expect(mockOnLdoUpdate).toBeCalledWith({
+            data: { softStartTime: 4.5 },
+            index,
+        });
+    });
 
     test.each(PMIC_1012_LDOS)(
-        'Set setLdoActiveDischarge index: %p',
+        'Set ldoActiveDischarge index: %p',
         async index => {
             await pmic.ldoModule[index].set.activeDischarge?.(true);
 
@@ -88,7 +101,7 @@ describe('PMIC 1012 - Setters Offline tests', () => {
     );
 
     test.each(PMIC_1012_LDOS)(
-        'Set setLdoOvercurrentProtection index: %p',
+        'Set ldoOvercurrentProtection index: %p',
         async index => {
             await pmic.ldoModule[index].set.overcurrentProtection?.(true);
 
@@ -100,23 +113,26 @@ describe('PMIC 1012 - Setters Offline tests', () => {
         },
     );
 
-    test.each(PMIC_1012_LDOS)(
-        'Set setLdoOnOffControl index: %p',
-        async index => {
-            await pmic.ldoModule[index].set.onOffControl?.('Software');
+    test.each(PMIC_1012_LDOS)('Set ldoOnOffControl index: %p', async index => {
+        await pmic.ldoModule[index].set.onOffControl?.('Software');
 
-            expect(mockOnLdoUpdate).toBeCalledTimes(1);
-            expect(mockOnLdoUpdate).toBeCalledWith({
-                data: {
-                    onOffControl: 'Software',
-                },
-                index,
-            });
-        },
-    );
+        expect(mockOnLdoUpdate).toBeCalledTimes(1);
+        expect(mockOnLdoUpdate).toBeCalledWith({
+            data: {
+                onOffControl: 'Software',
+            },
+            index,
+        });
+    });
 
-    test.each(PMIC_1012_LDOS)('Set setLdoVOutSel index: %p', async index => {
+    test.each(PMIC_1012_LDOS)('Set ldoVOutSel index: %p', async index => {
         await pmic.ldoModule[index].set.vOutSel?.('Software');
+
+        // Disabled for Load Switch 2
+        if (index === 1) {
+            expect(mockOnLdoUpdate).toBeCalledTimes(0);
+            return;
+        }
 
         expect(mockOnLdoUpdate).toBeCalledTimes(1);
         expect(mockOnLdoUpdate).toBeCalledWith({
@@ -125,18 +141,21 @@ describe('PMIC 1012 - Setters Offline tests', () => {
         });
     });
 
-    test.each(PMIC_1012_LDOS)(
-        'Set setLdoWeakPullDown index: %p',
-        async index => {
-            await pmic.ldoModule[index].set.weakPullDown?.(true);
+    test.each(PMIC_1012_LDOS)('Set ldoWeakPullDown index: %p', async index => {
+        await pmic.ldoModule[index].set.weakPullDown?.(true);
 
-            expect(mockOnLdoUpdate).toBeCalledTimes(1);
-            expect(mockOnLdoUpdate).toBeCalledWith({
-                data: { weakPullDown: true },
-                index,
-            });
-        },
-    );
+        // Disabled for Load Switch 2
+        if (index === 1) {
+            expect(mockOnLdoUpdate).toBeCalledTimes(0);
+            return;
+        }
+
+        expect(mockOnLdoUpdate).toBeCalledTimes(1);
+        expect(mockOnLdoUpdate).toBeCalledWith({
+            data: { weakPullDown: true },
+            index,
+        });
+    });
 });
 
 export {};
