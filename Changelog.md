@@ -1,4 +1,4 @@
-### 2.2.4 - Unreleased
+## 2.2.4 - Unreleased
 
 ### Changed
 
