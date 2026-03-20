@@ -144,14 +144,23 @@ export default ({
                     {ldoModule.values.onOffControl && (
                         <Dropdown
                             label="On/Off Control"
-                            items={ldoModule.values.onOffControl}
+                            items={ldoModule.values.onOffControl(
+                                ldo.mode,
+                                ldo.vOutSel,
+                            )}
                             onSelect={item => {
                                 ldoModule.set.onOffControl?.(item.value);
                             }}
                             selectedItem={
-                                ldoModule.values.onOffControl.find(
-                                    item => item.value === ldo.onOffControl,
-                                ) ?? ldoModule.values.onOffControl[0]
+                                ldoModule.values
+                                    .onOffControl(ldo.mode, ldo.vOutSel)
+                                    .find(
+                                        item => item.value === ldo.onOffControl,
+                                    ) ??
+                                ldoModule.values.onOffControl(
+                                    ldo.mode,
+                                    ldo.vOutSel,
+                                )[0]
                             }
                             disabled={disabled}
                         />
