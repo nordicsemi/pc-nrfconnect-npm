@@ -82,7 +82,7 @@ export default class Module implements LdoModule {
 
     get values(): LdoModule['values'] {
         return {
-            onOffControl: [{ label: 'SW', value: 'SW' }],
+            onOffControl: () => [{ label: 'SW', value: 'SW' }],
             softStartCurrent: () =>
                 SoftStartCurrentValues.map((item, i) => ({
                     label: `${SoftStartCurrentValues[i]} mA`,
