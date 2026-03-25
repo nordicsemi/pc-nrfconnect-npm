@@ -104,10 +104,13 @@ describe('PMIC 1012 - Logging', () => {
 
             expect(mockOnAdcSample).toBeCalledTimes(1);
             expect(mockOnAdcSample).toBeCalledWith({
-                timestamp: 17525,
-                vBat: 4.25,
-                tDie: 26.7,
+                iBat: 0.62,
                 soc: 98.7,
+                tBat: 0,
+                timestamp: 17525,
+                tte: 312,
+                ttf: 514,
+                vBat: 4.25,
             });
         });
 
@@ -126,24 +129,33 @@ describe('PMIC 1012 - Logging', () => {
 
             expect(mockOnAdcSample).toBeCalledTimes(3);
             expect(mockOnAdcSample).nthCalledWith(1, {
-                timestamp: 16525,
-                vBat: 4.25,
-                tDie: 26.7,
+                iBat: 0.62,
                 soc: 98.7,
+                tBat: 0,
+                timestamp: 16525,
+                tte: 312,
+                ttf: 514,
+                vBat: 4.25,
             });
 
             expect(mockOnAdcSample).nthCalledWith(2, {
-                timestamp: 2 ** 32 - 1 + 10525, // 1193hrs 02min 47sec 295ms + 10.525 sec
-                vBat: 4.25,
-                tDie: 26.7,
+                iBat: 0.62,
                 soc: 98.7,
+                tBat: 0,
+                timestamp: 2 ** 32 - 1 + 10525, // 1193hrs 02min 47sec 295ms + 10.525 sec
+                tte: 312,
+                ttf: 514,
+                vBat: 4.25,
             });
 
             expect(mockOnAdcSample).nthCalledWith(3, {
-                timestamp: (2 ** 32 - 1) * 2 + 8525, // 1193hrs 02min 47sec 295ms + 8.525 sec
-                vBat: 4.25,
-                tDie: 26.7,
+                iBat: 0.62,
                 soc: 98.7,
+                tBat: 0,
+                timestamp: (2 ** 32 - 1) * 2 + 8525, // 1193hrs 02min 47sec 295ms + 8.525 sec
+                tte: 312,
+                ttf: 514,
+                vBat: 4.25,
             });
         });
     });
