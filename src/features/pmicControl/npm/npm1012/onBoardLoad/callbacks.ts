@@ -1,0 +1,40 @@
+/*
+ * Copyright (c) 2026 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
+ */
+
+import { type ShellParser } from '@nordicsemiconductor/pc-nrfconnect-shared';
+
+import {
+    noop,
+    type NpmEventEmitter,
+    parseToFloat,
+    toRegex,
+} from '../../pmicHelpers';
+import { type OnBoardLoad } from '../../types';
+
+export default (
+    shellParser: ShellParser | undefined,
+    eventEmitter: NpmEventEmitter,
+) => {
+    const cleanupCallbacks = [];
+    if (shellParser) {
+        cleanupCallbacks.push(
+            shellParser.registerCommandCallback(
+                toRegex('cc_sink level', true),
+                res => {
+                    eventEmitter.emitPartialEvent<OnBoardLoad>(
+                        'onOnBoardLoadUpdate',
+                        {
+                            iLoad: parseToFloat(res),
+                        },
+                    );
+                },
+                noop,
+            ),
+        );
+    }
+
+    return cleanupCallbacks;
+};
