@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2025 Nordic Semiconductor ASA
+ * Copyright (c) 2026 Nordic Semiconductor ASA
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { setupMocksBase } from './helpers';
+import { setupMocksBase } from '../tests/helpers';
 
 describe('PMIC 1304 - Static getters', () => {
     const { pmic } = setupMocksBase();
@@ -13,7 +13,7 @@ describe('PMIC 1304 - Static getters', () => {
         jest.clearAllMocks();
     });
 
-    test('Device Type', () => expect(pmic.deviceType).toBe('npm1304'));
+    test('Number of LEDs', () => expect(pmic.ledModule.length).toBe(3));
 });
 
 export {};

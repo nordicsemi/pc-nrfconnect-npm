@@ -112,6 +112,7 @@ describe('PMIC 1304 - Apply Config ', () => {
     };
 
     const initLed: LED = {
+        cardLabel: 'LED',
         mode: 'Charger error',
     };
 

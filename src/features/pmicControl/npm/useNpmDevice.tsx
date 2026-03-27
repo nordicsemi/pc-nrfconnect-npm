@@ -40,6 +40,7 @@ import {
     setBucks,
     setCharger,
     setErrorLogs,
+    setGPIOLEDDrvs,
     setGPIOs,
     setHardcodedBatterModels,
     setLatestAdcSample,
@@ -61,6 +62,7 @@ import {
     updateBuck,
     updateCharger,
     updateFuelGauge,
+    updateGPIOLEDDrvs,
     updateGPIOs,
     updateLdo,
     updateLEDs,
@@ -268,6 +270,12 @@ export default () => {
             releaseAll.push(
                 npmDevice.onGPIOUpdate(payload => {
                     dispatch(updateGPIOs(payload));
+                }),
+            );
+
+            releaseAll.push(
+                npmDevice.onGpioLedDrvUpdate(payload => {
+                    dispatch(updateGPIOLEDDrvs(payload));
                 }),
             );
 
@@ -558,7 +566,14 @@ export default () => {
             dispatch(
                 setGPIOs(npmDevice.gpioModule.map(module => module.defaults)),
             );
-            dispatch(setLEDs(npmDevice.ledDefaults()));
+            dispatch(
+                setGPIOLEDDrvs(
+                    npmDevice.gpioLedDrvModule.map(module => module.defaults),
+                ),
+            );
+            dispatch(
+                setLEDs(npmDevice.ledModule.map(module => module.defaults)),
+            );
             dispatch(setPOFs(npmDevice.pofModule?.defaults));
             dispatch(setLowPowerConfig(npmDevice.lowPowerModule?.defaults));
             dispatch(setUsbPower(npmDevice.usbCurrentLimiterModule?.defaults));
@@ -729,8 +744,11 @@ export default () => {
             );
             dispatch(
                 setPaneHidden({
-                    name: 'GPIOs',
-                    hidden: !npmDevice?.gpioModule?.length,
+                    name: 'GPIOs & LEDs',
+                    hidden:
+                        !npmDevice?.gpioModule?.length &&
+                        !npmDevice?.gpioLedDrvModule?.length &&
+                        !npmDevice?.ledModule?.length,
                 }),
             );
             dispatch(

@@ -1,16 +1,17 @@
 /*
- * Copyright (c) 2023 Nordic Semiconductor ASA
+ * Copyright (c) 2026 Nordic Semiconductor ASA
  *
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
 import { helpers } from '../../tests/helpers';
-import { LEDModeValues, PmicDialog } from '../../types';
-import { PMIC_1300_LEDS, setupMocksWithShellParser } from './helpers';
+import { PMIC_1300_LEDS, setupMocksWithShellParser } from '../tests/helpers';
+import { modeValues } from './types';
 
 describe('PMIC 1300 - Setters Online tests', () => {
-    const { mockDialogHandler, mockOnLEDUpdate, mockEnqueueRequest, pmic } =
+    const { mockOnLEDUpdate, mockEnqueueRequest, pmic } =
         setupMocksWithShellParser();
+
     describe('Setters and effects state - success', () => {
         beforeEach(() => {
             jest.clearAllMocks();
@@ -22,14 +23,14 @@ describe('PMIC 1300 - Setters Online tests', () => {
 
         test.each(
             PMIC_1300_LEDS.map(index =>
-                LEDModeValues.map((mode, modeIndex) => ({
+                modeValues.map((mode, modeIndex) => ({
                     index,
                     mode,
                     modeIndex,
                 })),
             ).flat(),
-        )('Set setLedMode index: %p', async ({ index, mode, modeIndex }) => {
-            await pmic.setLedMode(index, mode);
+        )('Set ledMode index: %p', async ({ index, mode, modeIndex }) => {
+            await pmic.ledModule[index].set.mode?.(mode);
 
             expect(mockEnqueueRequest).toBeCalledTimes(1);
             expect(mockEnqueueRequest).toBeCalledWith(
@@ -43,6 +44,7 @@ describe('PMIC 1300 - Setters Online tests', () => {
             expect(mockOnLEDUpdate).toBeCalledTimes(0);
         });
     });
+
     describe('Setters and effects state - error', () => {
         beforeEach(() => {
             jest.clearAllMocks();
@@ -54,23 +56,17 @@ describe('PMIC 1300 - Setters Online tests', () => {
 
         test.each(
             PMIC_1300_LEDS.map(index =>
-                LEDModeValues.map((mode, modeIndex) => ({
+                modeValues.map((mode, modeIndex) => ({
                     index,
                     mode,
                     modeIndex,
                 })),
             ).flat(),
         )(
-            'Set setLedMode - Fail immediately - index: %p',
+            'Set ledMode - Fail immediately - index: %p',
             async ({ index, mode, modeIndex }) => {
-                mockDialogHandler.mockImplementationOnce(
-                    (dialog: PmicDialog) => {
-                        dialog.onConfirm();
-                    },
-                );
-
                 await expect(
-                    pmic.setLedMode(index, mode),
+                    pmic.ledModule[index].set.mode?.(mode),
                 ).rejects.toBeUndefined();
 
                 expect(mockEnqueueRequest).toBeCalledTimes(2);
@@ -81,7 +77,7 @@ describe('PMIC 1300 - Setters Online tests', () => {
                     true,
                 );
 
-                // Refresh data due to error
+                // Request update on error
                 expect(mockEnqueueRequest).nthCalledWith(
                     2,
                     `npmx led mode get ${index}`,
@@ -90,7 +86,6 @@ describe('PMIC 1300 - Setters Online tests', () => {
                     true,
                 );
 
-                // Updates should only be emitted when we get response
                 expect(mockOnLEDUpdate).toBeCalledTimes(0);
             },
         );

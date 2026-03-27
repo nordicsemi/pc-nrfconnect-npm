@@ -7,25 +7,13 @@
 import { ShellParserCallbacks as Callbacks } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import { npm1304FWVersion } from '../pmic1304Device';
-import { PMIC_1304_LEDS, setupMocksWithShellParser } from './helpers';
+import { setupMocksWithShellParser } from './helpers';
 
 describe('PMIC 1304 - Request update commands', () => {
     const { mockEnqueueRequest, pmic } = setupMocksWithShellParser();
 
     beforeEach(() => {
         jest.clearAllMocks();
-    });
-
-    test.each(PMIC_1304_LEDS)('Request update ledMode index: %p', index => {
-        pmic.getLedMode(index);
-
-        expect(mockEnqueueRequest).toBeCalledTimes(1);
-        expect(mockEnqueueRequest).toBeCalledWith(
-            `npmx led mode get ${index}`,
-            expect.anything(),
-            undefined,
-            true,
-        );
     });
 
     test('Request startAdcSample', () => {

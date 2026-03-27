@@ -107,6 +107,7 @@ describe('PMIC 1300 - Apply Config ', () => {
     };
 
     const initLed: LED = {
+        cardLabel: 'LED',
         mode: 'Charger error',
     };
 

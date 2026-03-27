@@ -12,7 +12,7 @@ import {
     GPIOValues,
     LdoExport,
     LdoModule,
-    LED,
+    LedExport,
     LEDMode,
     LowPowerConfig,
     npm1300ResetConfig,
@@ -163,17 +163,34 @@ ${deviceType}_ek_ldo${ldoModule.index + 1}: LDO${ldoModule.index + 1} {
 };
 `;
 
-const generateLEDs = (leds: LED[], deviceType: string) => `
+const generateLEDs = (
+    leds: LedExport[] | undefined,
+    deviceType: string,
+): string => {
+    if (leds === undefined) {
+        return '';
+    }
+
+    const ledModes: LEDMode[] = leds
+        .map(led => led.mode)
+        .filter(mode => mode !== undefined);
+
+    if (ledModes.length === 0) {
+        return '';
+    }
+
+    return `
 ${deviceType}_ek_leds: leds {
     compatible = "nordic,${deviceType}-led";
-    ${leds
+    ${ledModes
         .map(
-            (led, index) =>
-                `nordic,led${index}-mode = "${ledModeToOverlay(led.mode)}";`,
+            (mode, index) =>
+                `nordic,led${index}-mode = "${ledModeToOverlay(mode)}";`,
         )
         .join('    \n')}
 };
 `;
+};
 
 const generateLowPower = (lowPower?: LowPowerConfig) =>
     lowPower

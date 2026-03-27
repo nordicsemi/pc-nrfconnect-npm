@@ -23,7 +23,9 @@ import {
 } from '../types';
 import BuckModule from './buck';
 import ChargerModule from './charger';
+import GpioLedDrvModule from './gpioleddrv';
 import LdoModule from './ldo';
+import LedModule from './led';
 
 export const npm1012FWVersion = '0.0.1+0';
 
@@ -43,10 +45,14 @@ export default class Npm1012 extends BaseNpmDevice {
             {
                 bucks: { Module: BuckModule, count: 1 },
                 ldos: { Module: LdoModule, count: 2 },
+                gpioLedDrvs: { Module: GpioLedDrvModule, count: 3 },
                 ChargerModule,
                 maxEnergyExtraction: true,
-                noOfLEDs: 0,
                 noOfBatterySlots: 3,
+                leds: {
+                    Module: LedModule,
+                    count: 1,
+                },
             },
             0,
             {
