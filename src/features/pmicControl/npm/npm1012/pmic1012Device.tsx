@@ -13,12 +13,14 @@ import {
     MAX_TIMESTAMP,
     NpmEventEmitter,
     parseLogData,
+    parseToFloat,
 } from '../pmicHelpers';
 import {
     AdcSample,
     IrqEvent,
     LoggingEvent,
     NpmExportLatest,
+    OnBoardLoad,
     PmicDialog,
 } from '../types';
 import { BatteryProfiler } from './batteryProfiler';
@@ -28,6 +30,7 @@ import FuelGaugeModule from './fuelGauge';
 import GpioLedDrvModule from './gpioleddrv';
 import LdoModule from './ldo';
 import LedModule from './led';
+import OnBoardLoadModule from './onBoardLoad';
 import UsbCurrentLimiterModule from './universalSerialBusCurrentLimiter';
 
 export const npm1012FWVersion = '0.0.6+0';
@@ -59,6 +62,7 @@ export default class Npm1012 extends BaseNpmDevice {
                 BatteryProfiler,
                 FuelGaugeModule,
                 UsbCurrentLimiterModule,
+                OnBoardLoadModule,
             },
             0,
             {
@@ -88,6 +92,9 @@ export default class Npm1012 extends BaseNpmDevice {
                             case 'module_fg':
                                 // Handled in fuelGauge callbacks
                                 break;
+                            case 'module_cc_sink':
+                                this.processModuleCCSink(loggingEvent);
+                                break;
                         }
 
                         this.eventEmitter.emit('onLoggingEvent', {
@@ -97,6 +104,15 @@ export default class Npm1012 extends BaseNpmDevice {
                     });
                 }),
             );
+        }
+    }
+
+    private processModuleCCSink({ message }: LoggingEvent) {
+        if (message.startsWith('cc_level:')) {
+            const value = parseToFloat(message);
+            this.eventEmitter.emit('onOnBoardLoadUpdate', {
+                iLoad: value,
+            } satisfies OnBoardLoad);
         }
     }
 
