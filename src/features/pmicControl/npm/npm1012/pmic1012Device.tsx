@@ -23,7 +23,6 @@ import {
     OnBoardLoad,
     PmicDialog,
 } from '../types';
-import { BatteryProfiler } from './batteryProfiler';
 import BuckModule from './buck';
 import ChargerModule from './charger';
 import FuelGaugeModule from './fuelGauge';
@@ -59,7 +58,6 @@ export default class Npm1012 extends BaseNpmDevice {
                     Module: LedModule,
                     count: 1,
                 },
-                BatteryProfiler,
                 FuelGaugeModule,
                 UsbCurrentLimiterModule,
                 OnBoardLoadModule,
