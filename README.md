@@ -1,6 +1,5 @@
 # nPM PowerUP app
 
-[![Build Status](https://dev.azure.com/NordicSemiconductor/Wayland/_apis/build/status/NordicPlayground.pc-nrfconnect-npm?branchName=main)](https://dev.azure.com/NordicSemiconductor/Wayland/_build/results?buildId=56483&view=results)
 [![License](https://img.shields.io/badge/license-Modified%20BSD%20License-blue.svg)](LICENSE)
 
 nRF Connect nPM PowerUP is a desktop application intended to work with Nordic
