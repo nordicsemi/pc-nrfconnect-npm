@@ -50,6 +50,10 @@ export default ({
         },
     ];
 
+    const [internalOnOffControl, setInternalOnOffControl] = useState(
+        ldo.onOffControl,
+    );
+
     // NumberInputSliderWithUnit do not use ldo.<prop> as value as we send only at on change complete
     useEffect(() => {
         setInternalVLdo(ldo.voltage);
@@ -149,19 +153,34 @@ export default ({
                                 ldo.vOutSel,
                             )}
                             onSelect={item => {
-                                ldoModule.set.onOffControl?.(item.value);
+                                if (internalOnOffControl !== item.value) {
+                                    setInternalOnOffControl(item.value);
+                                    ldoModule.set.onOffControl?.(item.value);
+                                }
                             }}
-                            selectedItem={
-                                ldoModule.values
-                                    .onOffControl(ldo.mode, ldo.vOutSel)
+                            selectedItem={(() => {
+                                const prev = ldoModule.values
+                                    .onOffControl?.(ldo.mode, ldo.vOutSel)
                                     .find(
                                         item => item.value === ldo.onOffControl,
-                                    ) ??
-                                ldoModule.values.onOffControl(
+                                    );
+
+                                if (prev !== undefined) {
+                                    return prev;
+                                }
+
+                                const next = ldoModule.values.onOffControl?.(
                                     ldo.mode,
                                     ldo.vOutSel,
-                                )[0]
-                            }
+                                )[0];
+
+                                if (internalOnOffControl !== next.value) {
+                                    setInternalOnOffControl(next.value);
+                                    ldoModule.set.onOffControl?.(next.value);
+                                }
+
+                                return next;
+                            })()}
                             disabled={disabled}
                         />
                     )}
