@@ -799,7 +799,11 @@ export default () => {
     }, [dispatch, npmDevice, pmicState]);
 
     useEffect(() => {
-        if (npmDevice) {
+        if (
+            npmDevice &&
+            (npmDevice.deviceType === 'npm1300' ||
+                npmDevice.deviceType === 'npm1304')
+        ) {
             const t = setInterval(() => {
                 for (let i = 0; i < npmDevice.buckModule.length; i += 1) {
                     if (bucks[i].onOffControl !== 'Off') {
