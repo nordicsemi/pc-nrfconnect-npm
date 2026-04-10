@@ -10,6 +10,7 @@ import {
     noop,
     NpmEventEmitter,
     parseColonBasedAnswer,
+    parseLogData,
     parseToNumber,
     toRegex,
 } from '../../pmicHelpers';
@@ -26,6 +27,31 @@ export default (
     const callbacks = [];
 
     callbacks.push(
+        shellParser.onShellLoggingEvent(logEvent => {
+            parseLogData(logEvent, loggingEvent => {
+                if (loggingEvent.module !== 'module_pmic_irq') {
+                    return;
+                }
+
+                const usbPower: Partial<USBPower> = {};
+
+                switch (loggingEvent.message) {
+                    case 'EVENT_VBUSOKPE':
+                        break;
+                    case 'EVENT_VBUSPRESENTPE':
+                        usbPower.detectStatus = 'USB 100/500 mA';
+                        break;
+                    case 'EVENT_VBUSUNDERNE':
+                        usbPower.detectStatus = 'No USB connection';
+                        break;
+                }
+
+                eventEmitter.emitPartialEvent<USBPower>('onUsbPower', usbPower);
+            });
+        }),
+    );
+
+    callbacks.push(
         shellParser.registerCommandCallback(
             toRegex('npm1012 sysreg vbusilim', true),
             res => {
@@ -36,6 +62,7 @@ export default (
             noop,
         ),
     );
+
     callbacks.push(
         shellParser.registerCommandCallback(
             toRegex(
@@ -52,8 +79,14 @@ export default (
 
                 messageParts.forEach(part => {
                     switch (part) {
+                        case 'Good':
+                            break;
+                        case 'Overvoltage':
+                            break;
                         case 'Present':
                             usbPower.detectStatus = 'USB 100/500 mA';
+                            break;
+                        case 'Undervoltage':
                             break;
                     }
                 });
