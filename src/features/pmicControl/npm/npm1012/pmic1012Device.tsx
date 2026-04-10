@@ -27,7 +27,7 @@ import GpioLedDrvModule from './gpioleddrv';
 import LdoModule from './ldo';
 import LedModule from './led';
 
-export const npm1012FWVersion = '0.0.5+0';
+export const npm1012FWVersion = '0.0.6+0';
 
 export default class Npm1012 extends BaseNpmDevice {
     private waitingForReset = false;
