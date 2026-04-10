@@ -1,6 +1,5 @@
 # nPM PowerUP app
 
-[![Build Status](https://dev.azure.com/NordicSemiconductor/Wayland/_apis/build/status/NordicPlayground.pc-nrfconnect-npm?branchName=main)](https://dev.azure.com/NordicSemiconductor/Wayland/_build/results?buildId=56483&view=results)
 [![License](https://img.shields.io/badge/license-Modified%20BSD%20License-blue.svg)](LICENSE)
 
 nRF Connect nPM PowerUP is a desktop application intended to work with Nordic
@@ -27,8 +26,7 @@ official documentation, which includes information about the
 
 ## Development
 
-See the
-[app development](https://nordicsemiconductor.github.io/pc-nrfconnect-docs/)
+See the [app development](https://nordicsemi.github.io/pc-nrfconnect-docs/)
 pages for details on how to develop apps for the nRF Connect for Desktop
 framework.
 
@@ -39,7 +37,7 @@ Please report issues on the [DevZone](https://devzone.nordicsemi.com) portal.
 ## Contributing
 
 See the
-[information on contributing](https://nordicsemiconductor.github.io/pc-nrfconnect-docs/contributing)
+[information on contributing](https://nordicsemi.github.io/pc-nrfconnect-docs/contributing)
 for details.
 
 ## License
