@@ -17,7 +17,6 @@ import {
 } from '../pmicHelpers';
 import {
     AdcSample,
-    IrqEvent,
     LoggingEvent,
     NpmExportLatest,
     OnBoardLoad,
@@ -35,8 +34,6 @@ import UsbCurrentLimiterModule from './universalSerialBusCurrentLimiter';
 export const npm1012FWVersion = '0.0.6+0';
 
 export default class Npm1012 extends BaseNpmDevice {
-    private waitingForReset = false;
-    private recentReset = false;
     constructor(
         shellParser: ShellParser | undefined,
         dialogHandler: ((pmicDialog: PmicDialog) => void) | null,
@@ -134,44 +131,6 @@ export default class Npm1012 extends BaseNpmDevice {
                     this.eventEmitter.emit('onPmicStateChange', this.pmicState);
                 }
                 break;
-            default:
-                if (message.startsWith('powerid=')) {
-                    this.eventEmitter.emit(
-                        'onPowerIdUpdate',
-                        message.split('=')[1],
-                    );
-                }
-        }
-    }
-
-    private handleReset(logLevel: string, message: string) {
-        if (
-            logLevel === 'err' &&
-            message.startsWith('Error: ADC reading failed')
-        ) {
-            if (this.waitingForReset) return;
-
-            this.waitingForReset = true;
-        } else if (logLevel === 'inf' && this.waitingForReset) {
-            if (this.recentReset) {
-                this.dialogHandler?.({
-                    uuid: 'bootMonitorEnabled',
-                    type: 'information',
-                    title: 'Boot monitor is enabled',
-                    message:
-                        'The boot monitor on TIMER is enabled and will cause a periodic reset. Do you want to disable it?',
-                    confirmLabel: 'Yes, disable it',
-                    onConfirm: () =>
-                        this.timerConfigModule?.set.enabled?.(false),
-                    cancelLabel: 'No, keep enabled',
-                });
-            }
-            this.waitingForReset = false;
-            this.recentReset = true;
-            setTimeout(() => {
-                this.recentReset = false;
-            }, 15000);
-            this.requestUpdate();
         }
     }
 
@@ -180,9 +139,13 @@ export default class Npm1012 extends BaseNpmDevice {
         message,
         logLevel,
     }: LoggingEvent) {
-        this.handleReset(logLevel, message);
-
-        if (logLevel !== 'inf') return;
+        if (
+            logLevel === 'err' &&
+            message.startsWith('Error: ADC reading failed')
+        ) {
+            // TODO: handle event
+            return;
+        }
 
         const messageParts = message.split(',');
         const adcSample: AdcSample = {
@@ -237,30 +200,11 @@ export default class Npm1012 extends BaseNpmDevice {
         this.eventEmitter.emit('onAdcSample', adcSample);
     }
 
-    private processModulePmicIrq({ message }: LoggingEvent) {
-        // Handle timer expiry interrupt and emit event
-        if (message === 'SYS_TIMER_EXPIRY') {
-            this.eventEmitter.emit('onTimerExpiryInterrupt', message);
-            return;
+    // eslint-disable-next-line class-methods-use-this
+    private processModulePmicIrq({ logLevel, message }: LoggingEvent) {
+        if (logLevel === 'wrn' && message.startsWith('IRQ handling aborted')) {
+            // TODO: handle event
         }
-        const messageParts = message.split(',');
-        const event: IrqEvent = {
-            type: '',
-            event: '',
-        };
-        messageParts.forEach(part => {
-            const pair = part.split('=');
-            switch (pair[0]) {
-                case 'type':
-                    event.type = pair[1];
-                    break;
-                case 'bit':
-                    event.event = pair[1];
-                    break;
-            }
-
-            // handle event!!
-        });
     }
 
     release() {
