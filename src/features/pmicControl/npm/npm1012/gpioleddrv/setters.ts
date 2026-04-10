@@ -283,7 +283,9 @@ export class GpioLedDrvSet {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, class-methods-use-this
     gpioState(_value: GPIOLEDDrvGPIOState) {
-        return new Promise<void>(() => {});
+        return new Promise<void>(resolve => {
+            resolve();
+        });
     }
 
     ledDutyCycle(value: number) {
@@ -329,16 +331,22 @@ export class GpioLedDrvSet {
                 return;
             }
 
-            if (value === 'LED') {
-                this.sendCommand(
-                    `npm1012 gpio function set ${this.index} LED`,
-                    () => resolve(),
-                    () => {
-                        this.get.dutyCycle();
-                        reject();
-                    },
-                );
+            if (value !== 'LED') {
+                resolve();
+                return;
             }
+
+            const onError = () => {
+                this.get.state();
+                reject();
+            };
+
+            this.sendCommand(
+                `npm1012 gpio function set ${this.index} LED`,
+                () =>
+                    this.gpioPolarity('ACTIVELOW').then(resolve).catch(onError),
+                onError,
+            );
         });
     }
 }
