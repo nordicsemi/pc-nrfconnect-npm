@@ -255,7 +255,11 @@ export default ({ module, config, disabled }: GPIOLEDDrvProperties) => {
                         }
                     />
                     <NumberInput
-                        disabled={config.ledMode !== 'PWM' || disabled}
+                        disabled={
+                            (config.ledMode !== 'PWM' &&
+                                config.ledMode !== 'BLINK') ||
+                            disabled
+                        }
                         label={
                             <DocumentationTooltip
                                 card={card}
