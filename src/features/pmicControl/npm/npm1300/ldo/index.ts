@@ -23,7 +23,8 @@ export const toLdoExport = (ldo: Ldo): LdoExport => ({
     mode: ldo.mode,
     onOffControl: ldo.onOffControl,
     softStart: ldo.softStart,
-    softStartCurrentLoadSwitchMode: ldo.softStartCurrentLoadSwitchMode,
+    softStartCurrent: ldo.softStartCurrent,
+    softStartCurrentDropdownDisabled: ldo.softStartCurrentDropdownDisabled,
     voltage: ldo.voltage,
 });
 
@@ -43,7 +44,6 @@ export default class Module implements LdoModule {
     private _get: LdoGet;
     private _set: LdoSet;
     private _callbacks: (() => void)[];
-    protected pmicRevision: number | undefined;
 
     constructor({
         index,
@@ -54,6 +54,9 @@ export default class Module implements LdoModule {
         dialogHandler,
         pmicRevision,
     }: ModuleParams) {
+        const softStartCurrentDropdownDisabledLDOMode =
+            pmicRevision === undefined || pmicRevision < 2.3;
+
         this.index = index;
         this._get = new LdoGet(sendCommand, index);
         this._set = new LdoSet(
@@ -63,8 +66,12 @@ export default class Module implements LdoModule {
             offlineMode,
             index,
         );
-        this._callbacks = ldoCallbacks(shellParser, eventEmitter, index);
-        this.pmicRevision = pmicRevision;
+        this._callbacks = ldoCallbacks(
+            shellParser,
+            eventEmitter,
+            index,
+            softStartCurrentDropdownDisabledLDOMode,
+        );
     }
 
     get get() {
@@ -97,16 +104,16 @@ export default class Module implements LdoModule {
     }
 
     get defaults(): Ldo {
-        return ((index: number) => ({
+        return ((index: number): Ldo => ({
             activeDischarge: false,
             cardLabel: `Load Switch/LDO ${index + 1}`,
             enabled: false,
             mode: 'Load_switch',
             onOffControl: 'SW',
             onOffSoftwareControlEnabled: true,
-            softStart:
-                this.pmicRevision !== undefined && this.pmicRevision >= 2.3,
-            softStartCurrentLoadSwitchMode: 25,
+            softStart: true,
+            softStartCurrent: 25,
+            softStartCurrentDropdownDisabled: false,
             voltage: getLdoVoltageRange().min,
         }))(this.index);
     }

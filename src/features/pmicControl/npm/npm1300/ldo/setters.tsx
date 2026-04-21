@@ -45,11 +45,11 @@ export class LdoSet {
         if (ldo.mode !== undefined && this.mode) {
             promises.push(this.mode(ldo.mode));
         }
-        if (ldo.softStart !== undefined && this.softStart) {
-            promises.push(this.softStart(ldo.softStart));
-        }
-        if (ldo.softStart !== undefined && this.softStart) {
-            promises.push(this.softStart(ldo.softStart));
+        // if (ldo.softStart !== undefined && this.softStart) {
+        //     promises.push(this.softStart(ldo.softStart));
+        // }
+        if (ldo.softStartCurrent !== undefined && this.softStartCurrent) {
+            promises.push(this.softStartCurrent(ldo.softStartCurrent));
         }
         if (ldo.voltage !== undefined && this.voltage) {
             promises.push(this.voltage(ldo.voltage));
@@ -217,31 +217,33 @@ export class LdoSet {
         });
     }
 
-    softStart(enabled: boolean) {
-        return new Promise<void>((resolve, reject) => {
-            if (this.offlineMode) {
-                this.eventEmitter.emitPartialEvent<Ldo>(
-                    'onLdoUpdate',
-                    {
-                        softStart: enabled,
-                    },
-                    this.index,
-                );
-                resolve();
-            } else {
-                this.sendCommand(
-                    `npmx ldsw soft_start enable set ${this.index} ${
-                        enabled ? '1' : '0'
-                    }`,
-                    () => resolve(),
-                    () => {
-                        this.get.softStart();
-                        reject();
-                    },
-                );
-            }
-        });
-    }
+    // Disable as soft start will always be enabled by FW,
+    // and the register setting can not be configured by a shell command.
+    // softStart(enabled: boolean) {
+    //     return new Promise<void>((resolve, reject) => {
+    //         if (this.offlineMode) {
+    //             this.eventEmitter.emitPartialEvent<Ldo>(
+    //                 'onLdoUpdate',
+    //                 {
+    //                     softStart: enabled,
+    //                 },
+    //                 this.index,
+    //             );
+    //             resolve();
+    //         } else {
+    //             this.sendCommand(
+    //                 `npmx ldsw soft_start enable set ${this.index} ${
+    //                     enabled ? '1' : '0'
+    //                 }`,
+    //                 () => resolve(),
+    //                 () => {
+    //                     this.get.softStart();
+    //                     reject();
+    //                 },
+    //             );
+    //         }
+    //     });
+    // }
 
     softStartCurrent(value: LdoSoftStartCurrent) {
         return new Promise<void>((resolve, reject) => {
@@ -249,7 +251,7 @@ export class LdoSet {
                 this.eventEmitter.emitPartialEvent<Ldo>(
                     'onLdoUpdate',
                     {
-                        softStartCurrentLoadSwitchMode: value,
+                        softStartCurrent: value,
                     },
                     this.index,
                 );

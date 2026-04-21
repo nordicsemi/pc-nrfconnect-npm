@@ -19,6 +19,7 @@ export default (
     shellParser: ShellParser | undefined,
     eventEmitter: NpmEventEmitter,
     index: number,
+    softStartCurrentDropdownDisabledLDOMode: boolean,
 ) => {
     const cleanupCallbacks = [];
     if (shellParser) {
@@ -42,13 +43,17 @@ export default (
             shellParser.registerCommandCallback(
                 toRegex('npmx ldsw mode', true, index),
                 res => {
+                    const mode =
+                        parseToNumber(res) === 0 ? 'Load_switch' : 'LDO';
+                    const softStartCurrentDropdownDisabled =
+                        mode === 'LDO' &&
+                        softStartCurrentDropdownDisabledLDOMode;
+
                     eventEmitter.emitPartialEvent<Ldo>(
                         'onLdoUpdate',
                         {
-                            mode:
-                                parseToNumber(res) === 0
-                                    ? 'Load_switch'
-                                    : 'LDO',
+                            mode,
+                            softStartCurrentDropdownDisabled,
                         },
                         index,
                     );
@@ -95,10 +100,11 @@ export default (
             shellParser.registerCommandCallback(
                 toRegex('npmx ldsw soft_start current', true, index),
                 res => {
+                    const result = parseToNumber(res);
                     eventEmitter.emitPartialEvent<Ldo>(
                         'onLdoUpdate',
                         {
-                            softStartCurrentLoadSwitchMode: parseToNumber(res),
+                            softStartCurrent: result,
                         },
                         index,
                     );
