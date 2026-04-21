@@ -227,7 +227,10 @@ export default ({
                                         ) ??
                                     ldoModule.values.softStartCurrent()[0]
                                 }
-                                disabled={disabled}
+                                disabled={
+                                    disabled ||
+                                    ldo.softStartCurrentDropdownDisabled
+                                }
                             />
                         )}
                     {ldoModule.values.softStartCurrent &&
