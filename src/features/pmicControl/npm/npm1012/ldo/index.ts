@@ -51,13 +51,13 @@ export const toLdoExport = (ldo: Ldo): LdoExport => ({
     activeDischarge: ldo.activeDischarge,
     enabled: ldo.enabled,
     mode: ldo.mode,
-    overcurrentProtection: ldo.overcurrentProtection,
     onOffControl: ldo.onOffControl,
-    voltage: ldo.voltage,
-
+    overcurrentProtection: ldo.overcurrentProtection,
+    softStart: ldo.softStart,
     softStartCurrent: ldo.softStartCurrent,
     softStartTime: ldo.softStartTime,
     vOutSel: ldo.vOutSel,
+    voltage: ldo.voltage,
     weakPullDown: ldo.weakPullDown,
 });
 
