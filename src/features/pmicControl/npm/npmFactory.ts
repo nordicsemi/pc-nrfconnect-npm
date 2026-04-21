@@ -45,7 +45,15 @@ export const getNpmDevice = (
                 if (hwVersion?.startsWith('npm1012ek')) {
                     resolve(new Npm1012(shellParser, dialogHandler));
                 } else if (hwVersion?.startsWith('npm1300ek')) {
-                    resolve(new Npm1300(shellParser, dialogHandler));
+                    resolve(
+                        new Npm1300(
+                            shellParser,
+                            dialogHandler,
+                            {},
+                            hwVersion,
+                            pmicResponse,
+                        ),
+                    );
                 } else if (hwVersion?.startsWith('npm1304ek')) {
                     resolve(
                         new Npm1304(
