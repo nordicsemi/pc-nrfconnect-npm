@@ -308,6 +308,7 @@ export type Ldo = {
     ramp?: boolean;
     softStart?: boolean;
     softStartCurrent?: LdoSoftStartCurrent;
+    softStartCurrentDropdownDisabled?: boolean;
     softStartCurrentLDOMode?: LdoSoftStartCurrent;
     softStartCurrentLoadSwitchMode?: LdoSoftStartCurrent;
     softStartTime?: number;
