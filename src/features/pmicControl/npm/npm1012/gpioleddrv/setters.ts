@@ -344,7 +344,11 @@ export class GpioLedDrvSet {
             this.sendCommand(
                 `npm1012 gpio function set ${this.index} LED`,
                 () =>
-                    this.gpioPolarity('ACTIVELOW').then(resolve).catch(onError),
+                    this.gpioPolarity('ACTIVELOW')
+                        .then(() => this.gpioPull('NOPULL'))
+                        .then(() => this.gpioOpenDrain(true))
+                        .then(resolve)
+                        .catch(onError),
                 onError,
             );
         });
