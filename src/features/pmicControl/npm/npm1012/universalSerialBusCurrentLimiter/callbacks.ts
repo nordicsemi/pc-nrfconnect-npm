@@ -36,13 +36,23 @@ export default (
                 const usbPower: Partial<USBPower> = {};
 
                 switch (loggingEvent.message) {
+                    case 'EVENT_VBUSOKNE':
+                        break;
                     case 'EVENT_VBUSOKPE':
+                        break;
+                    case 'EVENT_VBUSOVNE':
+                        break;
+                    case 'EVENT_VBUSOVPE':
+                        break;
+                    case 'EVENT_VBUSPRESENTNE':
+                        usbPower.detectStatus = 'No USB connection';
                         break;
                     case 'EVENT_VBUSPRESENTPE':
                         usbPower.detectStatus = 'USB 100/500 mA';
                         break;
                     case 'EVENT_VBUSUNDERNE':
-                        usbPower.detectStatus = 'No USB connection';
+                        break;
+                    case 'EVENT_VBUSUNDERPE':
                         break;
                 }
 
