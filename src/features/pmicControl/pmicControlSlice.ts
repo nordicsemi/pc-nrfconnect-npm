@@ -114,6 +114,15 @@ const pmicControlSlice = createSlice({
                 };
             }
         },
+        updatePmicChargingState(
+            state,
+            action: PayloadAction<Partial<PmicChargingState>>,
+        ) {
+            state.pmicChargingState = {
+                ...state.pmicChargingState,
+                ...action.payload,
+            };
+        },
         setPmicState(state, action: PayloadAction<PmicState>) {
             state.pmicState = action.payload;
         },
@@ -439,6 +448,7 @@ export const {
     setNpmDevice,
     setPmicState,
     setPmicChargingState,
+    updatePmicChargingState,
     setLatestAdcSample,
     updateCharger,
     setCharger,
