@@ -195,8 +195,6 @@ export default class Npm1012 extends BaseNpmDevice {
 
         this.lastUptime = adcSample.timestamp;
 
-        this.chargerModule?.get.state();
-
         this.eventEmitter.emit('onAdcSample', adcSample);
     }
 
