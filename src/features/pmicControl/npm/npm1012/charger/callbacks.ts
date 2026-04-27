@@ -38,19 +38,32 @@ export default (
                 }
 
                 const charger: Partial<Charger> = {};
+                const chargingState: Partial<PmicChargingState> = {};
 
                 switch (loggingEvent.message) {
                     case 'EVENT_CHARGE':
                         charger.enabled = true;
+                        chargingState.constantCurrentCharging = true;
+                        chargingState.constantVoltageCharging = false;
                         break;
                     case 'EVENT_DISCHARGE':
                         charger.enabled = false;
+                        chargingState.constantCurrentCharging = false;
+                        chargingState.constantVoltageCharging = false;
+                        break;
+                    case 'EVENT_VTERM':
+                        chargingState.constantCurrentCharging = false;
+                        chargingState.constantVoltageCharging = true;
                         break;
                 }
 
                 eventEmitter.emitPartialEvent<Charger>(
                     'onChargerUpdate',
                     charger,
+                );
+                eventEmitter.emitPartialEvent<PmicChargingState>(
+                    'onChargingStatusUpdate',
+                    chargingState,
                 );
             });
         }),
@@ -113,9 +126,21 @@ export default (
         shellParser.registerCommandCallback(
             toRegex('npm1012 charger enable', true, undefined, onOffRegex),
             res => {
+                const enabled = parseOnOff(res);
+
                 eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    enabled: parseOnOff(res),
+                    enabled,
                 });
+
+                eventEmitter.emitPartialEvent<PmicChargingState>(
+                    'onChargingStatusUpdate',
+                    enabled
+                        ? {}
+                        : {
+                              constantCurrentCharging: false,
+                              constantVoltageCharging: false,
+                          },
+                );
             },
             noop,
         ),
