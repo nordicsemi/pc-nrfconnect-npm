@@ -11,6 +11,7 @@ import {
     type NpmEventEmitter,
     onOffRegex,
     parseColonBasedAnswer,
+    parseLogData,
     parseOnOff,
     parseToFloat,
     parseToNumber,
@@ -28,6 +29,32 @@ export default (
     }
 
     const callbacks = [];
+
+    callbacks.push(
+        shellParser.onShellLoggingEvent(logEvent => {
+            parseLogData(logEvent, loggingEvent => {
+                if (loggingEvent.module !== 'module_pmic_irq') {
+                    return;
+                }
+
+                const charger: Partial<Charger> = {};
+
+                switch (loggingEvent.message) {
+                    case 'EVENT_CHARGE':
+                        charger.enabled = true;
+                        break;
+                    case 'EVENT_DISCHARGE':
+                        charger.enabled = false;
+                        break;
+                }
+
+                eventEmitter.emitPartialEvent<Charger>(
+                    'onChargerUpdate',
+                    charger,
+                );
+            });
+        }),
+    );
 
     callbacks.push(
         shellParser.registerCommandCallback(
