@@ -104,7 +104,8 @@ describe('PMIC 1304 - Apply Config ', () => {
         mode: 'LDO',
         enabled: true,
         softStart: true,
-        softStartCurrentLoadSwitchMode: 50,
+        softStartCurrent: 50,
+        softStartCurrentDropdownDisabled: true,
         activeDischarge: false,
         onOffControl: 'GPIO0',
         onOffSoftwareControlEnabled: false,
@@ -201,7 +202,8 @@ describe('PMIC 1304 - Apply Config ', () => {
                 mode: 'Load_switch',
                 enabled: false,
                 softStart: true,
-                softStartCurrentLoadSwitchMode: 50,
+                softStartCurrent: 50,
+                softStartCurrentDropdownDisabled: true,
                 activeDischarge: true,
                 onOffControl: 'GPIO1',
             },
@@ -209,8 +211,9 @@ describe('PMIC 1304 - Apply Config ', () => {
                 voltage: 2,
                 mode: 'Load_switch',
                 enabled: false,
-                softStart: false,
-                softStartCurrentLoadSwitchMode: 50,
+                softStart: true,
+                softStartCurrent: 50,
+                softStartCurrentDropdownDisabled: true,
                 activeDischarge: false,
                 onOffControl: 'GPIO2',
             },
@@ -443,7 +446,7 @@ describe('PMIC 1304 - Apply Config ', () => {
         expect(mockOnChargerUpdate).toBeCalledTimes(16);
         expect(mockOnBoardLoadUpdate).toBeCalledTimes(1);
         expect(mockOnBuckUpdate).toBeCalledTimes(18); // 7 states + 1 (mode change on vOut) * 2 Bucks
-        expect(mockOnLdoUpdate).toBeCalledTimes(14);
+        expect(mockOnLdoUpdate).toBeCalledTimes(12);
         expect(mockOnGpioUpdate).toBeCalledTimes(25);
         expect(mockOnLEDUpdate).toBeCalledTimes(3);
         expect(mockOnPOFUpdate).toBeCalledTimes(3);

@@ -100,6 +100,7 @@ describe('PMIC 1300 - Apply Config ', () => {
         enabled: true,
         softStart: true,
         softStartCurrentLoadSwitchMode: 50,
+        softStartCurrentDropdownDisabled: true,
         activeDischarge: false,
         onOffControl: 'GPIO0',
         onOffSoftwareControlEnabled: false,
@@ -193,8 +194,9 @@ describe('PMIC 1300 - Apply Config ', () => {
                 voltage: 1,
                 mode: 'Load_switch',
                 enabled: false,
-                softStart: false,
-                softStartCurrentLoadSwitchMode: 50,
+                softStart: true,
+                softStartCurrent: 50,
+                softStartCurrentDropdownDisabled: true,
                 activeDischarge: true,
                 onOffControl: 'GPIO1',
             },
@@ -202,8 +204,9 @@ describe('PMIC 1300 - Apply Config ', () => {
                 voltage: 2,
                 mode: 'Load_switch',
                 enabled: false,
-                softStart: false,
-                softStartCurrentLoadSwitchMode: 50,
+                softStart: true,
+                softStartCurrent: 50,
+                softStartCurrentDropdownDisabled: true,
                 activeDischarge: false,
                 onOffControl: 'GPIO2',
             },
@@ -422,7 +425,7 @@ describe('PMIC 1300 - Apply Config ', () => {
 
         expect(mockOnChargerUpdate).toBeCalledTimes(17);
         expect(mockOnBuckUpdate).toBeCalledTimes(18); // 7 states + 1 (mode change on vOut) * 2 Bucks
-        expect(mockOnLdoUpdate).toBeCalledTimes(14);
+        expect(mockOnLdoUpdate).toBeCalledTimes(12);
         expect(mockOnGpioUpdate).toBeCalledTimes(25);
         expect(mockOnLEDUpdate).toBeCalledTimes(3);
         expect(mockOnPOFUpdate).toBeCalledTimes(3);
