@@ -706,9 +706,9 @@ export default abstract class BaseNpmDevice {
         );
     }
     onChargingStatusUpdate(
-        handler: (payload: PmicChargingState, error: string) => void,
+        handler: (payload: Partial<PmicChargingState>, error: string) => void,
     ) {
-        return this.setupHandler<PmicChargingState, true>(
+        return this.setupHandler<Partial<PmicChargingState>, true>(
             'onChargingStatusUpdate',
         )(handler);
     }
