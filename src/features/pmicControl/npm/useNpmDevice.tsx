@@ -49,7 +49,6 @@ import {
     setLowPowerConfig,
     setNpmDevice,
     setOnBoardLoad,
-    setPmicChargingState,
     setPmicState,
     setPOFs,
     setPowerId,
@@ -68,6 +67,7 @@ import {
     updateLEDs,
     updateLowPowerConfig,
     updateOnBoardLoad,
+    updatePmicChargingState,
     updatePOFs,
     updateResetConfig,
     updateTimerConfig,
@@ -239,7 +239,7 @@ export default () => {
 
             releaseAll.push(
                 npmDevice.onChargingStatusUpdate(payload => {
-                    dispatch(setPmicChargingState(payload));
+                    dispatch(updatePmicChargingState(payload));
                 }),
             );
 
