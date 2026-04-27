@@ -39,16 +39,6 @@ describe('PMIC 1304 - Setters Offline tests', () => {
         });
     });
 
-    test.each(PMIC_1304_LDOS)('Set setLdoSoftStart index: %p', async index => {
-        await pmic.ldoModule[index].set.softStart?.(true);
-
-        expect(mockOnLdoUpdate).toBeCalledTimes(1);
-        expect(mockOnLdoUpdate).toBeCalledWith({
-            data: { softStart: true },
-            index,
-        });
-    });
-
     test.each(PMIC_1304_LDOS)(
         'Set setLdoSoftStartCurrent index: %p',
         async index => {
@@ -56,7 +46,7 @@ describe('PMIC 1304 - Setters Offline tests', () => {
 
             expect(mockOnLdoUpdate).toBeCalledTimes(1);
             expect(mockOnLdoUpdate).toBeCalledWith({
-                data: { softStartCurrentLoadSwitchMode: 20 },
+                data: { softStartCurrent: 20 },
                 index,
             });
         },

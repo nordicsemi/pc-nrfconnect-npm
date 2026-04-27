@@ -175,30 +175,6 @@ describe('PMIC 1304 - Setters Online tests', () => {
 
         test.each(
             PMIC_1304_LDOS.map(index =>
-                [true, false].map(enabled => ({
-                    index,
-                    enabled,
-                })),
-            ).flat(),
-        )('Set setLdoSoftStart %p', async ({ index, enabled }) => {
-            await pmic.ldoModule[index].set.softStart?.(enabled);
-
-            expect(mockEnqueueRequest).toBeCalledTimes(1);
-            expect(mockEnqueueRequest).toBeCalledWith(
-                `npmx ldsw soft_start enable set ${index} ${
-                    enabled ? '1' : '0'
-                }`,
-                expect.anything(),
-                undefined,
-                true,
-            );
-
-            // Updates should only be emitted when we get response
-            expect(mockOnLdoUpdate).toBeCalledTimes(0);
-        });
-
-        test.each(
-            PMIC_1304_LDOS.map(index =>
                 SoftStartCurrentValues.map(softStart => ({
                     index,
                     softStart,
@@ -433,44 +409,6 @@ describe('PMIC 1304 - Setters Online tests', () => {
                 expect(mockEnqueueRequest).nthCalledWith(
                     2,
                     `npmx ldsw mode get ${index}`,
-                    expect.anything(),
-                    undefined,
-                    true,
-                );
-
-                // Updates should only be emitted when we get response
-                expect(mockOnLdoUpdate).toBeCalledTimes(0);
-            },
-        );
-
-        test.each(
-            PMIC_1304_LDOS.map(index =>
-                [true, false].map(enabled => ({
-                    index,
-                    enabled,
-                })),
-            ).flat(),
-        )(
-            'Set setLdoSoftStart - Fail immediately - %p',
-            async ({ index, enabled }) => {
-                await expect(
-                    pmic.ldoModule[index].set.softStart?.(enabled),
-                ).rejects.toBeUndefined();
-
-                expect(mockEnqueueRequest).toBeCalledTimes(2);
-                expect(mockEnqueueRequest).toBeCalledWith(
-                    `npmx ldsw soft_start enable set ${index} ${
-                        enabled ? '1' : '0'
-                    }`,
-                    expect.anything(),
-                    undefined,
-                    true,
-                );
-
-                // Refresh data due to error
-                expect(mockEnqueueRequest).nthCalledWith(
-                    2,
-                    `npmx ldsw soft_start enable get ${index}`,
                     expect.anything(),
                     undefined,
                     true,

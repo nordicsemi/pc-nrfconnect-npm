@@ -99,7 +99,10 @@ describe('PMIC 1300 - Command callbacks', () => {
 
         expect(mockOnLdoUpdate).toBeCalledTimes(1);
         expect(mockOnLdoUpdate).toBeCalledWith({
-            data: { mode },
+            data: {
+                mode,
+                softStartCurrentDropdownDisabled: mode === 'LDO',
+            },
             index,
         });
     });
