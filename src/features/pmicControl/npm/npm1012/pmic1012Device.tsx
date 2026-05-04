@@ -31,7 +31,7 @@ import LedModule from './led';
 import OnBoardLoadModule from './onBoardLoad';
 import UsbCurrentLimiterModule from './universalSerialBusCurrentLimiter';
 
-export const npm1012FWVersion = '0.1.0+0';
+export const npm1012FWVersion = '0.1.1+0';
 
 export default class Npm1012 extends BaseNpmDevice {
     constructor(
