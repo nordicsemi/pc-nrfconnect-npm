@@ -19,6 +19,7 @@ import {
 } from '../pmicHelpers';
 import {
     type AdcSample,
+    type FuelGauge,
     type IrqEvent,
     type LoggingEvent,
     type NpmExportV2,
@@ -191,6 +192,8 @@ export default class Npm1300 extends BaseNpmDevice {
         const fixed = (dp: number, value?: string | number) =>
             Number(Number(value ?? 0).toFixed(dp));
 
+        const fuelGaugeUpdate: Partial<FuelGauge> = {};
+
         messageParts.forEach(part => {
             const pair = part.split('=');
             switch (pair[0]) {
@@ -215,6 +218,12 @@ export default class Npm1300 extends BaseNpmDevice {
                 case 'ttf':
                     adcSample.ttf = Number(pair[1] ?? NaN);
                     break;
+                case 'cycle_count':
+                    fuelGaugeUpdate.cycleCount = Number(pair[1]);
+                    break;
+                case 'soh':
+                    fuelGaugeUpdate.actualCapacity = Number(pair[1]);
+                    break;
             }
         });
 
@@ -222,6 +231,11 @@ export default class Npm1300 extends BaseNpmDevice {
             this.uptimeOverflowCounter += 1;
             adcSample.timestamp += MAX_TIMESTAMP * this.uptimeOverflowCounter;
         }
+
+        this.eventEmitter.emitPartialEvent<FuelGauge>(
+            'onFuelGauge',
+            fuelGaugeUpdate,
+        );
 
         this.lastUptime = adcSample.timestamp;
 
