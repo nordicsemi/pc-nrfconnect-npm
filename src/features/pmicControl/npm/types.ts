@@ -198,8 +198,11 @@ export type FuelGauge = {
     enabled: boolean;
     notChargingSamplingRate: number;
     reportingRate: number;
-    chargingSamplingRate?: number;
+
     activeBatterModel?: BatteryModel;
+    actualCapacity?: number;
+    cycleCount?: number;
+    chargingSamplingRate?: number;
     discardPosiiveDeltaZ?: boolean;
 };
 
@@ -624,6 +627,10 @@ export interface FuelGaugeModule {
         all: (config: FuelGaugeExport) => Promise<void>;
         enabled: (enabled: boolean) => Promise<void>;
         activeBatteryModel: (name: string) => Promise<void>;
+        adcSample?: (
+            reportingRate: number,
+            samplingInterval: number,
+        ) => Promise<void>;
         batteryStatusCheckEnabled?: (enabled: boolean) => Promise<void>;
         discardPosiiveDeltaZ?: (value: boolean) => void;
     };
@@ -635,6 +642,10 @@ export interface FuelGaugeModule {
             slot?: number,
         ) => Promise<void>;
         reset: () => Promise<void>;
+    };
+    ranges: {
+        ratedMinBatteryCapacity?: Range;
+        samplingInterval?: Range;
     };
     callbacks: (() => void)[];
     defaults: FuelGauge;
