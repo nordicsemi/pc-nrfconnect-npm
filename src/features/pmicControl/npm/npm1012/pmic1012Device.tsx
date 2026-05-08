@@ -17,6 +17,7 @@ import {
 } from '../pmicHelpers';
 import {
     type AdcSample,
+    type FuelGauge,
     type LoggingEvent,
     type OnBoardLoad,
     type PmicDialog,
@@ -162,9 +163,14 @@ export default class Npm1012 extends BaseNpmDevice {
         const fixed = (dp: number, value?: string | number) =>
             Number(Number(value ?? 0).toFixed(dp));
 
+        const fuelGaugeUpdate: Partial<FuelGauge> = {};
+
         messageParts.forEach(part => {
             const pair = part.split('=');
             switch (pair[0]) {
+                case 'cycle_count':
+                    fuelGaugeUpdate.cycleCount = Number(pair[1]);
+                    break;
                 case 'ibat':
                     adcSample.iBat = fixed(2, Number(pair[1] ?? NaN) * 1000);
                     break;
@@ -173,6 +179,9 @@ export default class Npm1012 extends BaseNpmDevice {
                         100,
                         Math.max(0, fixed(1, pair[1])),
                     );
+                    break;
+                case 'soh':
+                    fuelGaugeUpdate.actualCapacity = Number(pair[1]);
                     break;
                 case 'tbat':
                     adcSample.tBat = fixed(1, pair[1]);
@@ -193,6 +202,11 @@ export default class Npm1012 extends BaseNpmDevice {
             this.uptimeOverflowCounter += 1;
             adcSample.timestamp += MAX_TIMESTAMP * this.uptimeOverflowCounter;
         }
+
+        this.eventEmitter.emitPartialEvent<FuelGauge>(
+            'onFuelGauge',
+            fuelGaugeUpdate,
+        );
 
         this.lastUptime = adcSample.timestamp;
 
