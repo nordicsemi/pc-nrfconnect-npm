@@ -5,7 +5,11 @@
  */
 
 import { type NpmEventEmitter } from '../../pmicHelpers';
-import { type FuelGauge, type FuelGaugeExport } from '../../types';
+import {
+    type AdcSampleSettings,
+    type FuelGauge,
+    type FuelGaugeExport,
+} from '../../types';
 import { FuelGaugeGet } from './getters';
 
 export class FuelGaugeSet {
@@ -57,6 +61,29 @@ export class FuelGaugeSet {
                     reject();
                 },
             );
+        });
+    }
+
+    adcSample(reportRate: number, samplingRate: number) {
+        return new Promise<void>((resolve, reject) => {
+            const onSuccess = () => {
+                const settings: AdcSampleSettings = {
+                    reportRate,
+                    samplingRate,
+                };
+                this.eventEmitter.emit('onAdcSettingsChange', settings);
+                resolve();
+            };
+
+            if (this.offlineMode) {
+                onSuccess();
+            } else {
+                this.sendCommand(
+                    `npm_adc sample ${samplingRate} ${reportRate}`,
+                    () => onSuccess(),
+                    () => reject(),
+                );
+            }
         });
     }
 
