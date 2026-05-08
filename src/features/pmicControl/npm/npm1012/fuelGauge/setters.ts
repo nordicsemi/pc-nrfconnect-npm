@@ -5,7 +5,11 @@
  */
 
 import { type NpmEventEmitter } from '../../pmicHelpers';
-import { type FuelGauge, type FuelGaugeExport } from '../../types';
+import {
+    type AdcSampleSettings,
+    type FuelGauge,
+    type FuelGaugeExport,
+} from '../../types';
 import { FuelGaugeGet } from './getters';
 
 export class FuelGaugeSet {
@@ -27,6 +31,42 @@ export class FuelGaugeSet {
         await Promise.allSettled([this.enabled(fuelGauge.enabled)]);
     }
 
+    activeBatteryModel(name: string) {
+        return new Promise<void>((resolve, reject) => {
+            this.sendCommand(
+                `fuel_gauge model set "${name}"`,
+                () => resolve(),
+                () => {
+                    this.get.activeBatteryModel();
+                    reject();
+                },
+            );
+        });
+    }
+
+    adcSample(reportRate: number, samplingRate: number) {
+        return new Promise<void>((resolve, reject) => {
+            const onSuccess = () => {
+                const settings: AdcSampleSettings = {
+                    reportRate,
+                    samplingRate,
+                };
+                this.eventEmitter.emit('onAdcSettingsChange', settings);
+                resolve();
+            };
+
+            if (this.offlineMode) {
+                onSuccess();
+            } else {
+                this.sendCommand(
+                    `npm_adc sample ${samplingRate} ${reportRate}`,
+                    () => onSuccess(),
+                    () => reject(),
+                );
+            }
+        });
+    }
+
     enabled(enabled: boolean) {
         return new Promise<void>((resolve, reject) => {
             if (this.offlineMode) {
@@ -44,19 +84,6 @@ export class FuelGaugeSet {
                     },
                 );
             }
-        });
-    }
-
-    activeBatteryModel(name: string) {
-        return new Promise<void>((resolve, reject) => {
-            this.sendCommand(
-                `fuel_gauge model set "${name}"`,
-                () => resolve(),
-                () => {
-                    this.get.activeBatteryModel();
-                    reject();
-                },
-            );
         });
     }
 
