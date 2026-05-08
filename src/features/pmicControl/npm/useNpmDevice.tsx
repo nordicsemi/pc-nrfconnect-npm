@@ -557,6 +557,12 @@ export default () => {
             dispatch(setOnBoardLoad(npmDevice.onBoardLoadModule?.defaults));
 
             dispatch(
+                npmDevice.fuelGaugeModule
+                    ? updateFuelGauge(npmDevice.fuelGaugeModule.defaults)
+                    : noop,
+            );
+
+            dispatch(
                 setBoosts(npmDevice.boostModule.map(boost => boost.defaults)),
             );
             dispatch(setBucks(npmDevice.buckModule.map(buck => buck.defaults)));
