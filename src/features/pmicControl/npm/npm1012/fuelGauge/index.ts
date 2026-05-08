@@ -69,8 +69,10 @@ export default class Module implements FuelGaugeModuleBase {
 
     get defaults(): FuelGauge {
         return {
-            enabled: false,
+            actualCapacity: Number.NaN,
             chargingSamplingRate: 500,
+            cycleCount: Number.NaN,
+            enabled: false,
             notChargingSamplingRate: 1000,
             reportingRate: 2000,
         };
