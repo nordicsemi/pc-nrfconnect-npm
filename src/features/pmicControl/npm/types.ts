@@ -327,6 +327,10 @@ export type npm2100LowPowerConfig = {
     powerButtonEnable: boolean;
 };
 
+export const isNpm1300ResetConfig = (
+    config: ResetConfig,
+): config is npm1300ResetConfig => 'longPressReset' in config;
+
 export type ResetConfig = npm1300ResetConfig | npm2100ResetConfig;
 
 export type npm1300ResetConfig = {

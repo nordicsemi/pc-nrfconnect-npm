@@ -11,6 +11,7 @@ import {
     Charger,
     ChargerModule,
     GPIOValues,
+    isNpm1300ResetConfig,
     LdoExport,
     LdoModule,
     LED,
@@ -129,7 +130,7 @@ const generateBuck = (
         }
 		${
             buck.modeControl.startsWith('GPIO')
-                ? ` pwm-gpio-config = <${GPIOValues.findIndex(
+                ? `pwm-gpio-config = <${GPIOValues.findIndex(
                       v => v === buck.modeControl,
                   )} GPIO_ACTIVE_HIGH>;`
                 : ''
@@ -190,10 +191,21 @@ const generateLEDs = (leds: LED[], deviceType: string) => `
 	};
 `;
 
-const longPressReset = (npmConfig: NpmExportLatest) =>
-    npmConfig.reset && 'longPressReset' in npmConfig.reset
-        ? `long-press-reset = "${npmConfig.reset.longPressReset.replaceAll('_', '-')}";`
+const longPressReset = (npmConfig: NpmExportLatest) => {
+    if (!npmConfig.reset || !isNpm1300ResetConfig(npmConfig.reset)) {
+        throw new Error('Invalid reset config for nPM1300');
+    }
+    return `long-press-reset = "${npmConfig.reset.longPressReset.replaceAll('_', '-')}";`;
+};
+
+const pmicIntPin = (npmConfig: NpmExportLatest) => {
+    const gpioIndex = npmConfig.gpios.findIndex(
+        gpio => gpio.mode === GPIOMode1300['Output interrupt'],
+    );
+    return gpioIndex !== -1
+        ? `pmic-int-pin = <${gpioIndex}>; // host-int-gpios must be set by the user for this to work`
         : '';
+};
 
 const generateWatchdog = (
     npmConfig: NpmExportLatest,
@@ -226,7 +238,7 @@ export default (npmConfig: NpmExportLatest, npmDevice: Npm1300 | Npm1304) => `/*
 		compatible = "nordic,${npmDevice.deviceType}";
 		reg = <0x6b>;
 
-		pmic-int-pin = <3>; // host-int-gpios must be set by the user for this to work
+		${pmicIntPin(npmConfig)}
 		ship-to-active-time-ms = <${npmConfig.lowPower?.timeToActive ?? npmDevice.lowPowerModule?.defaults.timeToActive}>;
 		${longPressReset(npmConfig)}
 		${npmDevice.deviceType}_gpio: gpio-controller {
