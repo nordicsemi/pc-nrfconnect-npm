@@ -38,7 +38,7 @@ export class UsbCurrentLimiterSet {
                 resolve();
             } else {
                 this.sendCommand(
-                    `npm1012 sysreg vbusilim set ${amps * 1000}`,
+                    `npm1012 sysreg vbusilim set ${amps * 1000}mA`,
                     () => resolve(),
                     () => {
                         this.get.vBusInCurrentLimiter();
