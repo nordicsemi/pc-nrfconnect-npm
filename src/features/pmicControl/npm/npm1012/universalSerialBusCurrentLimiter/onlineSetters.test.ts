@@ -25,7 +25,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
             expect(mockEnqueueRequest).toBeCalledTimes(1);
             expect(mockEnqueueRequest).nthCalledWith(
                 1,
-                'npm1012 sysreg vbusilim set 5000',
+                'npm1012 sysreg vbusilim set 5000mA',
                 expect.anything(),
                 undefined,
                 true,
@@ -52,7 +52,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
             expect(mockEnqueueRequest).toBeCalledTimes(2);
             expect(mockEnqueueRequest).nthCalledWith(
                 1,
-                'npm1012 sysreg vbusilim set 5000',
+                'npm1012 sysreg vbusilim set 5000mA',
                 expect.anything(),
                 undefined,
                 true,
