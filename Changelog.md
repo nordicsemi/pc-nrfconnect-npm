@@ -2,7 +2,8 @@
 
 ### Fixed
 
-- Fixed an issue with missing configurations in the generated overlays for nPM1300 and nPM1304.
+- Fixed an issue with missing configurations in the generated overlays for
+  nPM1300 and nPM1304.
 
 ## 2.2.4 - 2026-03-26
 
