@@ -18,16 +18,15 @@ import {
 import {
     type AdcSample,
     type LoggingEvent,
-    type NpmExportLatest,
     type OnBoardLoad,
     type PmicDialog,
 } from '../types';
-import BuckModule from './buck';
+import BuckModule, { toBuckExport } from './buck';
 import ChargerModule from './charger';
 import FuelGaugeModule from './fuelGauge';
 import GpioLedDrvModule from './gpioleddrv';
-import LdoModule from './ldo';
-import LedModule from './led';
+import LdoModule, { toLdoExport } from './ldo';
+import LedModule, { toLedExport } from './led';
 import OnBoardLoadModule from './onBoardLoad';
 import UsbCurrentLimiterModule from './universalSerialBusCurrentLimiter';
 
@@ -220,13 +219,10 @@ export default class Npm1012 extends BaseNpmDevice {
 
         return {
             boosts: [...currentState.boosts],
+            bucks: [...currentState.bucks.map(toBuckExport)],
             charger: currentState.charger,
-            ldos: [...currentState.ldos],
-            gpios: [...currentState.gpios],
-            leds: [...currentState.leds],
-            lowPower: currentState.lowPower,
-            reset: currentState.reset,
-            timerConfig: currentState.timerConfig,
+            deviceType: currentState.npmDevice.deviceType,
+            firmwareVersion: currentState.npmDevice.supportedVersion,
             fuelGaugeSettings: {
                 enabled: currentState.fuelGaugeSettings.enabled,
                 chargingSamplingRate:
@@ -234,13 +230,18 @@ export default class Npm1012 extends BaseNpmDevice {
                 discardPosiiveDeltaZ:
                     currentState.fuelGaugeSettings.discardPosiiveDeltaZ,
             },
-            firmwareVersion: currentState.npmDevice.supportedVersion,
-            deviceType: currentState.npmDevice.deviceType,
+            gpioLedDrvs: [...currentState.gpioleddrvs],
+            gpios: [...currentState.gpios],
+            ldos: [...currentState.ldos.map(toLdoExport)],
+            leds: [...currentState.leds.map(toLedExport)],
+            lowPower: currentState.lowPower,
+            reset: currentState.reset,
+            timerConfig: currentState.timerConfig,
             usbPower: currentState.usbPower
                 ? { currentLimiter: currentState.usbPower.currentLimiter }
                 : undefined,
             fileFormatVersion: 2 as const,
-        } as NpmExportLatest;
+        };
     }
 
     // eslint-disable-next-line class-methods-use-this
