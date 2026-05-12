@@ -4,7 +4,12 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { type LED, type LedModule, type ModuleParams } from '../../types';
+import {
+    type LED,
+    type LedExport,
+    type LedModule,
+    type ModuleParams,
+} from '../../types';
 import { LedActions } from './actions';
 import ledCallbacks from './callbacks';
 import { LedGet } from './getters';
@@ -14,6 +19,15 @@ import { LedSet } from './setters';
 /* eslint-disable no-underscore-dangle */
 
 const pwmFrequencyValues = [122, 244, 488, 977] as readonly number[];
+
+export const toLedExport = (config: LED): LedExport => ({
+    blinkContinuous: config.blinkContinuous,
+    blinkDouble: config.blinkDouble,
+    blinkTimeOff: config.blinkTimeOff,
+    blinkTimeOn: config.blinkTimeOn,
+    pwmFrequency: config.pwmFrequency,
+    rgbPhaseShifting: config.rgbPhaseShifting,
+});
 
 export default class Module implements LedModule {
     readonly index: number;
