@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { RangeType } from '../../../../../utils/helpers';
+import { type Range } from '@nordicsemiconductor/pc-nrfconnect-shared';
+
 import nPM1300LdoModule from '../../npm1300/ldo';
-import { Ldo } from '../../types';
+import { type Ldo } from '../../types';
 
 const getLdoVoltageRange = () =>
     ({
@@ -14,7 +15,7 @@ const getLdoVoltageRange = () =>
         max: 3.3,
         decimals: 1,
         step: 0.1,
-    }) as RangeType;
+    }) as Range;
 
 export default class Module extends nPM1300LdoModule {
     get defaults(): Ldo {

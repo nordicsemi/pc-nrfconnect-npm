@@ -6,19 +6,19 @@
 
 import type Npm1304 from '../npm1304/pmic1304Device';
 import {
-    BuckExport,
-    BuckModule,
-    Charger,
-    ChargerModule,
+    type BuckExport,
+    type BuckModule,
+    type Charger,
+    type ChargerModule,
     GPIOValues,
     isNpm1300ResetConfig,
-    LdoExport,
-    LdoModule,
-    LED,
-    LEDMode,
-    NpmExportLatest,
-    NTCThermistor,
-    USBPowerExport,
+    type LdoExport,
+    type LdoModule,
+    type LED,
+    type LEDMode,
+    type NpmExportLatest,
+    type NTCThermistor,
+    type USBPowerExport,
 } from '../types';
 import { GPIOMode1300 } from './gpio/types';
 import type Npm1300 from './pmic1300Device';
@@ -77,7 +77,7 @@ const generateCharger = (
 		vbus-limit-microamp = <${
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             toMicro(vbus.currentLimiter!)
-        }>; 
+        }>;
 		thermistor-ohms = <${thermistorTypeToOverlay(charger.ntcThermistor)}>;
 		thermistor-beta = <${charger.ntcThermistor === 'Ignore NTC' ? '0' : charger.ntcBeta}>;
 		${charger.ntcThermistor !== 'Ignore NTC' ? generateJeita(charger, chargerModule) : ''}
@@ -94,8 +94,8 @@ const generateCharger = (
             charger.iBatLim
                 ? `dischg-limit-microamp = <${toMicro(charger.iBatLim / 1000)}>;`
                 : ''
-        } 
-		term-current-percent = <${charger.iTerm}>; 
+        }
+		term-current-percent = <${charger.iTerm}>;
 	};`
         : '';
 
@@ -141,8 +141,8 @@ const generateBuck = (
                       v => v === buck.retentionControl,
                   )} GPIO_ACTIVE_HIGH>;`
                 : ''
-        }   
-		${buck.activeDischarge ? 'active-discharge;' : ''}   
+        }
+		${buck.activeDischarge ? 'active-discharge;' : ''}
 	};
 `;
 

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { FuelGauge } from '../../types';
+import { type FuelGauge } from '../../types';
 import { setupMocksBase } from '../tests/helpers';
 
 describe('PMIC 2100 - Setters Offline tests', () => {
