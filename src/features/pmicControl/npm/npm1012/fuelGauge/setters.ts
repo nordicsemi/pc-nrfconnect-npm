@@ -59,4 +59,14 @@ export class FuelGaugeSet {
             );
         });
     }
+
+    batteryStatusCheckEnabled(enabled: boolean) {
+        return new Promise<void>((resolve, reject) => {
+            this.sendCommand(
+                `npm_chg_status_check set ${enabled ? '1' : '0'}`,
+                () => resolve(),
+                () => reject(),
+            );
+        });
+    }
 }
