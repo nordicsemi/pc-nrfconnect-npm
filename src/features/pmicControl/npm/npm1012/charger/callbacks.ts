@@ -33,34 +33,32 @@ export default (
     callbacks.push(
         shellParser.onShellLoggingEvent(logEvent => {
             parseLogData(logEvent, loggingEvent => {
-                if (loggingEvent.module !== 'module_pmic_irq') {
+                if (loggingEvent.module !== 'module_pmic_charger') {
                     return;
                 }
 
-                const charger: Partial<Charger> = {};
-                const chargingState: Partial<PmicChargingState> = {};
+                const messageParts = loggingEvent.message.split('=');
+                const value = Number.parseInt(messageParts[1], 10);
 
-                switch (loggingEvent.message) {
-                    case 'EVENT_CHARGE':
-                        charger.enabled = true;
-                        chargingState.constantCurrentCharging = true;
-                        chargingState.constantVoltageCharging = false;
-                        break;
-                    case 'EVENT_DISCHARGE':
-                        charger.enabled = false;
-                        chargingState.constantCurrentCharging = false;
-                        chargingState.constantVoltageCharging = false;
-                        break;
-                    case 'EVENT_VTERM':
-                        chargingState.constantCurrentCharging = false;
-                        chargingState.constantVoltageCharging = true;
-                        break;
-                }
+                const chargingState: Partial<PmicChargingState> = {
+                    // // eslint-disable-next-line no-bitwise
+                    // batteryDetected: (value & 0x01) > 0,
+                    // eslint-disable-next-line no-bitwise
+                    batteryFull: (value & 0x02) > 0,
+                    // eslint-disable-next-line no-bitwise
+                    trickleCharge: (value & 0x04) > 0,
+                    // eslint-disable-next-line no-bitwise
+                    constantCurrentCharging: (value & 0x08) > 0,
+                    // eslint-disable-next-line no-bitwise
+                    constantVoltageCharging: (value & 0x10) > 0,
+                    // eslint-disable-next-line no-bitwise
+                    batteryRechargeNeeded: (value & 0x20) > 0,
+                    // eslint-disable-next-line no-bitwise
+                    dieTempHigh: (value & 0x40) > 0,
+                    // eslint-disable-next-line no-bitwise
+                    supplementModeActive: (value & 0x80) > 0,
+                };
 
-                eventEmitter.emitPartialEvent<Charger>(
-                    'onChargerUpdate',
-                    charger,
-                );
                 eventEmitter.emitPartialEvent<PmicChargingState>(
                     'onChargingStatusUpdate',
                     chargingState,
@@ -126,21 +124,9 @@ export default (
         shellParser.registerCommandCallback(
             toRegex('npm1012 charger enable', true, undefined, onOffRegex),
             res => {
-                const enabled = parseOnOff(res);
-
                 eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    enabled,
+                    enabled: parseOnOff(res),
                 });
-
-                eventEmitter.emitPartialEvent<PmicChargingState>(
-                    'onChargingStatusUpdate',
-                    enabled
-                        ? {}
-                        : {
-                              constantCurrentCharging: false,
-                              constantVoltageCharging: false,
-                          },
-                );
             },
             noop,
         ),
