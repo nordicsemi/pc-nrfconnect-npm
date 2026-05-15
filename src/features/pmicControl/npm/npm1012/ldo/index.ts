@@ -1,0 +1,164 @@
+/*
+ * Copyright (c) 2026 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
+ */
+
+import { type Range } from '@nordicsemiconductor/pc-nrfconnect-shared';
+
+import {
+    type Ldo,
+    type LdoExport,
+    type LdoMode,
+    type LdoModule,
+    type LdoOnOffControl,
+    type LdoVOutSel,
+    type ModuleParams,
+} from '../../types';
+import ldoCallbacks from './callbacks';
+import { LdoGet } from './getters';
+import { LdoSet } from './setters';
+import { onOffControlValues } from './types';
+
+const ldoDefaults = (index: number): Ldo => {
+    const common: Ldo = {
+        activeDischarge: false,
+        cardLabel: `Load Switch/LDO ${index + 1}`,
+        enabled: false,
+        onOffControl: 'Software',
+        onOffSoftwareControlEnabled: true,
+        overcurrentProtection: false,
+        softStart: true,
+        softStartCurrent: 20,
+        softStartTime: 4.5,
+    };
+
+    // Load Switch 2
+    if (index === 1) {
+        return { ...common, cardLabel: 'Load Switch 2' };
+    }
+
+    return {
+        ...common,
+        mode: 'Load_switch',
+        vOutSel: 'Vset',
+        voltage: voltageRange.min,
+        weakPullDown: false,
+    };
+};
+
+export const toLdoExport = (ldo: Ldo): LdoExport => ({
+    activeDischarge: ldo.activeDischarge,
+    enabled: ldo.enabled,
+    mode: ldo.mode,
+    onOffControl: ldo.onOffControl,
+    overcurrentProtection: ldo.overcurrentProtection,
+    softStart: ldo.softStart,
+    softStartCurrent: ldo.softStartCurrent,
+    softStartTime: ldo.softStartTime,
+    vOutSel: ldo.vOutSel,
+    voltage: ldo.voltage,
+    weakPullDown: ldo.weakPullDown,
+});
+
+const voltageRange: Range = {
+    min: 1,
+    max: 3.3,
+    decimals: 2,
+    step: 0.05,
+};
+
+const softStartCurrentValues = [10, 20, 35, 50] as readonly number[];
+const softStartTimeValues = [1.5, 4.5, 7.5, 10.5] as readonly number[];
+
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable class-methods-use-this */
+
+export default class Module implements LdoModule {
+    index: number;
+    private _get: LdoGet;
+    private _set: LdoSet;
+    private _callbacks: (() => void)[];
+    constructor({
+        index,
+        sendCommand,
+        eventEmitter,
+        offlineMode,
+        shellParser,
+    }: ModuleParams) {
+        this.index = index;
+        this._get = new LdoGet(sendCommand, index);
+        this._set = new LdoSet(eventEmitter, sendCommand, offlineMode, index);
+        this._callbacks = ldoCallbacks(shellParser, eventEmitter, index);
+    }
+
+    get get() {
+        return this._get;
+    }
+
+    get set() {
+        return this._set;
+    }
+
+    get callbacks() {
+        return this._callbacks;
+    }
+
+    get values(): LdoModule['values'] {
+        const onOffControlValueForUI = (
+            mode?: LdoMode,
+            vOutSel?: LdoVOutSel,
+        ) => {
+            const valuesWithoutSoftware = onOffControlValues.filter(
+                value => value !== 'Software',
+            );
+            const valuesWithoutSoftwareOrVset = onOffControlValues.filter(
+                value => value !== 'Software' && value !== 'VSET',
+            );
+            const valuesWithoutVset = onOffControlValues.filter(
+                value => value !== 'VSET',
+            );
+
+            let values: LdoOnOffControl[] = [];
+
+            // Filter out 'Software' and/or 'VSET' option
+            if (this.index === 1) {
+                values = valuesWithoutVset; // Load Switch 2
+            } else if (mode === 'Load_switch' && vOutSel === 'Vset') {
+                values = valuesWithoutSoftwareOrVset;
+            } else if (vOutSel === 'Software') {
+                values = valuesWithoutVset;
+            } else if (vOutSel === 'Vset') {
+                values = valuesWithoutSoftware;
+            }
+
+            return values.map(val => ({
+                label: val,
+                value: val,
+            }));
+        };
+
+        return {
+            onOffControl: onOffControlValueForUI,
+            softStartCurrent: () =>
+                softStartCurrentValues.map(val => ({
+                    label: `${val} mA`,
+                    value: val,
+                })),
+            softStartTime: softStartTimeValues.map(val => ({
+                label: `${val} ms`,
+                value: val,
+            })),
+        };
+    }
+
+    get ranges(): LdoModule['ranges'] {
+        return {
+            voltage: voltageRange,
+        };
+    }
+
+    get defaults(): Ldo {
+        return ldoDefaults(this.index);
+    }
+}

@@ -16,6 +16,7 @@ import {
     type Charger,
     type ErrorLogs,
     type GPIO,
+    type GPIOLEDDrv,
     type Ldo,
     type LED,
     type LowPowerConfig,
@@ -61,6 +62,9 @@ export const setupMocksBase = (
     const mockOnGpioUpdate = jest.fn(
         (_partialUpdate: PartialUpdate<GPIO>) => {},
     );
+    const mockOnGpioLedDrvUpdate = jest.fn(
+        (_partialUpdate: PartialUpdate<GPIOLEDDrv>) => {},
+    );
     const mockOnLEDUpdate = jest.fn((_partialUpdate: PartialUpdate<LED>) => {});
 
     const mockOnPOFUpdate = jest.fn((_partialUpdate: Partial<POF>) => {});
@@ -94,6 +98,7 @@ export const setupMocksBase = (
     pmic.onChargerUpdate(mockOnChargerUpdate);
     pmic.onOnBoardLoadUpdate(mockOnBoardLoadUpdate);
     pmic.onGPIOUpdate(mockOnGpioUpdate);
+    pmic.onGpioLedDrvUpdate(mockOnGpioLedDrvUpdate);
     pmic.onLEDUpdate(mockOnLEDUpdate);
     pmic.onPOFUpdate(mockOnPOFUpdate);
     pmic.onTimerConfigUpdate(mockOnTimerConfigUpdate);
@@ -122,6 +127,7 @@ export const setupMocksBase = (
         mockOnFuelGaugeUpdate,
         mockOnLdoUpdate,
         mockOnGpioUpdate,
+        mockOnGpioLedDrvUpdate,
         mockOnLEDUpdate,
         mockOnPOFUpdate,
         mockOnTimerConfigUpdate,

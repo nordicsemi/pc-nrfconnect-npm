@@ -16,10 +16,12 @@ import path from 'path';
 
 import { closeDevice, openDevice } from '../actions/deviceActions';
 import {
+    npm1012DeviceSetup,
     npm1300DeviceSetup,
     npm1304DeviceSetup,
     npm2100DeviceSetup,
 } from '../features/pmicControl/npm/deviceSetups';
+import { npm1012FWVersion } from '../features/pmicControl/npm/npm1012/pmic1012Device';
 import Npm1300, {
     npm1300FWVersion,
 } from '../features/pmicControl/npm/npm1300/pmic1300Device';
@@ -31,6 +33,8 @@ import Npm2100, {
 } from '../features/pmicControl/npm/npm2100/pmic2100Device';
 import {
     dialogHandler,
+    isNpm1012SerialApplicationMode,
+    isNpm1012SerialRecoverMode,
     isNpm1300SerialApplicationMode,
     isNpm1300SerialRecoverMode,
     isNpm1304SerialApplicationMode,
@@ -56,6 +60,13 @@ const deviceListing: DeviceTraits = {
 
 const deviceSetupConfig: DeviceSetupConfig = {
     deviceSetups: [
+        npm1012DeviceSetup({
+            key: 'nPM1012',
+            description: '',
+            hex: getAppFile(
+                path.join('fw', `app_signed_nPM1012_${npm1012FWVersion}.hex`),
+            ),
+        }),
         npm1300DeviceSetup({
             key: 'nPM1300',
             description: '',
@@ -116,6 +127,8 @@ export default () => {
                 dispatch(stopEventRecording());
             }}
             deviceFilter={device =>
+                isNpm1012SerialApplicationMode(device) ||
+                isNpm1012SerialRecoverMode(device) ||
                 isNpm1300SerialRecoverMode(device) ||
                 isNpm1300SerialApplicationMode(device) ||
                 isNpm1304SerialRecoverMode(device) ||

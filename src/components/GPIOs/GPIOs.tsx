@@ -12,18 +12,21 @@ import {
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import {
+    getGPIOLEDDrvs,
     getGPIOs,
     getLEDs,
     getNpmDevice,
 } from '../../features/pmicControl/pmicControlSlice';
 import useIsUIDisabled from '../../features/useIsUIDisabled';
 import GPIO from './GPIO';
-import LEDs from './LEDs';
+import GPIOLEDDrv from './GPIOLEDDrv';
+import LED from './LED';
 
 export default ({ active }: PaneProps) => {
     const disabled = useIsUIDisabled();
     const npmDevice = useSelector(getNpmDevice);
     const gpios = useSelector(getGPIOs);
+    const gpioleddrvs = useSelector(getGPIOLEDDrvs);
     const leds = useSelector(getLEDs);
 
     return active ? (
@@ -37,9 +40,24 @@ export default ({ active }: PaneProps) => {
                         disabled={disabled}
                     />
                 ))}
-            {npmDevice && !!npmDevice.getNumberOfLEDs() && (
-                <LEDs npmDevice={npmDevice} leds={leds} disabled={disabled} />
-            )}
+            {npmDevice &&
+                gpioleddrvs.map((gpioleddrv, index) => (
+                    <GPIOLEDDrv
+                        config={gpioleddrv}
+                        module={npmDevice.gpioLedDrvModule[index]}
+                        key={`GPIOLEDDRV${1 + index}`}
+                        disabled={disabled}
+                    />
+                ))}
+            {npmDevice &&
+                leds.map((led, index) => (
+                    <LED
+                        led={led}
+                        ledModule={npmDevice.ledModule[index]}
+                        key={`LED${1 + index}`}
+                        disabled={disabled}
+                    />
+                ))}
         </MasonryLayout>
     ) : null;
 };

@@ -40,6 +40,7 @@ import {
     setBucks,
     setCharger,
     setErrorLogs,
+    setGPIOLEDDrvs,
     setGPIOs,
     setHardcodedBatterModels,
     setLatestAdcSample,
@@ -48,7 +49,6 @@ import {
     setLowPowerConfig,
     setNpmDevice,
     setOnBoardLoad,
-    setPmicChargingState,
     setPmicState,
     setPOFs,
     setPowerId,
@@ -61,11 +61,13 @@ import {
     updateBuck,
     updateCharger,
     updateFuelGauge,
+    updateGPIOLEDDrvs,
     updateGPIOs,
     updateLdo,
     updateLEDs,
     updateLowPowerConfig,
     updateOnBoardLoad,
+    updatePmicChargingState,
     updatePOFs,
     updateResetConfig,
     updateTimerConfig,
@@ -237,7 +239,7 @@ export default () => {
 
             releaseAll.push(
                 npmDevice.onChargingStatusUpdate(payload => {
-                    dispatch(setPmicChargingState(payload));
+                    dispatch(updatePmicChargingState(payload));
                 }),
             );
 
@@ -268,6 +270,12 @@ export default () => {
             releaseAll.push(
                 npmDevice.onGPIOUpdate(payload => {
                     dispatch(updateGPIOs(payload));
+                }),
+            );
+
+            releaseAll.push(
+                npmDevice.onGpioLedDrvUpdate(payload => {
+                    dispatch(updateGPIOLEDDrvs(payload));
                 }),
             );
 
@@ -558,7 +566,14 @@ export default () => {
             dispatch(
                 setGPIOs(npmDevice.gpioModule.map(module => module.defaults)),
             );
-            dispatch(setLEDs(npmDevice.ledDefaults()));
+            dispatch(
+                setGPIOLEDDrvs(
+                    npmDevice.gpioLedDrvModule.map(module => module.defaults),
+                ),
+            );
+            dispatch(
+                setLEDs(npmDevice.ledModule.map(module => module.defaults)),
+            );
             dispatch(setPOFs(npmDevice.pofModule?.defaults));
             dispatch(setLowPowerConfig(npmDevice.lowPowerModule?.defaults));
             dispatch(setUsbPower(npmDevice.usbCurrentLimiterModule?.defaults));
@@ -729,21 +744,33 @@ export default () => {
             );
             dispatch(
                 setPaneHidden({
-                    name: 'GPIOs',
-                    hidden: !npmDevice?.gpioModule?.length,
+                    name: 'GPIOs & LEDs',
+                    hidden:
+                        !npmDevice?.gpioModule?.length &&
+                        !npmDevice?.gpioLedDrvModule?.length &&
+                        !npmDevice?.ledModule?.length,
                 }),
             );
             dispatch(
                 setPaneHidden({
                     name: 'System Features',
                     hidden:
-                        !npmDevice?.lowPowerModule &&
-                        !npmDevice?.resetModule &&
-                        !npmDevice?.timerConfigModule &&
-                        !npmDevice?.pofModule &&
-                        !npmDevice?.usbCurrentLimiterModule &&
-                        (!npmDevice ||
-                            (npmDevice && !SupportsErrorLogs(npmDevice))),
+                        !(
+                            npmDevice?.lowPowerModule && // npm130x features
+                            npmDevice.resetModule &&
+                            npmDevice.timerConfigModule &&
+                            npmDevice.pofModule &&
+                            npmDevice.usbCurrentLimiterModule &&
+                            SupportsErrorLogs(npmDevice)
+                        ) &&
+                        !(
+                            npmDevice?.lowPowerModule && // npm2100 features
+                            npmDevice.resetModule &&
+                            npmDevice.timerConfigModule &&
+                            !npmDevice.pofModule &&
+                            !npmDevice.usbCurrentLimiterModule &&
+                            !SupportsErrorLogs(npmDevice)
+                        ),
                 }),
             );
             dispatch(
@@ -772,7 +799,11 @@ export default () => {
     }, [dispatch, npmDevice, pmicState]);
 
     useEffect(() => {
-        if (npmDevice) {
+        if (
+            npmDevice &&
+            (npmDevice.deviceType === 'npm1300' ||
+                npmDevice.deviceType === 'npm1304')
+        ) {
             const t = setInterval(() => {
                 for (let i = 0; i < npmDevice.buckModule.length; i += 1) {
                     if (bucks[i].onOffControl !== 'Off') {

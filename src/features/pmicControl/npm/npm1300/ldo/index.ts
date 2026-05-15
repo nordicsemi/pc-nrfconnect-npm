@@ -15,16 +15,17 @@ import {
 import ldoCallbacks from './callbacks';
 import { LdoGet } from './getters';
 import { LdoSet } from './setters';
-import { type SoftStart, SoftStartValues } from './types';
+import { SoftStartCurrentValues } from './types';
 
 export const toLdoExport = (ldo: Ldo): LdoExport => ({
-    voltage: ldo.voltage,
+    activeDischarge: ldo.activeDischarge,
     enabled: ldo.enabled,
     mode: ldo.mode,
-    softStartEnabled: ldo.softStartEnabled,
-    softStart: ldo.softStart,
-    activeDischarge: ldo.activeDischarge,
     onOffControl: ldo.onOffControl,
+    softStart: ldo.softStart,
+    softStartCurrent: ldo.softStartCurrent,
+    softStartCurrentDropdownDisabled: ldo.softStartCurrentDropdownDisabled,
+    voltage: ldo.voltage,
 });
 
 const getLdoVoltageRange = () =>
@@ -43,7 +44,6 @@ export default class Module implements LdoModule {
     private _get: LdoGet;
     private _set: LdoSet;
     private _callbacks: (() => void)[];
-    protected pmicRevision: number | undefined;
 
     constructor({
         index,
@@ -54,6 +54,9 @@ export default class Module implements LdoModule {
         dialogHandler,
         pmicRevision,
     }: ModuleParams) {
+        const softStartCurrentDropdownDisabledLDOMode =
+            pmicRevision === undefined || pmicRevision < 2.3;
+
         this.index = index;
         this._get = new LdoGet(sendCommand, index);
         this._set = new LdoSet(
@@ -63,8 +66,12 @@ export default class Module implements LdoModule {
             offlineMode,
             index,
         );
-        this._callbacks = ldoCallbacks(shellParser, eventEmitter, index);
-        this.pmicRevision = pmicRevision;
+        this._callbacks = ldoCallbacks(
+            shellParser,
+            eventEmitter,
+            index,
+            softStartCurrentDropdownDisabledLDOMode,
+        );
     }
 
     get get() {
@@ -79,14 +86,14 @@ export default class Module implements LdoModule {
         return this._callbacks;
     }
 
-    get values(): {
-        softstart: { label: string; value: SoftStart }[];
-    } {
+    get values(): LdoModule['values'] {
         return {
-            softstart: [...SoftStartValues].map((item, i) => ({
-                label: `${SoftStartValues[i]} mA`,
-                value: item,
-            })),
+            onOffControl: () => [{ label: 'SW', value: 'SW' }],
+            softStartCurrent: () =>
+                SoftStartCurrentValues.map((item, i) => ({
+                    label: `${SoftStartCurrentValues[i]} mA`,
+                    value: item,
+                })),
         };
     }
 
@@ -97,17 +104,17 @@ export default class Module implements LdoModule {
     }
 
     get defaults(): Ldo {
-        return {
-            voltage: getLdoVoltageRange().min,
-            mode: 'Load_switch',
-            enabled: false,
-            softStartEnabled: true,
-            softStart: 25,
+        return ((index: number): Ldo => ({
             activeDischarge: false,
+            cardLabel: `Load Switch/LDO ${index + 1}`,
+            enabled: false,
+            mode: 'Load_switch',
             onOffControl: 'SW',
             onOffSoftwareControlEnabled: true,
-            ldoSoftStartEnable:
-                this.pmicRevision !== undefined && this.pmicRevision >= 2.3,
-        };
+            softStart: true,
+            softStartCurrent: 25,
+            softStartCurrentDropdownDisabled: false,
+            voltage: getLdoVoltageRange().min,
+        }))(this.index);
     }
 }

@@ -22,6 +22,9 @@ const getDecimalPlaces = (value: number): number => {
     return decimalPart ? decimalPart.length : 0;
 };
 
+const getDecimalPlacesFromRange = (range: Range): number =>
+    range.decimals ?? getDecimalPlaces(range.step ?? 1);
+
 export const getRange = (ranges: Range[]): number[] => {
     const out: number[] = [];
 
@@ -42,3 +45,23 @@ export const getRange = (ranges: Range[]): number[] => {
 
     return out;
 };
+
+export type RangeOrNumberArray = Range | number[];
+
+const getMaxNumDecimalsForNumberArray = (values: number[]): number =>
+    Math.max(...values.map(v => getDecimalPlaces(v)));
+
+export const getMaxNumDecimalsForRangeOrNumberArray = (
+    values: RangeOrNumberArray,
+): number =>
+    Array.isArray(values)
+        ? getMaxNumDecimalsForNumberArray(values)
+        : getDecimalPlacesFromRange(values);
+
+export const getMaxValueOfRangeOrNumberArray = (
+    values: RangeOrNumberArray,
+): number => (Array.isArray(values) ? Math.max(...values) : values.max);
+
+export const getMinValueOfRangeOrNumberArray = (
+    values: RangeOrNumberArray,
+): number => (Array.isArray(values) ? Math.min(...values) : values.min);

@@ -17,6 +17,7 @@ import type {
     ErrorLogs,
     FuelGauge,
     GPIO,
+    GPIOLEDDrv,
     Ldo,
     LED,
     LowPowerConfig,
@@ -40,6 +41,7 @@ interface pmicControlState {
     onBoardLoad?: OnBoardLoad;
     ldos: Ldo[];
     gpios: GPIO[];
+    gpioleddrvs: GPIOLEDDrv[];
     leds: LED[];
     pof?: POF;
     lowPower?: LowPowerConfig;
@@ -66,6 +68,7 @@ const initialState: pmicControlState = {
     bucks: [],
     ldos: [],
     gpios: [],
+    gpioleddrvs: [],
     leds: [],
     pmicChargingState: {
         batteryFull: false,
@@ -110,6 +113,15 @@ const pmicControlSlice = createSlice({
                     ...action.payload,
                 };
             }
+        },
+        updatePmicChargingState(
+            state,
+            action: PayloadAction<Partial<PmicChargingState>>,
+        ) {
+            state.pmicChargingState = {
+                ...state.pmicChargingState,
+                ...action.payload,
+            };
         },
         setPmicState(state, action: PayloadAction<PmicState>) {
             state.pmicState = action.payload;
@@ -187,11 +199,25 @@ const pmicControlSlice = createSlice({
                 };
             }
         },
+        setGPIOLEDDrvs(state, action: PayloadAction<GPIOLEDDrv[]>) {
+            state.gpioleddrvs = action.payload;
+        },
+        updateGPIOLEDDrvs(
+            state,
+            action: PayloadAction<PartialUpdate<GPIOLEDDrv>>,
+        ) {
+            if (state.gpioleddrvs.length > action.payload.index) {
+                state.gpioleddrvs[action.payload.index] = {
+                    ...state.gpioleddrvs[action.payload.index],
+                    ...action.payload.data,
+                };
+            }
+        },
         setLEDs(state, action: PayloadAction<LED[]>) {
             state.leds = action.payload;
         },
         updateLEDs(state, action: PayloadAction<PartialUpdate<LED>>) {
-            if (state.leds.length >= action.payload.index) {
+            if (state.leds.length > action.payload.index) {
                 state.leds[action.payload.index] = {
                     ...state.leds[action.payload.index],
                     ...action.payload.data,
@@ -350,6 +376,8 @@ export const getBoosts = (state: RootState) => state.app.pmicControl.boosts;
 export const getBucks = (state: RootState) => state.app.pmicControl.bucks;
 export const getLdos = (state: RootState) => state.app.pmicControl.ldos;
 export const getGPIOs = (state: RootState) => state.app.pmicControl.gpios;
+export const getGPIOLEDDrvs = (state: RootState) =>
+    state.app.pmicControl.gpioleddrvs;
 export const getLEDs = (state: RootState) => state.app.pmicControl.leds;
 export const getPOF = (state: RootState) => state.app.pmicControl.pof;
 export const getShip = (state: RootState) => state.app.pmicControl.lowPower;
@@ -420,6 +448,7 @@ export const {
     setNpmDevice,
     setPmicState,
     setPmicChargingState,
+    updatePmicChargingState,
     setLatestAdcSample,
     updateCharger,
     setCharger,
@@ -433,6 +462,8 @@ export const {
     updateLdo,
     setGPIOs,
     updateGPIOs,
+    setGPIOLEDDrvs,
+    updateGPIOLEDDrvs,
     setLEDs,
     updateLEDs,
     setPOFs,

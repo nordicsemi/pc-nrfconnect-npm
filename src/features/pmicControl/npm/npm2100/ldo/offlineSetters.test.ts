@@ -15,7 +15,7 @@ describe('PMIC 2100 - Setters Offline tests', () => {
     });
 
     test.each(PMIC_2100_LDOS)('Set setLdoVoltage index: %p', async index => {
-        await pmic.ldoModule[index].set.voltage(1.2);
+        await pmic.ldoModule[index].set.voltage?.(1.2);
 
         expect(mockOnLdoUpdate).toBeCalledTimes(1);
         expect(mockOnLdoUpdate).toBeCalledWith({

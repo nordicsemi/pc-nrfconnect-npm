@@ -36,12 +36,13 @@ import {
     type FuelGauge,
     type FuelGaugeModule,
     type GPIO,
+    type GPIOLEDDrv,
+    type GpioLedDrvModule,
     type GpioModule,
     type Ldo,
     type LdoModule,
     type LED,
-    type LEDMode,
-    LEDModeValues,
+    type LedModule,
     type LoggingEvent,
     type LowPowerModule,
     type ModuleParams,
@@ -154,6 +155,27 @@ export default abstract class BaseNpmDevice {
     protected set gpioModule(gpioModule: GpioModule[]) {
         this.releaseAll.push(...gpioModule.map(gpio => gpio.callbacks).flat());
         this.#gpioModule = gpioModule;
+    }
+
+    #gpioLedDrvModule: GpioLedDrvModule[] = [];
+    get gpioLedDrvModule() {
+        return [...this.#gpioLedDrvModule];
+    }
+    protected set gpioLedDrvModule(gpioLedDrvModule: GpioLedDrvModule[]) {
+        this.releaseAll.push(
+            ...gpioLedDrvModule.map(gpio => gpio.callbacks).flat(),
+        );
+        this.#gpioLedDrvModule = gpioLedDrvModule;
+    }
+
+    #ledModule: LedModule[] = [];
+    get ledModule() {
+        return this.#ledModule;
+    }
+
+    protected set ledModule(ledModule: LedModule[]) {
+        this.releaseAll.push(...ledModule.map(led => led.callbacks).flat());
+        this.#ledModule = ledModule;
     }
 
     #fuelGaugeModule?: FuelGaugeModule;
@@ -324,11 +346,33 @@ export default abstract class BaseNpmDevice {
             );
         }
 
+        if (this.peripherals.gpioLedDrvs) {
+            const gpioLedDrv = this.peripherals.gpioLedDrvs;
+            this.gpioLedDrvModule = [...Array(gpioLedDrv.count).keys()].map(
+                index =>
+                    new gpioLedDrv.Module({
+                        ...args,
+                        index,
+                    }),
+            );
+        }
+
         if (this.peripherals.boosts) {
             const boosts = this.peripherals.boosts;
             this.boostModule = [...Array(boosts.count ?? 0).keys()].map(
                 index =>
                     new boosts.Module({
+                        ...args,
+                        index,
+                    }),
+            );
+        }
+
+        if (this.peripherals.leds) {
+            const leds = this.peripherals.leds;
+            this.ledModule = [...Array(leds.count ?? 0).keys()].map(
+                index =>
+                    new leds.Module({
                         ...args,
                         index,
                     }),
@@ -520,73 +564,11 @@ export default abstract class BaseNpmDevice {
                     noop,
                 ),
             );
-
-            for (let i = 0; i < this.peripherals.noOfLEDs; i += 1) {
-                this.releaseAll.push(
-                    shellParser.registerCommandCallback(
-                        toRegex('npmx led mode', true, i, '[0-3]'),
-                        res => {
-                            const mode = LEDModeValues[parseToNumber(res)];
-                            if (mode) {
-                                this.eventEmitter.emitPartialEvent<LED>(
-                                    'onLEDUpdate',
-                                    {
-                                        mode,
-                                    },
-                                    i,
-                                );
-                            }
-                        },
-                        noop,
-                    ),
-                );
-            }
         }
 
         this.updateUptimeOverflowCounter();
 
         this.initPeripherals();
-    }
-
-    // Return a set of default LED settings
-    ledDefaults(): LED[] {
-        const defaultLEDs: LED[] = [];
-        for (let i = 0; i < this.peripherals.noOfLEDs; i += 1) {
-            defaultLEDs.push({
-                mode: LEDModeValues[i],
-            });
-        }
-        return defaultLEDs;
-    }
-
-    getLedMode(index: number) {
-        return this.sendCommand(`npmx led mode get ${index}`);
-    }
-
-    setLedMode(index: number, mode: LEDMode) {
-        return new Promise<void>((resolve, reject) => {
-            if (this.pmicState === 'ek-disconnected') {
-                this.eventEmitter.emitPartialEvent<LED>(
-                    'onLEDUpdate',
-                    {
-                        mode,
-                    },
-                    index,
-                );
-                resolve();
-            } else {
-                this.sendCommand(
-                    `npmx led mode set ${index} ${LEDModeValues.findIndex(
-                        m => m === mode,
-                    )}`,
-                    () => resolve(),
-                    () => {
-                        this.getLedMode(index);
-                        reject();
-                    },
-                );
-            }
-        });
     }
 
     requestUpdate() {
@@ -597,11 +579,9 @@ export default abstract class BaseNpmDevice {
         this.buckModule.forEach(buck => buck.get.all());
         this.ldoModule.forEach(ldo => ldo.get.all());
         this.gpioModule.forEach(module => module.get.all());
+        this.gpioLedDrvModule.forEach(gpio => gpio.get.all());
         this.boostModule.forEach(boost => boost.get.all());
-
-        for (let i = 0; i < this.peripherals.noOfLEDs; i += 1) {
-            this.getLedMode(i);
-        }
+        this.ledModule.forEach(module => module.get.all());
 
         this.batteryModule?.get.all();
         this.usbCurrentLimiterModule?.get.all();
@@ -726,9 +706,9 @@ export default abstract class BaseNpmDevice {
         );
     }
     onChargingStatusUpdate(
-        handler: (payload: PmicChargingState, error: string) => void,
+        handler: (payload: Partial<PmicChargingState>, error: string) => void,
     ) {
-        return this.setupHandler<PmicChargingState, true>(
+        return this.setupHandler<Partial<PmicChargingState>, true>(
             'onChargingStatusUpdate',
         )(handler);
     }
@@ -789,6 +769,13 @@ export default abstract class BaseNpmDevice {
         return this.setupHandler<PartialUpdate<GPIO>, true>('onGPIOUpdate')(
             handler,
         );
+    }
+    onGpioLedDrvUpdate(
+        handler: (payload: PartialUpdate<GPIOLEDDrv>, error: string) => void,
+    ) {
+        return this.setupHandler<PartialUpdate<GPIOLEDDrv>, true>(
+            'onGpioLedDrvUpdate',
+        )(handler);
     }
     onLEDUpdate(handler: (payload: PartialUpdate<LED>, error: string) => void) {
         return this.setupHandler<PartialUpdate<LED>, true>('onLEDUpdate')(
@@ -874,9 +861,6 @@ export default abstract class BaseNpmDevice {
 
     hasMaxEnergyExtraction() {
         return this.peripherals.maxEnergyExtraction;
-    }
-    getNumberOfLEDs() {
-        return this.peripherals.noOfLEDs;
     }
     getNumberOfBatteryModelSlots() {
         return this.peripherals.noOfBatterySlots;
@@ -1031,15 +1015,29 @@ export default abstract class BaseNpmDevice {
                         ),
                     );
 
-                    await Promise.all(
-                        config.leds.map((led, index) =>
-                            (() => {
-                                this.setLedMode(index, led.mode).catch(
-                                    () => {},
-                                );
-                            })(),
-                        ),
-                    );
+                    if (config.gpioLedDrvs) {
+                        await Promise.all(
+                            config.gpioLedDrvs.map((gpio, index) =>
+                                (() => {
+                                    this.gpioLedDrvModule[index].set
+                                        .all(gpio)
+                                        .catch(() => {});
+                                })(),
+                            ),
+                        );
+                    }
+
+                    if (config.leds) {
+                        await Promise.all(
+                            config.leds.map((led, index) =>
+                                (() => {
+                                    this.ledModule[index].set
+                                        .all(led)
+                                        .catch(() => {});
+                                })(),
+                            ),
+                        );
+                    }
 
                     if (config.pof) {
                         await this.pofModule?.set

@@ -13,13 +13,13 @@ import {
     parseToNumber,
     toRegex,
 } from '../../pmicHelpers';
-import { GPIOValues, type Ldo, type SoftStart } from '../../types';
-import { SoftStartValues } from './types';
+import { GPIOValues, type Ldo } from '../../types';
 
 export default (
     shellParser: ShellParser | undefined,
     eventEmitter: NpmEventEmitter,
     index: number,
+    softStartCurrentDropdownDisabledLDOMode: boolean,
 ) => {
     const cleanupCallbacks = [];
     if (shellParser) {
@@ -43,13 +43,17 @@ export default (
             shellParser.registerCommandCallback(
                 toRegex('npmx ldsw mode', true, index),
                 res => {
+                    const mode =
+                        parseToNumber(res) === 0 ? 'Load_switch' : 'LDO';
+                    const softStartCurrentDropdownDisabled =
+                        mode === 'LDO' &&
+                        softStartCurrentDropdownDisabledLDOMode;
+
                     eventEmitter.emitPartialEvent<Ldo>(
                         'onLdoUpdate',
                         {
-                            mode:
-                                parseToNumber(res) === 0
-                                    ? 'Load_switch'
-                                    : 'LDO',
+                            mode,
+                            softStartCurrentDropdownDisabled,
                         },
                         index,
                     );
@@ -74,35 +78,33 @@ export default (
             ),
         );
 
-        cleanupCallbacks.push(
-            shellParser.registerCommandCallback(
-                toRegex('npmx ldsw soft_start enable', true, index, '(0|1)'),
-                res => {
-                    eventEmitter.emitPartialEvent<Ldo>(
-                        'onLdoUpdate',
-                        {
-                            softStartEnabled: parseToBoolean(res),
-                        },
-                        index,
-                    );
-                },
-                noop,
-            ),
-        );
+        // Disable callback for soft start enable as it will be always enabled by FW,
+        // and the register setting can not be configured by a shell command.
+        // cleanupCallbacks.push(
+        //     shellParser.registerCommandCallback(
+        //         toRegex('npmx ldsw soft_start enable', true, index, '(0|1)'),
+        //         res => {
+        //             eventEmitter.emitPartialEvent<Ldo>(
+        //                 'onLdoUpdate',
+        //                 {
+        //                     softStart: parseToBoolean(res),
+        //                 },
+        //                 index,
+        //             );
+        //         },
+        //         noop,
+        //     ),
+        // );
 
         cleanupCallbacks.push(
             shellParser.registerCommandCallback(
-                toRegex(
-                    'npmx ldsw soft_start current',
-                    true,
-                    index,
-                    `(${SoftStartValues.join('|')})`,
-                ),
+                toRegex('npmx ldsw soft_start current', true, index),
                 res => {
+                    const result = parseToNumber(res);
                     eventEmitter.emitPartialEvent<Ldo>(
                         'onLdoUpdate',
                         {
-                            softStart: parseToNumber(res) as SoftStart,
+                            softStartCurrent: result,
                         },
                         index,
                     );

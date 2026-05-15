@@ -11,6 +11,8 @@ import { npm1300TimerMode } from '../../npm1300/timerConfig/types';
 import {
     type Buck,
     type Charger,
+    ChargerJeitaILabel,
+    ChargerJeitaVLabel,
     type FuelGauge,
     type GPIO,
     type GPIOExport,
@@ -67,6 +69,16 @@ describe('PMIC 1304 - Apply Config ', () => {
         tCool: 12,
         tWarm: 47,
         tHot: 69,
+        jeitaILabelCold: ChargerJeitaILabel.coldIOff,
+        jeitaILabelCool: ChargerJeitaILabel.coolIChg50percent,
+        jeitaILabelNominal: ChargerJeitaILabel.nominalIChg,
+        jeitaILabelWarm: ChargerJeitaILabel.warmIChg,
+        jeitaILabelHot: ChargerJeitaILabel.hotIOff,
+        jeitaVLabelCold: ChargerJeitaVLabel.coldVNA,
+        jeitaVLabelCool: ChargerJeitaVLabel.coolVTerm,
+        jeitaVLabelNominal: ChargerJeitaVLabel.nominalVTerm,
+        jeitaVLabelWarm: ChargerJeitaVLabel.warmVTerm100mVOff,
+        jeitaVLabelHot: ChargerJeitaVLabel.hotVNA,
     };
 
     const initOnBoardLoad: OnBoardLoad = {
@@ -83,20 +95,25 @@ describe('PMIC 1304 - Apply Config ', () => {
         onOffSoftwareControlEnabled: false,
         retentionControl: 'GPIO0',
         activeDischarge: false,
+        cardLabel: 'Buck',
+        vSetLabel: 'Vset',
     };
 
     const initLdo: Ldo = {
         voltage: -1,
         mode: 'LDO',
         enabled: true,
-        softStartEnabled: true,
-        softStart: 25,
+        softStart: true,
+        softStartCurrent: 50,
+        softStartCurrentDropdownDisabled: true,
         activeDischarge: false,
         onOffControl: 'GPIO0',
         onOffSoftwareControlEnabled: false,
+        cardLabel: 'Ldo',
     };
 
     const initLed: LED = {
+        cardLabel: 'LED',
         mode: 'Charger error',
     };
 
@@ -143,6 +160,16 @@ describe('PMIC 1304 - Apply Config ', () => {
             tCool: 20,
             tWarm: 50,
             tHot: 80,
+            jeitaILabelCold: ChargerJeitaILabel.coldIOff,
+            jeitaILabelCool: ChargerJeitaILabel.coolIChg50percent,
+            jeitaILabelNominal: ChargerJeitaILabel.nominalIChg,
+            jeitaILabelWarm: ChargerJeitaILabel.warmIChg,
+            jeitaILabelHot: ChargerJeitaILabel.hotIOff,
+            jeitaVLabelCold: ChargerJeitaVLabel.coldVNA,
+            jeitaVLabelCool: ChargerJeitaVLabel.coolVTerm,
+            jeitaVLabelNominal: ChargerJeitaVLabel.nominalVTerm,
+            jeitaVLabelWarm: ChargerJeitaVLabel.warmVTerm100mVOff,
+            jeitaVLabelHot: ChargerJeitaVLabel.hotVNA,
         },
         onBoardLoad: {
             iLoad: 10,
@@ -174,8 +201,9 @@ describe('PMIC 1304 - Apply Config ', () => {
                 voltage: 1,
                 mode: 'Load_switch',
                 enabled: false,
-                softStartEnabled: false,
-                softStart: 50,
+                softStart: true,
+                softStartCurrent: 50,
+                softStartCurrentDropdownDisabled: true,
                 activeDischarge: true,
                 onOffControl: 'GPIO1',
             },
@@ -183,8 +211,9 @@ describe('PMIC 1304 - Apply Config ', () => {
                 voltage: 2,
                 mode: 'Load_switch',
                 enabled: false,
-                softStartEnabled: false,
-                softStart: 50,
+                softStart: true,
+                softStartCurrent: 50,
+                softStartCurrentDropdownDisabled: true,
                 activeDischarge: false,
                 onOffControl: 'GPIO2',
             },
@@ -417,7 +446,7 @@ describe('PMIC 1304 - Apply Config ', () => {
         expect(mockOnChargerUpdate).toBeCalledTimes(16);
         expect(mockOnBoardLoadUpdate).toBeCalledTimes(1);
         expect(mockOnBuckUpdate).toBeCalledTimes(18); // 7 states + 1 (mode change on vOut) * 2 Bucks
-        expect(mockOnLdoUpdate).toBeCalledTimes(14);
+        expect(mockOnLdoUpdate).toBeCalledTimes(12);
         expect(mockOnGpioUpdate).toBeCalledTimes(25);
         expect(mockOnLEDUpdate).toBeCalledTimes(3);
         expect(mockOnPOFUpdate).toBeCalledTimes(3);

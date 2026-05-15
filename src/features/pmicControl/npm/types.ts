@@ -13,7 +13,29 @@ import {
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { z } from 'zod';
 
+import { type RangeOrNumberArray } from '../../../utils/helpers';
 import type BaseNpmDevice from './basePmicDevice';
+import type {
+    BuckAlternateVOutControl1012,
+    BuckModeControl1012,
+    BuckOnOffControl1012,
+    BuckVOutRippleControl1012,
+} from './npm1012/buck/types';
+import {
+    type ITerm1012,
+    type ITrickle1012,
+    type VTrickleFast1012,
+} from './npm1012/charger/types';
+import type {
+    GPIODrive as GPIOLEDDrvGPIODrive1012,
+    GPIOModeInput as GPIOLEDDrvGPIOModeInput1012,
+    GPIOModeOutput as GPIOLEDDrvGPIOModeOutput1012,
+    GPIOPolarity as GPIOLEDDrvGPIOPolarity1012,
+    GPIOPull as GPIOLEDDrvGPIOPull1012,
+    LEDDrive as GPIOLEDDrvLEDDrive1012,
+    LEDMode as GPIOLEDDrvLEDMode1012,
+} from './npm1012/gpioleddrv/types';
+import type { OnOffControl as LdoOnOffControl1012 } from './npm1012/ldo/types';
 import {
     type ITermNpm1300,
     type VTrickleFast1300,
@@ -23,7 +45,8 @@ import type {
     GPIOMode1300,
     GPIOPull1300,
 } from './npm1300/gpio/types';
-import type { SoftStart as SoftStart1300 } from './npm1300/ldo/types';
+import type { SoftStartCurrent as LdoSoftStartCurrent1300 } from './npm1300/ldo/types';
+import type { Mode as LEDMode1300 } from './npm1300/led/types';
 import { type npm1300TimerMode } from './npm1300/timerConfig/types';
 import { type ITermNpm1304 } from './npm1304/charger/types';
 import type { PowerID2100 } from './npm2100/battery';
@@ -37,11 +60,11 @@ import {
     type nPM2100GPIOControlMode,
     type nPM2100GPIOControlPinSelect,
     type nPM2100LdoModeControl,
-    type nPM2100LDOSoftStart,
     type npm2100LongPressResetDebounce,
     type npm2100ResetPinSelection,
-    type nPM2100SoftStart,
     type npm2100TimerMode,
+    type SoftStartCurrentLDOMode as LdoSoftStartCurrentLDOMode2100,
+    type SoftStartCurrentLoadSwitchMode as LdoSoftStartCurrentLoadSwitchMode2100,
 } from './npm2100/types';
 import { type NpmEventEmitter } from './pmicHelpers';
 
@@ -74,6 +97,8 @@ export const BoostPinSelectionValues = [
     'GPIO1HI',
 ] as const;
 
+export const VSETValues = ['VSET1', 'VSET2'] as const;
+
 export const BuckModeControlValues = ['Auto', 'PWM', 'PFM'] as const;
 export const BuckOnOffControlValues = ['Off'] as const;
 export const BuckRetentionControlValues = ['Off'] as const;
@@ -82,11 +107,21 @@ type GPIONames = (typeof GPIOValues)[number];
 export type RebootMode = 'cold' | 'warm';
 export const LdoModeValues = ['Load_switch', 'LDO'] as const;
 export type LdoMode = (typeof LdoModeValues)[number];
-export type SoftStart = SoftStart1300 | nPM2100SoftStart;
-export type LdoSoftStart = nPM2100LDOSoftStart;
+export type LdoSoftStartCurrent =
+    | LdoSoftStartCurrent1300
+    | LdoSoftStartCurrentLDOMode2100
+    | LdoSoftStartCurrentLoadSwitchMode2100
+    | number;
+export type LdoGPIOControlPinSelect = nPM2100GPIOControlPinSelect;
+export type LdoGPIOControlMode = nPM2100GPIOControlMode;
+export type LdoModeControl = nPM2100LdoModeControl;
 export type LdoOnOffControl =
     | (typeof LdoOnOffControlValues)[number]
-    | GPIONames;
+    | GPIONames
+    | LdoOnOffControl1012;
+
+export const LdoVOutSelValues = ['Software', 'Vset'] as const;
+export type LdoVOutSel = (typeof LdoVOutSelValues)[number];
 
 export const BoostVOutSelValues = ['Vset', 'Software'] as const;
 export type BoostVOutSel = (typeof BoostVOutSelValues)[number];
@@ -97,18 +132,24 @@ export type BoostPinSelection = (typeof BoostPinSelectionValues)[number];
 export type BuckMode = 'vSet' | 'software';
 export type BuckModeControl =
     | (typeof BuckModeControlValues)[number]
-    | GPIONames;
+    | GPIONames
+    | BuckModeControl1012;
 export type BuckOnOffControl =
     | (typeof BuckOnOffControlValues)[number]
-    | GPIONames;
+    | GPIONames
+    | (typeof VSETValues)[number]
+    | BuckOnOffControl1012;
 export type BuckRetentionControl =
     | (typeof BuckRetentionControlValues)[number]
     | GPIONames;
+export type BuckAlternateVOutControl = BuckAlternateVOutControl1012;
+export type BuckVOutRippleControl = BuckVOutRippleControl1012;
 
-export type ITerm = ITermNpm1300 | ITermNpm1304;
+export type ITerm = ITerm1012 | ITermNpm1300 | ITermNpm1304;
+export type ITrickle = ITrickle1012;
 
 export const NTCValues = ['Ignore NTC', '10 kΩ', '47 kΩ', '100 kΩ'] as const;
-export type VTrickleFast = VTrickleFast1300;
+export type VTrickleFast = VTrickleFast1012 | VTrickleFast1300;
 export type NTCThermistor = (typeof NTCValues)[number];
 
 export type ModuleSettings = {
@@ -170,16 +211,44 @@ export type Charger = {
     enableRecharging: boolean;
     enableVBatLow: boolean;
     iTerm: ITerm;
-    iBatLim?: number;
-    ntcThermistor: NTCThermistor;
-    ntcBeta: number;
-    tChgStop: number;
+    jeitaILabelCold: ChargerJeitaILabel;
+    jeitaILabelCool: ChargerJeitaILabel;
+    jeitaILabelNominal: ChargerJeitaILabel;
+    jeitaILabelWarm: ChargerJeitaILabel;
+    jeitaILabelHot: ChargerJeitaILabel;
+    jeitaVLabelCold: ChargerJeitaVLabel;
+    jeitaVLabelCool: ChargerJeitaVLabel;
+    jeitaVLabelNominal: ChargerJeitaVLabel;
+    jeitaVLabelWarm: ChargerJeitaVLabel;
+    jeitaVLabelHot: ChargerJeitaVLabel;
     tChgResume: number;
-    vTermR: number;
     tCold: number;
     tCool: number;
     tWarm: number;
     tHot: number;
+
+    enableAdvancedChargingProfile?: boolean;
+    enableBatteryDischargeCurrentLimit?: boolean;
+    enableChargeCurrentThrottling?: boolean;
+    enableNtcMonitoring?: boolean;
+    enableWeakBatteryCharging?: boolean;
+    iBatLim?: number;
+    iChgCool?: number;
+    iChgWarm?: number;
+    iThrottle?: number;
+    iTrickle?: ITrickle;
+    ntcBeta?: number;
+    ntcThermistor?: NTCThermistor;
+    tChgReduce?: number;
+    tChgStop?: number;
+    tOutCharge?: number;
+    tOutTrickle?: number;
+    vBatLow?: number;
+    vTermCool?: number;
+    vTermR?: number;
+    vTermWarm?: number;
+    vThrottle?: number;
+    vWeak?: number;
 };
 
 export type OnBoardLoad = {
@@ -199,33 +268,53 @@ export type Boost = {
 
 export type Buck = {
     vOutNormal: number;
-    vOutRetention: number;
     mode: BuckMode;
     modeControl: BuckModeControl;
     onOffControl: BuckOnOffControl;
     onOffSoftwareControlEnabled: boolean;
-    retentionControl: BuckRetentionControl;
     enabled: boolean;
-    activeDischarge: boolean;
+    cardLabel: string;
+    vSetLabel: string;
+
+    activeDischarge?: boolean;
+    activeDischargeResistance?: number;
+    alternateVOut?: number;
+    alternateVOutControl?: BuckAlternateVOutControl;
+    automaticPassthrough?: boolean;
+    peakCurrentLimit?: number;
+    quickVOutDischarge?: boolean;
+    retentionControl?: BuckRetentionControl;
+    shortCircuitProtection?: boolean;
+    softStartPeakCurrentLimit?: number;
+    vOutComparatorBiasCurrentLPMode?: number;
+    vOutComparatorBiasCurrentULPMode?: number;
+    vOutRetention?: number;
+    vOutRippleControl?: BuckVOutRippleControl;
 };
 
 export type Ldo = {
-    voltage: number;
-    enabled: boolean;
-    mode: LdoMode;
-    modeControl?: nPM2100LdoModeControl;
-    pinSel?: nPM2100GPIOControlPinSelect;
-    pinMode?: nPM2100GPIOControlMode;
-    ocpEnabled?: boolean;
-    rampEnabled?: boolean;
-    haltEnabled?: boolean;
-    softStartEnabled: boolean;
-    softStart: SoftStart;
-    ldoSoftStart?: LdoSoftStart;
-    ldoSoftStartEnable?: boolean;
     activeDischarge: boolean;
+    cardLabel: string;
+    enabled: boolean;
     onOffControl: LdoOnOffControl;
     onOffSoftwareControlEnabled: boolean;
+
+    halt?: boolean;
+    mode?: LdoMode;
+    modeControl?: LdoModeControl;
+    overcurrentProtection?: boolean;
+    pinMode?: LdoGPIOControlMode;
+    pinSel?: LdoGPIOControlPinSelect;
+    ramp?: boolean;
+    softStart?: boolean;
+    softStartCurrent?: LdoSoftStartCurrent;
+    softStartCurrentDropdownDisabled?: boolean;
+    softStartCurrentLDOMode?: LdoSoftStartCurrent;
+    softStartCurrentLoadSwitchMode?: LdoSoftStartCurrent;
+    softStartTime?: number;
+    vOutSel?: LdoVOutSel;
+    voltage?: number;
+    weakPullDown?: boolean;
 };
 
 export type GPIOState = GPIOState2100;
@@ -247,16 +336,51 @@ export type GPIO = {
     debounceEnabled: boolean;
 };
 
-export const LEDModeValues = [
-    'Charger error',
-    'Charging',
-    'Host',
-    'Not used',
-] as const;
-export type LEDMode = (typeof LEDModeValues)[number];
+export type LEDMode = LEDMode1300;
 
 export type LED = {
-    mode: LEDMode;
+    cardLabel: string;
+
+    blinkContinuous?: boolean;
+    blinkDouble?: boolean;
+    blinkTimeOff?: number;
+    blinkTimeOn?: number;
+    mode?: LEDMode;
+    pwmFrequency?: number;
+    rgbPhaseShifting?: boolean;
+};
+
+export const GPIOLEDDrvStateValues = ['GPIO', 'LED'] as const;
+export type GPIOLEDDrvState = (typeof GPIOLEDDrvStateValues)[number];
+
+export const GPIOLEDDrvGPIOStateValues = ['Input', 'Output'] as const;
+export type GPIOLEDDrvGPIOState = (typeof GPIOLEDDrvGPIOStateValues)[number];
+
+export type GPIOLEDDrvGPIODrive = GPIOLEDDrvGPIODrive1012;
+export type GPIOLEDDrvGPIOMode =
+    | GPIOLEDDrvGPIOModeInput1012
+    | GPIOLEDDrvGPIOModeOutput1012;
+export type GPIOLEDDrvGPIOPolarity = GPIOLEDDrvGPIOPolarity1012;
+export type GPIOLEDDrvGPIOPull = GPIOLEDDrvGPIOPull1012;
+
+export type GPIOLEDDrvLEDDrive = GPIOLEDDrvLEDDrive1012;
+export type GPIOLEDDrvLEDMode = GPIOLEDDrvLEDMode1012;
+
+export type GPIOLEDDrv = {
+    gpioDebounce: boolean;
+    gpioDrive: GPIOLEDDrvGPIODrive;
+    gpioDutyCycle: number;
+    gpioMode: GPIOLEDDrvGPIOMode;
+    gpioOpenDrain: boolean;
+    gpioPolarity: GPIOLEDDrvGPIOPolarity;
+    gpioPull: GPIOLEDDrvGPIOPull;
+    gpioState: GPIOLEDDrvGPIOState;
+
+    ledDrive: GPIOLEDDrvLEDDrive;
+    ledDutyCycle: number;
+    ledMode: GPIOLEDDrvLEDMode;
+
+    state: GPIOLEDDrvState;
 };
 
 export const POFPolarityValues = ['Active low', 'Active high'] as const;
@@ -307,6 +431,36 @@ export enum npm2100TimeToActive {
     '600ms' = '600',
     '1s' = '1000',
     '3s' = '3000',
+}
+
+export enum ChargerJeitaILabel {
+    coldIOff,
+
+    coolIChgCool,
+    coolIChg50percent,
+    coolICool,
+
+    nominalIChg,
+
+    warmIChg,
+    warmIChgWarm,
+
+    hotIOff,
+}
+
+export enum ChargerJeitaVLabel {
+    coldVNA,
+
+    coolVTerm,
+    coolVTermCool,
+
+    nominalVTerm,
+
+    warmVTermR,
+    warmVTermWarm,
+    warmVTerm100mVOff,
+
+    hotVNA,
 }
 
 export type TimeToActive = npm1300TimeToActive | npm2100TimeToActive;
@@ -532,21 +686,38 @@ export abstract class ChargerModuleSetBase {
     abstract enabled(value: boolean): Promise<void>;
     abstract vTrickleFast(value: VTrickleFast): Promise<void>;
     abstract iTerm(iTerm: ITerm): Promise<void>;
-    abstract batLim?(value: number): Promise<void>;
     abstract enabledRecharging(value: boolean): Promise<void>;
     abstract enabledVBatLow(value: boolean): Promise<void>;
-    abstract nTCThermistor(
-        mode: NTCThermistor,
-        autoSetBeta?: boolean,
-    ): Promise<void>;
-    abstract nTCBeta(value: number): Promise<void>;
-    abstract tChgStop(value: number): Promise<void>;
     abstract tChgResume(value: number): Promise<void>;
-    abstract vTermR(value: number): Promise<void>;
     abstract tCold(value: number): Promise<void>;
     abstract tCool(value: number): Promise<void>;
     abstract tWarm(value: number): Promise<void>;
     abstract tHot(value: number): Promise<void>;
+
+    batLim?(value: number): Promise<void>;
+    enableAdvancedChargingProfile?(value: boolean): Promise<void>;
+    enableBatteryDischargeCurrentLimit?(value: boolean): Promise<void>;
+    enableChargeCurrentThrottling?(value: boolean): Promise<void>;
+    enableNtcMonitoring?(value: boolean): Promise<void>;
+    enabledWeakBatteryCharging?(value: boolean): Promise<void>;
+    enabledWeakBatteryCharging?(value: boolean): Promise<void>;
+    iChgCool?(value: number): Promise<void>;
+    iChgWarm?(value: number): Promise<void>;
+    iThrottle?(value: number): Promise<void>;
+    iTrickle?(value: ITrickle): Promise<void>;
+    iTrickle?(value: ITrickle): Promise<void>;
+    nTCBeta?(value: number): Promise<void>;
+    nTCThermistor?(mode: NTCThermistor, autoSetBeta?: boolean): Promise<void>;
+    tChgReduce?(value: number): Promise<void>;
+    tChgStop?(value: number): Promise<void>;
+    tOutCharge?(value: number): Promise<void>;
+    tOutTrickle?(value: number): Promise<void>;
+    vBatLow?(value: number): Promise<void>;
+    vTermCool?(value: number): Promise<void>;
+    vTermR?(value: number): Promise<void>;
+    vTermWarm?(value: number): Promise<void>;
+    vThrottle?(value: number): Promise<void>;
+    vWeak?(value: number): Promise<void>;
 }
 
 export type ChargerModuleGet = new (
@@ -573,30 +744,64 @@ export abstract class ChargerModuleGetBase {
     abstract enabled(): void;
     abstract vTrickleFast(): void;
     abstract iTerm(): void;
-    abstract batLim?(): void;
     abstract enabledRecharging(): void;
     abstract enabledVBatLow(): void;
-    abstract nTCThermistor(): void;
-    abstract nTCBeta(): void;
-    abstract tChgStop(): void;
     abstract tChgResume(): void;
-    abstract vTermR(): void;
     abstract tCold(): void;
     abstract tCool(): void;
     abstract tWarm(): void;
     abstract tHot(): void;
+
+    batLim?(): void;
+    enabledAdvancedChargingProfile?(): void;
+    enabledBatteryDischargeCurrentLimit?(): void;
+    enabledChargeCurrentThrottling?(): void;
+    enabledNtcMonitoring?(): void;
+    enabledWeakBatteryCharging?(): void;
+    enabledWeakBatteryCharging?(): void;
+    iChgCool?(): void;
+    iChgWarm?(): void;
+    iThrottle?(): void;
+    iTrickle?(): void;
+    iTrickle?(): void;
+    nTCBeta?(): void;
+    nTCThermistor?(): void;
+    tChgReduce?(): void;
+    tChgStop?(): void;
+    tOutCharge?(): void;
+    tOutTrickle?(): void;
+    vBatLow?(): void;
+    vTermCool?(): void;
+    vTermR?(): void;
+    vTermWarm?(): void;
+    vThrottle?(): void;
+    vWeak?(): void;
 }
 
 export type ChargerModuleRanges = {
     voltage: number[];
-    vTermR: number[];
     jeita: Range;
     chipThermal: Range;
-    current: Range;
+    current: RangeOrNumberArray;
     nTCBeta: Range;
-    iBatLim?: FixedListRange;
     vLowerCutOff: Range;
     batterySize: Range;
+
+    iBatLim?: FixedListRange;
+    vTermR?: number[];
+    vWeak?: Range;
+};
+
+export type ChargerModuleValues = {
+    iTerm: { label: string; value: ITerm }[];
+    vTrickleFast: { label: string; value: VTrickleFast }[];
+
+    iThrottle?: { label: string; value: number }[];
+    iTrickle?: { label: string; value: ITrickle }[];
+    tOutCharge?: { label: string; value: number }[];
+    tOutTrickle?: { label: string; value: number }[];
+    vBatLow?: { label: string; value: number }[];
+    vThrottle?: { label: string; value: number }[];
 };
 
 export interface ChargerModule {
@@ -605,10 +810,7 @@ export interface ChargerModule {
     callbacks: (() => void)[];
     ranges: ChargerModuleRanges;
     defaults: Charger;
-    values: {
-        iTerm: { label: string; value: ITerm }[];
-        vTrickleFast: { label: string; value: VTrickleFast }[];
-    };
+    values: ChargerModuleValues;
 }
 
 export interface BoostModule {
@@ -644,31 +846,78 @@ export interface BuckModule {
     get: {
         all: () => void;
         vOutNormal: () => void;
-        vOutRetention: () => void;
         mode: () => void;
         enabled: () => void;
         modeControl: () => void;
         onOffControl: () => void;
-        retentionControl: () => void;
-        activeDischarge: () => void;
+
+        activeDischarge?: () => void;
+        activeDischargeResistance?: () => void;
+        alternateVOutControl?: () => void;
+        automaticPassthrough?: () => void;
+        peakCurrentLimit?: () => void;
+        quickVOutDischarge?: () => void;
+        retentionControl?: () => void;
+        shortCircuitProtection?: () => void;
+        softStartPeakCurrentLimit?: () => void;
+        alternateVOut?: () => void;
+        vOutComparatorBiasCurrent?: (mode: BuckModeControl) => void;
+        vOutRetention?: () => void;
+        vOutRippleControl?: () => void;
     };
     set: {
         all: (config: BuckExport) => Promise<void>;
         vOutNormal: (value: number) => Promise<void>;
-        vOutRetention: (value: number) => Promise<void>;
         mode: (mode: BuckMode) => Promise<void>;
         modeControl: (modeControl: BuckModeControl) => Promise<void>;
         onOffControl: (onOffControl: BuckOnOffControl) => Promise<void>;
-        retentionControl: (
+        enabled: (enabled: boolean) => Promise<void>;
+
+        activeDischarge?: (activeDischarge: boolean) => Promise<void>;
+        activeDischargeResistance?: (value: number) => Promise<void>;
+        alternateVOut?: (value: number) => Promise<void>;
+        alternateVOutControl?: (
+            value: BuckAlternateVOutControl,
+        ) => Promise<void>;
+        automaticPassthrough?: (value: boolean) => Promise<void>;
+        peakCurrentLimit?: (value: number) => Promise<void>;
+        quickVOutDischarge?: (value: boolean) => Promise<void>;
+        shortCircuitProtection?: (value: boolean) => Promise<void>;
+        softStartPeakCurrentLimit?: (value: number) => Promise<void>;
+        retentionControl?: (
             retentionControl: BuckRetentionControl,
         ) => Promise<void>;
-        enabled: (enabled: boolean) => Promise<void>;
-        activeDischarge: (activeDischarge: boolean) => Promise<void>;
+        vOutComparatorBiasCurrent?: (
+            mode: BuckModeControl,
+            value: number,
+        ) => Promise<void>;
+        vOutRetention?: (value: number) => Promise<void>;
+        vOutRippleControl?: (value: BuckVOutRippleControl) => Promise<void>;
     };
     callbacks: (() => void)[];
     ranges: {
         voltage: Range;
-        retVOut: Range;
+
+        alternateVOut?: Range;
+        retVOut?: Range;
+    };
+    values: {
+        activeDischargeResistance?: { label: string; value: number }[];
+        alternateVOutControl?: {
+            label: string;
+            value: BuckAlternateVOutControl;
+        }[];
+        modeControl: { label: string; value: BuckModeControl }[];
+        onOffControl: (
+            mode: BuckMode,
+        ) => { label: string; value: BuckOnOffControl }[];
+        peakCurrentLimit?: { label: string; value: number }[];
+        retentionControl?: { label: string; value: BuckRetentionControl }[];
+        softStartPeakCurrentLimit?: { label: string; value: number }[];
+        vOutComparatorBiasCurrent?: (
+            mode: BuckModeControl,
+        ) => { label: string; value: number }[];
+        vOutRippleControl?: { label: string; value: BuckVOutRippleControl }[];
     };
     defaults: Buck;
 }
@@ -677,45 +926,64 @@ export interface LdoModule {
     index: number;
     get: {
         all: () => void;
-        voltage: () => void;
         enabled: () => void;
-        mode: () => void;
-        softStartEnabled?: () => void;
-        softStart: () => void;
+
         activeDischarge?: () => void;
-        onOffControl?: () => void;
-        modeCtrl?: () => void;
-        pinSel?: () => void;
-        softStartLdo?: () => void;
-        pinMode?: () => void;
-        ocp?: () => void;
-        ramp?: () => void;
         halt?: () => void;
+        mode?: () => void;
+        modeControl?: () => void;
+        onOffControl?: () => void;
+        overcurrentProtection?: () => void;
+        pinMode?: () => void;
+        pinSel?: () => void;
+        ramp?: () => void;
+        softStart?: () => void;
+        softStartCurrent?: (mode?: LdoMode) => void;
+        softStartTime?: () => void;
+        vOutSel?: () => void;
+        voltage?: () => void;
+        weakPullDown?: () => void;
     };
     set: {
         all: (config: LdoExport) => Promise<void>;
-        voltage: (value: number) => Promise<void>;
         enabled: (enabled: boolean) => Promise<void>;
-        mode: (mode: LdoMode) => Promise<void>;
-        softStartEnabled?: (enabled: boolean) => Promise<void>;
-        softStart: (softStart: SoftStart) => Promise<void>;
+
         activeDischarge?: (activeDischarge: boolean) => Promise<void>;
+        halt?: (halt: boolean) => Promise<void>;
+        mode?: (mode: LdoMode) => Promise<void>;
+        modeControl?: (modeCtrl: LdoModeControl) => Promise<void>;
         onOffControl?: (onOffControl: LdoOnOffControl) => Promise<void>;
-        modeControl?: (modeCtrl: nPM2100LdoModeControl) => Promise<void>;
-        pinSel?: (pinSel: nPM2100GPIOControlPinSelect) => Promise<void>;
-        ldoSoftstart?: (softStartLdo: LdoSoftStart) => Promise<void>;
-        pinMode?: (pinMode: nPM2100GPIOControlMode) => Promise<void>;
-        ocpEnabled?: (ocp: boolean) => Promise<void>;
-        rampEnabled?: (ramp: boolean) => Promise<void>;
-        haltEnabled?: (halt: boolean) => Promise<void>;
+        overcurrentProtection?: (ocp: boolean) => Promise<void>;
+        pinMode?: (pinMode: LdoGPIOControlMode) => Promise<void>;
+        pinSel?: (pinSel: LdoGPIOControlPinSelect) => Promise<void>;
+        ramp?: (ramp: boolean) => Promise<void>;
+        softStart?: (enabled: boolean) => Promise<void>;
+        softStartCurrent?: (
+            value: LdoSoftStartCurrent,
+            mode?: LdoMode,
+        ) => Promise<void>;
+        softStartTime?: (value: number) => Promise<void>;
+        vOutSel?: (mode: LdoVOutSel) => Promise<void>;
+        voltage?: (value: number) => Promise<void>;
+        weakPullDown?: (enable: boolean) => Promise<void>;
     };
     callbacks: (() => void)[];
     ranges: {
-        voltage: Range;
+        voltage?: Range;
     };
     values: {
-        softstart: { label: string; value: SoftStart }[];
-        ldoSoftstart?: { label: string; value: LdoSoftStart }[];
+        modeControl?: { label: string; value: LdoModeControl }[];
+        onOffControl?: (
+            mode?: LdoMode,
+            vOutSel?: LdoVOutSel,
+        ) => { label: string; value: LdoOnOffControl }[];
+        pinMode?: { label: string; value: LdoGPIOControlMode }[];
+        pinSel?: { label: string; value: LdoGPIOControlPinSelect }[];
+        softStartCurrent?: (mode?: LdoMode) => {
+            label: string;
+            value: LdoSoftStartCurrent;
+        }[];
+        softStartTime?: { label: string; value: number }[];
     };
     defaults: Ldo;
 }
@@ -734,6 +1002,68 @@ export interface OnBoardLoadModule {
         iLoad: Range;
     };
     defaults: OnBoardLoad;
+}
+
+export interface GpioLedDrvModule {
+    defaults: GPIOLEDDrv;
+    index: number;
+
+    callbacks: (() => void)[];
+    get: {
+        all: () => void;
+
+        gpioDebounce: () => void;
+        gpioDrive: () => void;
+        gpioDutyCycle: () => void;
+        gpioMode: () => void;
+        gpioOpenDrain: () => void;
+        gpioPolarity: () => void;
+        gpioPull: () => void;
+        gpioState: () => void;
+
+        ledDrive: () => void;
+        ledDutyCycle: () => void;
+        ledMode: () => void;
+
+        state: () => void;
+    };
+    ranges: {
+        gpioDutyCycle: Range;
+
+        ledDutyCycle: Range;
+    };
+    set: {
+        all: (value: GPIOLEDDrv) => Promise<void>;
+
+        gpioDebounce: (value: boolean) => Promise<void>;
+        gpioDrive: (value: GPIOLEDDrvGPIODrive) => Promise<void>;
+        gpioDutyCycle: (value: number) => Promise<void>;
+        gpioMode: (
+            mode: GPIOLEDDrvGPIOMode,
+            state: GPIOLEDDrvGPIOState,
+        ) => Promise<void>;
+        gpioOpenDrain: (value: boolean) => Promise<void>;
+        gpioPolarity: (value: GPIOLEDDrvGPIOPolarity) => Promise<void>;
+        gpioPull: (value: GPIOLEDDrvGPIOPull) => Promise<void>;
+        gpioState: (value: GPIOLEDDrvGPIOState) => Promise<void>;
+
+        ledDrive: (value: GPIOLEDDrvLEDDrive) => Promise<void>;
+        ledDutyCycle: (value: number) => Promise<void>;
+        ledMode: (value: GPIOLEDDrvLEDMode) => Promise<void>;
+
+        state: (value: GPIOLEDDrvState) => Promise<void>;
+    };
+    values: {
+        gpioDrive: { label: string; value: GPIOLEDDrvGPIODrive }[];
+        gpioMode: (
+            state: GPIOLEDDrvGPIOState,
+        ) => { label: string; value: GPIOLEDDrvGPIOMode }[];
+        gpioPolarity: { label: string; value: GPIOLEDDrvGPIOPolarity }[];
+        gpioPull: { label: string; value: GPIOLEDDrvGPIOPull }[];
+
+        ledDrive: { label: string; value: GPIOLEDDrvLEDDrive }[];
+        ledMode: { label: string; value: GPIOLEDDrvLEDMode }[];
+    };
 }
 
 export type GpioModule = {
@@ -765,6 +1095,45 @@ export type GpioModule = {
     callbacks: (() => void)[];
     defaults: GPIO;
 };
+
+export interface LedModule {
+    defaults: LED;
+    index: number;
+
+    actions: {
+        blink?: () => void;
+    };
+    callbacks: (() => void)[];
+    get: {
+        all: () => void;
+
+        blinkContinuous?: () => void;
+        blinkDouble?: () => void;
+        blinkTimeOff?: () => void;
+        blinkTimeOn?: () => void;
+        mode?: () => void;
+        pwmFrequency?: () => void;
+        rgbPhaseShifting?: () => void;
+    };
+    ranges: {
+        blinkTime?: Range;
+    };
+    set: {
+        all: (config: LedExport) => Promise<void>;
+
+        blinkContinuous?: (value: boolean) => Promise<void>;
+        blinkDouble?: (value: boolean) => Promise<void>;
+        blinkTimeOff?: (value: number) => Promise<void>;
+        blinkTimeOn?: (value: number) => Promise<void>;
+        mode?: (mode: LEDMode) => Promise<void>;
+        pwmFrequency?: (freq: number) => Promise<void>;
+        rgbPhaseShifting?: (value: boolean) => Promise<void>;
+    };
+    values: {
+        mode?: { label: string; value: LEDMode }[];
+        pwmFrequency?: { label: string; value: number }[];
+    };
+}
 
 export interface PofModule {
     get: {
@@ -913,6 +1282,7 @@ export interface PmicDialog {
 }
 
 export const zodSchemaNpmMode = z.union([
+    z.literal('npm1012'),
     z.literal('npm1300'),
     z.literal('npm1304'),
     z.literal('npm2100'),
@@ -924,8 +1294,11 @@ export type FuelGaugeExport = Omit<
     'notChargingSamplingRate' | 'reportingRate' | 'activeBatterModel'
 >;
 export type BoostExport = Omit<Boost, 'pinModeEnabled' | 'vOutVSet'>;
-export type LdoExport = Omit<Ldo, 'onOffSoftwareControlEnabled'>;
-export type BuckExport = Omit<Buck, 'onOffSoftwareControlEnabled'>;
+export type LdoExport = Omit<Ldo, 'cardLabel' | 'onOffSoftwareControlEnabled'>;
+export type BuckExport = Omit<
+    Buck,
+    'onOffSoftwareControlEnabled' | 'cardLabel' | 'vSetLabel'
+>;
 export type GPIOExport = Omit<
     GPIO,
     | 'pullEnabled'
@@ -934,7 +1307,9 @@ export type GPIOExport = Omit<
     | 'debounceEnabled'
     | 'stateShown'
 >;
+export type GPIOLEDDrvExport = Omit<GPIOLEDDrv, ''>;
 export type USBPowerExport = Omit<USBPower, 'detectStatus'>;
+export type LedExport = Omit<LED, 'cardLabel'>;
 
 export interface NpmExportV1 {
     boosts: BoostExport[];
@@ -961,7 +1336,8 @@ export interface NpmExportV2 {
     bucks?: BuckExport[];
     ldos: LdoExport[];
     gpios: GPIOExport[];
-    leds: LED[];
+    gpioLedDrvs?: GPIOLEDDrvExport[];
+    leds?: LedExport[];
     pof?: POF;
     onBoardLoad?: OnBoardLoad;
     lowPower?: LowPowerConfig;
@@ -1060,7 +1436,6 @@ export type Documentation = {
 export type NpmPeripherals = {
     ChargerModule?: IModule<ChargerModule>;
     maxEnergyExtraction: boolean;
-    noOfLEDs: number;
     noOfBatterySlots: number;
     ldos?: {
         Module: IModule<LdoModule>;
@@ -1074,8 +1449,16 @@ export type NpmPeripherals = {
         Module: IModule<GpioModule>;
         count: number;
     };
+    gpioLedDrvs?: {
+        Module: IModule<GpioLedDrvModule>;
+        count: number;
+    };
     boosts?: {
         Module: IModule<BoostModule>;
+        count: number;
+    };
+    leds?: {
+        Module: IModule<LedModule>;
         count: number;
     };
     BatteryProfiler?: IModule<BatteryProfiler>;

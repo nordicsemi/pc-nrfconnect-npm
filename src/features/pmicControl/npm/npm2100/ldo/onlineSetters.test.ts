@@ -30,7 +30,7 @@ describe('PMIC 2100 - Setters Online tests', () => {
                     },
                 );
 
-                await pmic.ldoModule[index].set.voltage(1);
+                await pmic.ldoModule[index].set.voltage?.(1);
 
                 expect(mockEnqueueRequest).toBeCalledTimes(3);
 
@@ -96,7 +96,7 @@ describe('PMIC 2100 - Setters Online tests', () => {
                 },
             ]).flat(),
         )('Set setLdoMode index: %p', async ({ index, mode }) => {
-            await pmic.ldoModule[index].set.mode(mode);
+            await pmic.ldoModule[index].set.mode?.(mode);
 
             expect(mockEnqueueRequest).toBeCalledTimes(2);
             expect(mockEnqueueRequest).nthCalledWith(
@@ -132,7 +132,7 @@ describe('PMIC 2100 - Setters Online tests', () => {
             'Set setLdoVoltage onError case 1  - Fail immediately - index: %p',
             async index => {
                 await expect(
-                    pmic.ldoModule[index].set.voltage(3),
+                    pmic.ldoModule[index].set.voltage?.(3),
                 ).rejects.toBeUndefined();
 
                 expect(mockEnqueueRequest).toBeCalledTimes(2);
@@ -175,7 +175,7 @@ describe('PMIC 2100 - Setters Online tests', () => {
                     );
 
                 await expect(
-                    pmic.ldoModule[index].set.voltage(3),
+                    pmic.ldoModule[index].set.voltage?.(3),
                 ).rejects.toBeUndefined();
 
                 expect(mockEnqueueRequest).toBeCalledTimes(4);
@@ -267,7 +267,7 @@ describe('PMIC 2100 - Setters Online tests', () => {
             'Set setLdoMode - Fail immediately - index: %p',
             async ({ index, mode }) => {
                 await expect(
-                    pmic.ldoModule[index].set.mode(mode),
+                    pmic.ldoModule[index].set.mode?.(mode),
                 ).rejects.toBeUndefined();
 
                 expect(mockEnqueueRequest).toBeCalledTimes(2);
@@ -311,7 +311,7 @@ describe('PMIC 2100 - Setters Online tests', () => {
                 );
 
                 await expect(
-                    pmic.ldoModule[index].set.mode(mode),
+                    pmic.ldoModule[index].set.mode?.(mode),
                 ).rejects.toBeUndefined();
 
                 expect(mockEnqueueRequest).toBeCalledTimes(3);

@@ -71,9 +71,8 @@ const upgradeToLatest = (exportJson: AnyNpmExport): NpmExportLatest => {
         };
 
         if (exportJson.charger) {
-            exportJson.charger.iTerm = Number.parseInt(
+            exportJson.charger.iTerm = Number.parseFloat(
                 exportJson.charger.iTerm.toString(),
-                10,
             );
         }
 

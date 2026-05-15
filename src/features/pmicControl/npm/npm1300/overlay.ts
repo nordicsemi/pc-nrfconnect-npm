@@ -14,7 +14,7 @@ import {
     isNpm1300ResetConfig,
     type LdoExport,
     type LdoModule,
-    type LED,
+    type LedExport,
     type LEDMode,
     type NpmExportLatest,
     type NTCThermistor,
@@ -78,20 +78,26 @@ const generateCharger = (
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             toMicro(vbus.currentLimiter!)
         }>;
-		thermistor-ohms = <${thermistorTypeToOverlay(charger.ntcThermistor)}>;
-		thermistor-beta = <${charger.ntcThermistor === 'Ignore NTC' ? '0' : charger.ntcBeta}>;
-		${charger.ntcThermistor !== 'Ignore NTC' ? generateJeita(charger, chargerModule) : ''}
+    ${
+        charger.ntcBeta !== undefined && charger.ntcThermistor !== undefined
+            ? `
+            thermistor-ohms = <${thermistorTypeToOverlay(charger.ntcThermistor)}>;
+            thermistor-beta = <${charger.ntcThermistor === 'Ignore NTC' ? '0' : charger.ntcBeta}>;
+            ${charger.ntcThermistor !== 'Ignore NTC' ? generateJeita(charger, chargerModule) : ''}
+            `
+            : ''
+    }
 		${charger.enabled ? 'charging-enable;' : ''}
 		trickle-microvolt = <${toMicro(charger.vTrickleFast)}>;
 		${charger.enableVBatLow ? 'vbatlow-charge-enable;' : ''}
 		${charger.enableRecharging ? '' : 'disable-recharge;'}
 		dietemp-resume-millidegrees = <${toMilli(charger.tChgResume)}>;
-		dietemp-stop-millidegrees = <${toMilli(charger.tChgStop)}>;
+        ${charger.tChgStop !== undefined ? `dietemp-stop-millidegrees = <${toMilli(charger.tChgStop)}>;` : ''}
 		term-microvolt = <${toMicro(charger.vTerm)}>;
-		term-warm-microvolt = <${toMicro(charger.vTermR)}>;
+        ${charger.vTermR !== undefined ? `term-warm-microvolt = <${toMicro(charger.vTermR)}>;` : ''}
 		current-microamp = <${toMicro(charger.iChg / 1000)}>;
 		${
-            charger.iBatLim
+            charger.iBatLim !== undefined
                 ? `dischg-limit-microamp = <${toMicro(charger.iBatLim / 1000)}>;`
                 : ''
         }
@@ -120,7 +126,7 @@ const generateBuck = (
                 : ''
         }
 		${buckInitialMode(buck)}
-		retention-microvolt = <${toMicro(buck.vOutRetention)}>;
+        ${buck.vOutRetention !== undefined ? `retention-microvolt = <${toMicro(buck.vOutRetention)}>;` : ''}
 		${
             buck.onOffControl !== 'Off'
                 ? `enable-gpio-config = <${GPIOValues.findIndex(
@@ -136,13 +142,14 @@ const generateBuck = (
                 : ''
         }
 		${
+            buck.retentionControl !== undefined &&
             buck.retentionControl !== 'Off'
                 ? `retention-gpio-config = <${GPIOValues.findIndex(
                       v => v === buck.retentionControl,
                   )} GPIO_ACTIVE_HIGH>;`
                 : ''
         }
-		${buck.activeDischarge ? 'active-discharge;' : ''}
+		${buck.activeDischarge === true ? 'active-discharge;' : ''}
 	};
 `;
 
@@ -154,10 +161,18 @@ const generateLDO = (
 ) => `
 	${deviceType}_ldo${ldoModule.index + 1}: LDO${ldoModule.index + 1} {
 		${ldo.enabled ? 'regulator-boot-on;' : ''}
-		regulator-min-microvolt = <${toMicro(ldoModule.ranges.voltage.min)}>;
-		regulator-max-microvolt = <${toMicro(ldoModule.ranges.voltage.max)}>;
+        ${
+            ldoModule.ranges.voltage
+                ? `regulator-min-microvolt = <${toMicro(ldoModule.ranges.voltage.min)}>;`
+                : ''
+        }
+        ${
+            ldoModule.ranges.voltage
+                ? `regulator-max-microvolt = <${toMicro(ldoModule.ranges.voltage.max)}>;`
+                : ''
+        }
 		${
-            ldo.mode === 'LDO'
+            ldo.mode === 'LDO' && ldo.voltage !== undefined
                 ? `regulator-init-microvolt = <${toMicro(ldo.voltage)}>;`
                 : ''
         }
@@ -174,22 +189,38 @@ const generateLDO = (
                   )} GPIO_ACTIVE_HIGH>;` // Is this correct?
                 : ''
         }
-		${ldo.ldoSoftStart ? `soft-start-microamp = <${toMicro(Number.parseInt(ldo.ldoSoftStart, 10))}>;` : ''}
+		${ldo.softStartCurrent !== undefined ? `soft-start-microamp = <${toMicro(ldo.softStartCurrent)}>;` : ''}
 		${ldo.activeDischarge ? 'active-discharge;' : ''}
 	};
 `;
 
-const generateLEDs = (leds: LED[], deviceType: string) => `
+const generateLEDs = (
+    leds: LedExport[] | undefined,
+    deviceType: string,
+): string => {
+    if (leds === undefined) {
+        return '';
+    }
+
+    const ledModes: LEDMode[] = leds
+        .map(led => led.mode)
+        .filter(mode => mode !== undefined);
+
+    if (ledModes.length === 0) {
+        return '';
+    }
+
+    return `
 	${deviceType}_leds: leds {
 		compatible = "nordic,${deviceType}-led";
-		${leds
+		${ledModes
             .map(
-                (led, index) =>
-                    `nordic,led${index}-mode = "${ledModeToOverlay(led.mode)}";`,
+                (mode, index) =>
+                    `nordic,led${index}-mode = "${ledModeToOverlay(mode)}";`,
             )
             .join('	\n')}
-	};
-`;
+	};`;
+};
 
 const longPressReset = (npmConfig: NpmExportLatest) => {
     if (!npmConfig.reset || !isNpm1300ResetConfig(npmConfig.reset)) {

@@ -15,8 +15,6 @@ describe('PMIC 2100 - Static getters', () => {
 
     test('Has of Charger', () => expect(pmic.chargerModule).toBeUndefined());
 
-    test('Number of LEDs', () => expect(pmic.getNumberOfLEDs()).toBe(0));
-
     test('Device Type', () => expect(pmic.deviceType).toBe('npm2100'));
 });
 
