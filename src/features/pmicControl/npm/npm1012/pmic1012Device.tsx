@@ -58,7 +58,7 @@ export default class Npm1012 extends BaseNpmDevice {
                 UsbCurrentLimiterModule,
                 OnBoardLoadModule,
             },
-            0,
+            1,
             {
                 reset: false,
                 charger: true,
