@@ -479,8 +479,8 @@ export const npm1304DeviceSetup = (firmware: NpmFirmware): DeviceSetup => ({
                             doNotAskAgainStoreID:
                                 'pmic1304-0.9.0-old-EK-warning',
                             message: npm1304OlderPmicMessage,
-                            confirmLabel: 'Yes',
-                            optionalLabel: "Yes & don't ask again",
+                            confirmLabel: 'Continue',
+                            optionalLabel: "Don't show again",
                             title: 'Important!',
                             onConfirm: () => {
                                 resolve();
