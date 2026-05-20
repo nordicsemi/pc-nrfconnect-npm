@@ -256,8 +256,11 @@ export default ({ module, config, disabled }: GPIOLEDDrvProperties) => {
                     />
                     <NumberInput
                         disabled={
-                            (config.ledMode !== 'PWM' &&
-                                config.ledMode !== 'BLINK') ||
+                            (config.ledMode !== 'BLINK' &&
+                                config.ledMode !== 'CHARGE' &&
+                                config.ledMode !== 'ERROR' &&
+                                config.ledMode !== 'PWM' &&
+                                config.ledMode !== 'VBUS') ||
                             disabled
                         }
                         label={
