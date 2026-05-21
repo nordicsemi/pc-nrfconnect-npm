@@ -52,6 +52,8 @@ export default ({ disabled }: { disabled: boolean }) => {
         mode = 'Constant Voltage';
     } else if (batteryConnected && pmicChargingState.trickleCharge) {
         mode = 'Trickle';
+    } else if (batteryConnected && pmicChargingState.batteryFull) {
+        mode = 'Charging Complete';
     }
 
     return (
