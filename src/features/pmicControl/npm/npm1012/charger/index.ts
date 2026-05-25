@@ -183,7 +183,7 @@ export default class Module implements ChargerModuleBase {
                 decimals: 2,
             },
             batterySize: {
-                min: 32,
+                min: 4,
                 max: 3000,
             },
             vWeak: {
