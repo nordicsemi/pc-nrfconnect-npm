@@ -248,7 +248,7 @@ export default class Npm1012 extends BaseNpmDevice {
 
     // eslint-disable-next-line class-methods-use-this
     get canUploadBatteryProfiles() {
-        return false;
+        return true;
     }
 
     // TODO: Enable when overlay format is known
