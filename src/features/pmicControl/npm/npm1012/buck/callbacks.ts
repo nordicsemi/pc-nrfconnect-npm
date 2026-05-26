@@ -11,6 +11,7 @@ import {
     type NpmEventEmitter,
     onOffRegex,
     parseColonBasedAnswer,
+    parseLogData,
     parseOnOff,
     parseToFloat,
     parseToNumber,
@@ -34,6 +35,33 @@ export default (
     }
 
     const callbacks = [];
+
+    callbacks.push(
+        shellParser.onShellLoggingEvent(logEvent => {
+            parseLogData(logEvent, loggingEvent => {
+                if (loggingEvent.module !== 'module_pmic') {
+                    return;
+                }
+
+                const buckUpdate: Partial<Buck> = {};
+
+                switch (loggingEvent.message) {
+                    case 'Buck disabled':
+                        buckUpdate.enabled = false;
+                        break;
+                    case 'Buck enabled':
+                        buckUpdate.enabled = true;
+                        break;
+                }
+
+                eventEmitter.emitPartialEvent<Buck>(
+                    'onBuckUpdate',
+                    buckUpdate,
+                    index,
+                );
+            });
+        }),
+    );
 
     callbacks.push(
         shellParser.registerCommandCallback(
