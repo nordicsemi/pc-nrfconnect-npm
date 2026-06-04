@@ -15,6 +15,7 @@ import appReducer from './appReducer';
 import Charger from './components/Charger/Charger';
 import DashboardControl from './components/Dashboard/DashboardControl';
 import DeviceSelector from './components/DeviceSelector';
+import FuelGauge from './components/FuelGauge/FuelGauge';
 import SlotSelectionDownloadDialog from './components/FuelGauge/SlotSelectionDownloadDialog';
 import GPIOs from './components/GPIOs/GPIOs';
 import Graph from './components/Graph/Graph';
@@ -71,6 +72,10 @@ render(
             {
                 name: 'Profiles',
                 Main: Profiles,
+            },
+            {
+                name: 'Fuel Gauge',
+                Main: FuelGauge,
             },
             {
                 name: 'Graph',
