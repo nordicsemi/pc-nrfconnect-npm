@@ -791,6 +791,12 @@ export default () => {
                     hidden: !npmDevice?.canUploadBatteryProfiles,
                 }),
             );
+            dispatch(
+                setPaneHidden({
+                    name: 'Fuel Gauge',
+                    hidden: !npmDevice?.fuelGaugeModule,
+                }),
+            );
 
             dispatch(
                 setPaneHidden({
