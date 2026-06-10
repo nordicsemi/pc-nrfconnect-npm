@@ -598,6 +598,10 @@ export interface ProfileDownload {
     alertMessage?: string;
     slot?: number;
 }
+export interface BatteryHealthProfileLoadUpdate {
+    alertMessage?: string;
+    state: 'downloading' | 'aborted' | 'aborting' | 'applied' | 'failed';
+}
 
 export type FixedListRange = number[] | FixedListRangeWithLabel;
 export type FixedListRangeWithLabel = number[] & {
@@ -656,6 +660,13 @@ export interface FuelGaugeModule {
             slot?: number,
         ) => Promise<void>;
         reset: () => Promise<void>;
+
+        abortLoadBatteryHealthProfile?: () => Promise<void>;
+        loadBatteryHealthProfile?: (
+            profile: Buffer,
+            batteryModelName: string,
+            slot?: number,
+        ) => Promise<void>;
         resetBatteryHealthData?: () => Promise<void>;
     };
     ranges: {
