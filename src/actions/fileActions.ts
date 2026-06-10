@@ -202,3 +202,21 @@ export const saveFileDialog = (): AppThunk => (dispatch, getState) => {
             dispatch(saveSettings(result.filePath)),
     );
 };
+
+export const saveBatteryHealthProfileDialog = (profileData: string) => {
+    showSaveDialog({
+        title: 'Save battery health profile',
+        defaultPath: 'state.json',
+        filters: [
+            {
+                name: 'JSON',
+                extensions: ['json'],
+            },
+        ],
+    }).then(
+        result =>
+            !result.canceled &&
+            result.filePath &&
+            fs.writeFileSync(result.filePath, profileData),
+    );
+};
