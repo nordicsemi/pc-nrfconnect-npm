@@ -27,6 +27,8 @@ const samplingIntervalRange: Range = {
 /* eslint-disable class-methods-use-this */
 
 export default class Module implements FuelGaugeModuleBase {
+    batteryHealthProfileLoadInProgress = false;
+    batteryHealthProfileLoadAborting = false;
     profileDownloadInProgress = false;
     profileDownloadAborting = false;
     private _get: FuelGaugeGet;
