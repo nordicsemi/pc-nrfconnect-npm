@@ -23,6 +23,7 @@ import {
 import {
     type AdcSample,
     type AdcSampleSettings,
+    type BatteryHealthProfileLoadUpdate,
     type BatteryModel,
     type BatteryModule,
     type BatteryProfiler,
@@ -1156,6 +1157,20 @@ export default abstract class BaseNpmDevice {
         return () => {
             this.eventEmitter.removeListener(
                 'onProfileDownloadUpdate',
+                handler,
+            );
+        };
+    }
+    onLoadBatteryHealthProfileUpdate(
+        handler: (
+            payload: BatteryHealthProfileLoadUpdate,
+            error?: string,
+        ) => void,
+    ) {
+        this.eventEmitter.on('onLoadBatteryHealthProfileUpdate', handler);
+        return () => {
+            this.eventEmitter.removeListener(
+                'onLoadBatteryHealthProfileUpdate',
                 handler,
             );
         };
