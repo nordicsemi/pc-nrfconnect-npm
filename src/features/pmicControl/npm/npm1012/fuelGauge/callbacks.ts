@@ -29,291 +29,276 @@ export default (
     get: FuelGaugeGet,
     fuelGaugeModule: FuelGaugeModule,
 ) => {
-    const cleanupCallbacks = [];
-
-    if (shellParser) {
-        cleanupCallbacks.push(
-            shellParser.registerCommandCallback(
-                toRegex('fuel_gauge', true, undefined, '(1|0)'),
-
-                res => {
-                    eventEmitter.emit('onFuelGauge', {
-                        enabled: parseToBoolean(res),
-                    } satisfies Partial<FuelGauge>);
-                },
-                noop,
-            ),
-        );
-
-        cleanupCallbacks.push(
-            shellParser.registerCommandCallback(
-                toRegex('fuel_gauge model download begin'),
-                () => shellParser?.setShellEchos(false),
-                () => shellParser?.setShellEchos(true),
-            ),
-        );
-
-        cleanupCallbacks.push(
-            shellParser.registerCommandCallback(
-                toRegex('fuel_gauge model', true, undefined, '"[^"]*"'),
-                res => {
-                    eventEmitter.emit(
-                        'onActiveBatteryModelUpdate',
-                        parseBatteryModel(parseColonBasedAnswer(res)),
-                    );
-                },
-                noop,
-            ),
-        );
-
-        cleanupCallbacks.push(
-            shellParser.registerCommandCallback(
-                toRegex('fuel_gauge model store'),
-                () => {
-                    get.storedBatteryModel();
-                    get.activeBatteryModel();
-                },
-                noop,
-            ),
-        );
-
-        cleanupCallbacks.push(
-            shellParser.registerCommandCallback(
-                toRegex('fuel_gauge model list'),
-                res => {
-                    const models = res.split(
-                        'Battery models stored in database:',
-                    );
-                    if (models.length < 2) {
-                        eventEmitter.emit('onStoredBatteryModelUpdate', []);
-                        return;
-                    }
-                    const stringModels = models[1].trim().split('\n');
-                    const list = stringModels.map(parseBatteryModel);
-                    eventEmitter.emit(
-                        'onStoredBatteryModelUpdate',
-                        list.filter(item => item != null),
-                    );
-                },
-                noop,
-            ),
-        );
-
-        cleanupCallbacks.push(
-            shellParser.onShellLoggingEvent(logEvent => {
-                parseLogData(logEvent, loggingEvent => {
-                    if (loggingEvent.module !== 'module_fg') {
-                        return;
-                    }
-
-                    switch (loggingEvent.message) {
-                        case 'Battery model timeout':
-                            shellParser?.setShellEchos(true);
-
-                            fuelGaugeModule.profileDownloadAborting = true;
-                            if (fuelGaugeModule.profileDownloadInProgress) {
-                                fuelGaugeModule.profileDownloadInProgress = false;
-                                const payload: ProfileDownload = {
-                                    state: 'aborted',
-                                    alertMessage: loggingEvent.message,
-                                };
-
-                                eventEmitter.emit(
-                                    'onProfileDownloadUpdate',
-                                    payload,
-                                );
-                            }
-                            break;
-
-                        case 'JSON data download timeout':
-                            shellParser?.setShellEchos(true);
-
-                            fuelGaugeModule.batteryHealthProfileLoadAborting = true;
-                            if (
-                                fuelGaugeModule.batteryHealthProfileLoadInProgress
-                            ) {
-                                fuelGaugeModule.batteryHealthProfileLoadInProgress = false;
-                                const payload: BatteryHealthProfileLoadUpdate =
-                                    {
-                                        state: 'aborted',
-                                        alertMessage: loggingEvent.message,
-                                    };
-
-                                eventEmitter.emit(
-                                    'onLoadBatteryHealthProfileUpdate',
-                                    payload,
-                                );
-                            }
-                            break;
-                    }
-                });
-            }),
-        );
-
-        cleanupCallbacks.push(
-            shellParser.registerCommandCallback(
-                toRegex('fuel_gauge model download apply'),
-                res => {
-                    if (fuelGaugeModule.profileDownloadInProgress) {
-                        fuelGaugeModule.profileDownloadInProgress = false;
-                        const profileDownload: ProfileDownload = {
-                            state: 'applied',
-                            alertMessage: parseColonBasedAnswer(res),
-                        };
-                        eventEmitter.emit(
-                            'onProfileDownloadUpdate',
-                            profileDownload,
-                        );
-                    }
-                    shellParser?.setShellEchos(true);
-                },
-                res => {
-                    if (fuelGaugeModule.profileDownloadInProgress) {
-                        fuelGaugeModule.profileDownloadInProgress = false;
-                        const profileDownload: ProfileDownload = {
-                            state: 'failed',
-                            alertMessage: parseColonBasedAnswer(res),
-                        };
-                        eventEmitter.emit(
-                            'onProfileDownloadUpdate',
-                            profileDownload,
-                        );
-                    }
-                    shellParser?.setShellEchos(true);
-                },
-            ),
-        );
-
-        cleanupCallbacks.push(
-            shellParser.registerCommandCallback(
-                toRegex('fuel_gauge model download abort'),
-                res => {
-                    if (fuelGaugeModule.profileDownloadInProgress) {
-                        fuelGaugeModule.profileDownloadInProgress = false;
-                        const profileDownload: ProfileDownload = {
-                            state: 'aborted',
-                            alertMessage: parseColonBasedAnswer(res),
-                        };
-                        eventEmitter.emit(
-                            'onProfileDownloadUpdate',
-                            profileDownload,
-                        );
-                    }
-
-                    shellParser?.setShellEchos(true);
-                },
-                res => {
-                    if (fuelGaugeModule.profileDownloadInProgress) {
-                        fuelGaugeModule.profileDownloadInProgress = false;
-                        const profileDownload: ProfileDownload = {
-                            state: 'failed',
-                            alertMessage: parseColonBasedAnswer(res),
-                        };
-                        eventEmitter.emit(
-                            'onProfileDownloadUpdate',
-                            profileDownload,
-                        );
-                    }
-
-                    shellParser?.setShellEchos(true);
-                },
-            ),
-        );
-
-        cleanupCallbacks.push(
-            shellParser.registerCommandCallback(
-                toRegex('fuel_gauge state download abort'),
-                res => {
-                    if (
-                        fuelGaugeModule.batteryHealthProfileLoadInProgress
-                    ) {
-                        fuelGaugeModule.batteryHealthProfileLoadInProgress = false;
-                        const profileDownload: BatteryHealthProfileLoadUpdate =
-                            {
-                                state: 'aborted',
-                                alertMessage: parseColonBasedAnswer(res),
-                            };
-                        eventEmitter.emit(
-                            'onLoadBatteryHealthProfileUpdate',
-                            profileDownload,
-                        );
-                    }
-
-                    shellParser?.setShellEchos(true);
-                },
-                res => {
-                    if (
-                        fuelGaugeModule.batteryHealthProfileLoadInProgress
-                    ) {
-                        fuelGaugeModule.batteryHealthProfileLoadInProgress = false;
-                        const profileDownload: BatteryHealthProfileLoadUpdate =
-                            {
-                                state: 'failed',
-                                alertMessage: parseColonBasedAnswer(res),
-                            };
-                        eventEmitter.emit(
-                            'onLoadBatteryHealthProfileUpdate',
-                            profileDownload,
-                        );
-                    }
-
-                    shellParser?.setShellEchos(true);
-                },
-            ),
-        );
-
-        cleanupCallbacks.push(
-            shellParser.registerCommandCallback(
-                toRegex('fuel_gauge state download apply'),
-                res => {
-                    if (
-                        fuelGaugeModule.batteryHealthProfileLoadInProgress
-                    ) {
-                        fuelGaugeModule.batteryHealthProfileLoadInProgress = false;
-                        const latestResult = res.split('\n').at(-1) ?? res;
-                        const profileDownload: BatteryHealthProfileLoadUpdate =
-                            {
-                                state: 'applied',
-                                alertMessage:
-                                    parseColonBasedAnswer(latestResult),
-                            };
-                        eventEmitter.emit(
-                            'onLoadBatteryHealthProfileUpdate',
-                            profileDownload,
-                        );
-                    }
-                    shellParser?.setShellEchos(true);
-                },
-                res => {
-                    if (
-                        fuelGaugeModule.batteryHealthProfileLoadInProgress
-                    ) {
-                        fuelGaugeModule.batteryHealthProfileLoadInProgress = false;
-                        const latestResult = res.split('\n').at(-1) ?? res;
-                        const profileDownload: BatteryHealthProfileLoadUpdate =
-                            {
-                                state: 'failed',
-                                alertMessage:
-                                    parseColonBasedAnswer(latestResult),
-                            };
-                        eventEmitter.emit(
-                            'onLoadBatteryHealthProfileUpdate',
-                            profileDownload,
-                        );
-                    }
-                    shellParser?.setShellEchos(true);
-                },
-            ),
-        );
-
-        cleanupCallbacks.push(
-            shellParser.registerCommandCallback(
-                toRegex('fuel_gauge state download begin'),
-                () => shellParser?.setShellEchos(false),
-                () => shellParser?.setShellEchos(true),
-            ),
-        );
+    if (!shellParser) {
+        return [];
     }
 
-    return cleanupCallbacks;
+    const callbacks = [];
+
+    callbacks.push(
+        shellParser.registerCommandCallback(
+            toRegex('fuel_gauge', true, undefined, '(1|0)'),
+
+            res => {
+                eventEmitter.emit('onFuelGauge', {
+                    enabled: parseToBoolean(res),
+                } satisfies Partial<FuelGauge>);
+            },
+            noop,
+        ),
+    );
+
+    callbacks.push(
+        shellParser.registerCommandCallback(
+            toRegex('fuel_gauge model download begin'),
+            () => shellParser?.setShellEchos(false),
+            () => shellParser?.setShellEchos(true),
+        ),
+    );
+
+    callbacks.push(
+        shellParser.registerCommandCallback(
+            toRegex('fuel_gauge model', true, undefined, '"[^"]*"'),
+            res => {
+                eventEmitter.emit(
+                    'onActiveBatteryModelUpdate',
+                    parseBatteryModel(parseColonBasedAnswer(res)),
+                );
+            },
+            noop,
+        ),
+    );
+
+    callbacks.push(
+        shellParser.registerCommandCallback(
+            toRegex('fuel_gauge model store'),
+            () => {
+                get.storedBatteryModel();
+                get.activeBatteryModel();
+            },
+            noop,
+        ),
+    );
+
+    callbacks.push(
+        shellParser.registerCommandCallback(
+            toRegex('fuel_gauge model list'),
+            res => {
+                const models = res.split('Battery models stored in database:');
+                if (models.length < 2) {
+                    eventEmitter.emit('onStoredBatteryModelUpdate', []);
+                    return;
+                }
+                const stringModels = models[1].trim().split('\n');
+                const list = stringModels.map(parseBatteryModel);
+                eventEmitter.emit(
+                    'onStoredBatteryModelUpdate',
+                    list.filter(item => item != null),
+                );
+            },
+            noop,
+        ),
+    );
+
+    callbacks.push(
+        shellParser.onShellLoggingEvent(logEvent => {
+            parseLogData(logEvent, loggingEvent => {
+                if (loggingEvent.module !== 'module_fg') {
+                    return;
+                }
+
+                switch (loggingEvent.message) {
+                    case 'Battery model timeout':
+                        shellParser?.setShellEchos(true);
+
+                        fuelGaugeModule.profileDownloadAborting = true;
+                        if (fuelGaugeModule.profileDownloadInProgress) {
+                            fuelGaugeModule.profileDownloadInProgress = false;
+                            const payload: ProfileDownload = {
+                                state: 'aborted',
+                                alertMessage: loggingEvent.message,
+                            };
+
+                            eventEmitter.emit(
+                                'onProfileDownloadUpdate',
+                                payload,
+                            );
+                        }
+                        break;
+
+                    case 'JSON data download timeout':
+                        shellParser?.setShellEchos(true);
+
+                        fuelGaugeModule.batteryHealthProfileLoadAborting = true;
+                        if (
+                            fuelGaugeModule.batteryHealthProfileLoadInProgress
+                        ) {
+                            fuelGaugeModule.batteryHealthProfileLoadInProgress = false;
+                            const payload: BatteryHealthProfileLoadUpdate = {
+                                state: 'aborted',
+                                alertMessage: loggingEvent.message,
+                            };
+
+                            eventEmitter.emit(
+                                'onLoadBatteryHealthProfileUpdate',
+                                payload,
+                            );
+                        }
+                        break;
+                }
+            });
+        }),
+    );
+
+    callbacks.push(
+        shellParser.registerCommandCallback(
+            toRegex('fuel_gauge model download apply'),
+            res => {
+                if (fuelGaugeModule.profileDownloadInProgress) {
+                    fuelGaugeModule.profileDownloadInProgress = false;
+                    const profileDownload: ProfileDownload = {
+                        state: 'applied',
+                        alertMessage: parseColonBasedAnswer(res),
+                    };
+                    eventEmitter.emit(
+                        'onProfileDownloadUpdate',
+                        profileDownload,
+                    );
+                }
+                shellParser?.setShellEchos(true);
+            },
+            res => {
+                if (fuelGaugeModule.profileDownloadInProgress) {
+                    fuelGaugeModule.profileDownloadInProgress = false;
+                    const profileDownload: ProfileDownload = {
+                        state: 'failed',
+                        alertMessage: parseColonBasedAnswer(res),
+                    };
+                    eventEmitter.emit(
+                        'onProfileDownloadUpdate',
+                        profileDownload,
+                    );
+                }
+                shellParser?.setShellEchos(true);
+            },
+        ),
+    );
+
+    callbacks.push(
+        shellParser.registerCommandCallback(
+            toRegex('fuel_gauge model download abort'),
+            res => {
+                if (fuelGaugeModule.profileDownloadInProgress) {
+                    fuelGaugeModule.profileDownloadInProgress = false;
+                    const profileDownload: ProfileDownload = {
+                        state: 'aborted',
+                        alertMessage: parseColonBasedAnswer(res),
+                    };
+                    eventEmitter.emit(
+                        'onProfileDownloadUpdate',
+                        profileDownload,
+                    );
+                }
+
+                shellParser?.setShellEchos(true);
+            },
+            res => {
+                if (fuelGaugeModule.profileDownloadInProgress) {
+                    fuelGaugeModule.profileDownloadInProgress = false;
+                    const profileDownload: ProfileDownload = {
+                        state: 'failed',
+                        alertMessage: parseColonBasedAnswer(res),
+                    };
+                    eventEmitter.emit(
+                        'onProfileDownloadUpdate',
+                        profileDownload,
+                    );
+                }
+
+                shellParser?.setShellEchos(true);
+            },
+        ),
+    );
+
+    callbacks.push(
+        shellParser.registerCommandCallback(
+            toRegex('fuel_gauge state download abort'),
+            res => {
+                if (fuelGaugeModule.batteryHealthProfileLoadInProgress) {
+                    fuelGaugeModule.batteryHealthProfileLoadInProgress = false;
+                    const profileDownload: BatteryHealthProfileLoadUpdate = {
+                        state: 'aborted',
+                        alertMessage: parseColonBasedAnswer(res),
+                    };
+                    eventEmitter.emit(
+                        'onLoadBatteryHealthProfileUpdate',
+                        profileDownload,
+                    );
+                }
+
+                shellParser?.setShellEchos(true);
+            },
+            res => {
+                if (fuelGaugeModule.batteryHealthProfileLoadInProgress) {
+                    fuelGaugeModule.batteryHealthProfileLoadInProgress = false;
+                    const profileDownload: BatteryHealthProfileLoadUpdate = {
+                        state: 'failed',
+                        alertMessage: parseColonBasedAnswer(res),
+                    };
+                    eventEmitter.emit(
+                        'onLoadBatteryHealthProfileUpdate',
+                        profileDownload,
+                    );
+                }
+
+                shellParser?.setShellEchos(true);
+            },
+        ),
+    );
+
+    callbacks.push(
+        shellParser.registerCommandCallback(
+            toRegex('fuel_gauge state download apply'),
+            res => {
+                if (fuelGaugeModule.batteryHealthProfileLoadInProgress) {
+                    fuelGaugeModule.batteryHealthProfileLoadInProgress = false;
+                    const latestResult = res.split('\n').at(-1) ?? res;
+                    const profileDownload: BatteryHealthProfileLoadUpdate = {
+                        state: 'applied',
+                        alertMessage: parseColonBasedAnswer(latestResult),
+                    };
+                    eventEmitter.emit(
+                        'onLoadBatteryHealthProfileUpdate',
+                        profileDownload,
+                    );
+                }
+                shellParser?.setShellEchos(true);
+            },
+            res => {
+                if (fuelGaugeModule.batteryHealthProfileLoadInProgress) {
+                    fuelGaugeModule.batteryHealthProfileLoadInProgress = false;
+                    const latestResult = res.split('\n').at(-1) ?? res;
+                    const profileDownload: BatteryHealthProfileLoadUpdate = {
+                        state: 'failed',
+                        alertMessage: parseColonBasedAnswer(latestResult),
+                    };
+                    eventEmitter.emit(
+                        'onLoadBatteryHealthProfileUpdate',
+                        profileDownload,
+                    );
+                }
+                shellParser?.setShellEchos(true);
+            },
+        ),
+    );
+
+    callbacks.push(
+        shellParser.registerCommandCallback(
+            toRegex('fuel_gauge state download begin'),
+            () => shellParser?.setShellEchos(false),
+            () => shellParser?.setShellEchos(true),
+        ),
+    );
+
+    return callbacks;
 };
