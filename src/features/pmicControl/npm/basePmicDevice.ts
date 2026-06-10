@@ -1161,6 +1161,9 @@ export default abstract class BaseNpmDevice {
             );
         };
     }
+
+    requestBatteryHealthProfileData?(): Promise<string>;
+
     onLoadBatteryHealthProfileUpdate(
         handler: (
             payload: BatteryHealthProfileLoadUpdate,
