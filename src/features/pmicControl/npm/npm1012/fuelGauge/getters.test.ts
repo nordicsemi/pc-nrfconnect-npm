@@ -16,43 +16,91 @@ describe('PMIC 1012 - Request update commands', () => {
         jest.clearAllMocks();
     });
 
-    test('Request update fuelGauge', () => {
-        pmic.fuelGaugeModule?.get.enabled();
-
-        expect(mockEnqueueRequest).toBeCalledTimes(1);
-        expect(mockEnqueueRequest).toBeCalledWith(
-            `fuel_gauge get`,
-            expect.anything(),
-            undefined,
-            true,
-        );
-    });
-
-    test('Request update activeBatteryModel', () => {
+    test('Request update fuelGauge activeBatteryModel', () => {
         pmic.fuelGaugeModule?.get.activeBatteryModel();
 
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
-            `fuel_gauge model get`,
+            'fuel_gauge model get',
             expect.anything(),
             undefined,
             true,
         );
     });
 
-    test('Request update storedBatteryModel', () => {
+    test('Request update fuelGauge batteryHealthEnabled', () => {
+        pmic.fuelGaugeModule?.get.batteryHealthEnabled?.();
+
+        expect(mockEnqueueRequest).toBeCalledTimes(1);
+        expect(mockEnqueueRequest).toBeCalledWith(
+            'fuel_gauge health enable get',
+            expect.anything(),
+            undefined,
+            true,
+        );
+    });
+
+    test('Request update fuelGauge batteryReplacementDetection', () => {
+        pmic.fuelGaugeModule?.get.batteryReplacementDetection?.();
+
+        expect(mockEnqueueRequest).toBeCalledTimes(1);
+        expect(mockEnqueueRequest).toBeCalledWith(
+            'fuel_gauge health replacement_detection get',
+            expect.anything(),
+            undefined,
+            true,
+        );
+    });
+
+    test('Request update fuelGauge enabled', () => {
+        pmic.fuelGaugeModule?.get.enabled();
+
+        expect(mockEnqueueRequest).toBeCalledTimes(1);
+        expect(mockEnqueueRequest).toBeCalledWith(
+            'fuel_gauge get',
+            expect.anything(),
+            undefined,
+            true,
+        );
+    });
+
+    test('Request update fuelGauge quickConvergenceMode', () => {
+        pmic.fuelGaugeModule?.get.quickConvergenceMode?.();
+
+        expect(mockEnqueueRequest).toBeCalledTimes(1);
+        expect(mockEnqueueRequest).toBeCalledWith(
+            'fuel_gauge health quick_convergence get',
+            expect.anything(),
+            undefined,
+            true,
+        );
+    });
+
+    test('Request update fuelGauge ratedMinBatteryCapacity', () => {
+        pmic.fuelGaugeModule?.get.ratedMinBatteryCapacity?.();
+
+        expect(mockEnqueueRequest).toBeCalledTimes(1);
+        expect(mockEnqueueRequest).toBeCalledWith(
+            'fuel_gauge health rated_min_capacity get',
+            expect.anything(),
+            undefined,
+            true,
+        );
+    });
+
+    test('Request update fuelGauge storedBatteryModel', () => {
         pmic.fuelGaugeModule?.get.storedBatteryModel();
 
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
-            `fuel_gauge model list`,
+            'fuel_gauge model list',
             expect.anything(),
             undefined,
             true,
         );
     });
 
-    test('Request getHardcodedBatteryModels success', async () => {
+    test('Request update fuelGauge storedBatteryModel - hardcodedBatteryModels', async () => {
         mockEnqueueRequest.mockImplementationOnce(
             (
                 _command: string,
@@ -111,7 +159,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
-            `fuel_gauge model list`,
+            'fuel_gauge model list',
             expect.anything(),
             undefined,
             true,
