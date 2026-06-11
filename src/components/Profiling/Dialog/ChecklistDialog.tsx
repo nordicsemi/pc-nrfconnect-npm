@@ -64,10 +64,17 @@ export default ({ isVisible }: { isVisible: boolean }) => {
                         }
                         variant="primary"
                         onClick={async () => {
-                            // PMIC 1300 Specific
                             await npmDevice?.ldoModule[0]?.set.enabled(false);
                             await npmDevice?.ldoModule[1]?.set.enabled(false);
-                            await npmDevice?.buckModule[0]?.set.enabled(false);
+
+                            if (
+                                npmDevice?.deviceType === 'npm1300' ||
+                                npmDevice?.deviceType === 'npm1304'
+                            ) {
+                                await npmDevice?.buckModule[0]?.set.enabled(
+                                    false,
+                                );
+                            }
 
                             await npmDevice?.fuelGaugeModule?.set.enabled(
                                 false,
