@@ -9,10 +9,13 @@ import { type ShellParser } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import {
     noop,
     type NpmEventEmitter,
+    onOffRegex,
     parseBatteryModel,
     parseColonBasedAnswer,
     parseLogData,
+    parseOnOff,
     parseToBoolean,
+    parseToNumber,
     toRegex,
 } from '../../pmicHelpers';
 import {
@@ -297,6 +300,60 @@ export default (
             toRegex('fuel_gauge state download begin'),
             () => shellParser?.setShellEchos(false),
             () => shellParser?.setShellEchos(true),
+        ),
+    );
+
+    callbacks.push(
+        shellParser.registerCommandCallback(
+            toRegex('fuel_gauge health enable', true, undefined, onOffRegex),
+            res =>
+                eventEmitter.emitPartialEvent<FuelGauge>('onFuelGauge', {
+                    batteryHealthEnabled: parseOnOff(res),
+                }),
+            noop,
+        ),
+    );
+
+    callbacks.push(
+        shellParser.registerCommandCallback(
+            toRegex(
+                'fuel_gauge health replacement_detection',
+                true,
+                undefined,
+                onOffRegex,
+            ),
+            res =>
+                eventEmitter.emitPartialEvent<FuelGauge>('onFuelGauge', {
+                    batteryReplacementDetection: parseOnOff(res),
+                }),
+            noop,
+        ),
+    );
+
+    callbacks.push(
+        shellParser.registerCommandCallback(
+            toRegex(
+                'fuel_gauge health quick_convergence',
+                true,
+                undefined,
+                onOffRegex,
+            ),
+            res =>
+                eventEmitter.emitPartialEvent<FuelGauge>('onFuelGauge', {
+                    quickConvergenceMode: parseOnOff(res),
+                }),
+            noop,
+        ),
+    );
+
+    callbacks.push(
+        shellParser.registerCommandCallback(
+            toRegex('fuel_gauge health rated_min_capacity', true),
+            res =>
+                eventEmitter.emitPartialEvent<FuelGauge>('onFuelGauge', {
+                    ratedMinBatteryCapacity: parseToNumber(res),
+                }),
+            noop,
         ),
     );
 

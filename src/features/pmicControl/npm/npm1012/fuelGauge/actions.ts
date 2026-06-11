@@ -192,4 +192,14 @@ export class FuelGaugeActions {
             );
         });
     }
+
+    resetBatteryHealthData() {
+        return new Promise<void>((resolve, reject) => {
+            this.sendCommand(
+                'fuel_gauge health reset',
+                () => resolve(),
+                () => reject(),
+            );
+        });
+    }
 }

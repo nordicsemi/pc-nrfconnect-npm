@@ -16,6 +16,13 @@ import fuelGaugeCallbacks from './callbacks';
 import { FuelGaugeGet } from './getters';
 import { FuelGaugeSet } from './setters';
 
+const ratedMinBatteryCapacityRange: Range = {
+    decimals: 0,
+    max: 1000,
+    min: 1,
+    step: 1,
+};
+
 const samplingIntervalRange: Range = {
     decimals: 1,
     max: 3600,
@@ -27,14 +34,15 @@ const samplingIntervalRange: Range = {
 /* eslint-disable class-methods-use-this */
 
 export default class Module implements FuelGaugeModuleBase {
+    private _actions: FuelGaugeActions;
+    private _callbacks: (() => void)[];
+    private _get: FuelGaugeGet;
+    private _set: FuelGaugeSet;
+
     batteryHealthProfileLoadInProgress = false;
     batteryHealthProfileLoadAborting = false;
     profileDownloadInProgress = false;
     profileDownloadAborting = false;
-    private _get: FuelGaugeGet;
-    private _set: FuelGaugeSet;
-    private _actions: FuelGaugeActions;
-    private _callbacks: (() => void)[];
 
     constructor({
         sendCommand,
@@ -53,14 +61,6 @@ export default class Module implements FuelGaugeModuleBase {
         );
     }
 
-    get get() {
-        return this._get;
-    }
-
-    get set() {
-        return this._set;
-    }
-
     get actions() {
         return this._actions;
     }
@@ -72,17 +72,30 @@ export default class Module implements FuelGaugeModuleBase {
     get defaults(): FuelGauge {
         return {
             actualCapacity: Number.NaN,
+            batteryHealthEnabled: false,
+            batteryReplacementDetection: false,
             chargingSamplingRate: 500,
             cycleCount: Number.NaN,
             enabled: false,
             notChargingSamplingRate: 1000,
+            quickConvergenceMode: false,
+            ratedMinBatteryCapacity: ratedMinBatteryCapacityRange.min,
             reportingRate: 2000,
         };
     }
 
+    get get() {
+        return this._get;
+    }
+
     get ranges() {
         return {
+            ratedMinBatteryCapacity: ratedMinBatteryCapacityRange,
             samplingInterval: samplingIntervalRange,
         };
+    }
+
+    get set() {
+        return this._set;
     }
 }
