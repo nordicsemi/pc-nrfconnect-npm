@@ -9,13 +9,20 @@ import { type ShellParser } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import {
     noop,
     type NpmEventEmitter,
+    onOffRegex,
     parseBatteryModel,
     parseColonBasedAnswer,
     parseLogData,
+    parseOnOff,
     parseToBoolean,
+    parseToNumber,
     toRegex,
 } from '../../pmicHelpers';
-import { type FuelGauge, type ProfileDownload } from '../../types';
+import {
+    type BatteryHealthProfileLoadUpdate,
+    type FuelGauge,
+    type ProfileDownload,
+} from '../../types';
 import type FuelGaugeModule from '.';
 import { type FuelGaugeGet } from './getters';
 
@@ -188,6 +195,151 @@ export default (
 
                     shellParser?.setShellEchos(true);
                 },
+            ),
+        );
+
+        cleanupCallbacks.push(
+            shellParser.registerCommandCallback(
+                toRegex('fuel_gauge state download abort'),
+                res => {
+                    if (fuelGaugeModule.batteryHealthProfileLoadInProgress) {
+                        fuelGaugeModule.batteryHealthProfileLoadInProgress = false;
+                        const profileDownload: BatteryHealthProfileLoadUpdate =
+                            {
+                                state: 'aborted',
+                                alertMessage: parseColonBasedAnswer(res),
+                            };
+                        eventEmitter.emit(
+                            'onLoadBatteryHealthProfileUpdate',
+                            profileDownload,
+                        );
+                    }
+
+                    shellParser?.setShellEchos(true);
+                },
+                res => {
+                    if (fuelGaugeModule.batteryHealthProfileLoadInProgress) {
+                        fuelGaugeModule.batteryHealthProfileLoadInProgress = false;
+                        const profileDownload: BatteryHealthProfileLoadUpdate =
+                            {
+                                state: 'failed',
+                                alertMessage: parseColonBasedAnswer(res),
+                            };
+                        eventEmitter.emit(
+                            'onLoadBatteryHealthProfileUpdate',
+                            profileDownload,
+                        );
+                    }
+
+                    shellParser?.setShellEchos(true);
+                },
+            ),
+        );
+
+        cleanupCallbacks.push(
+            shellParser.registerCommandCallback(
+                toRegex('fuel_gauge state download apply'),
+                res => {
+                    if (fuelGaugeModule.batteryHealthProfileLoadInProgress) {
+                        fuelGaugeModule.batteryHealthProfileLoadInProgress = false;
+                        const latestResult = res.split('\n').at(-1) ?? res;
+                        const profileDownload: BatteryHealthProfileLoadUpdate =
+                            {
+                                state: 'applied',
+                                alertMessage:
+                                    parseColonBasedAnswer(latestResult),
+                            };
+                        eventEmitter.emit(
+                            'onLoadBatteryHealthProfileUpdate',
+                            profileDownload,
+                        );
+                    }
+                    shellParser?.setShellEchos(true);
+                },
+                res => {
+                    if (fuelGaugeModule.batteryHealthProfileLoadInProgress) {
+                        fuelGaugeModule.batteryHealthProfileLoadInProgress = false;
+                        const latestResult = res.split('\n').at(-1) ?? res;
+                        const profileDownload: BatteryHealthProfileLoadUpdate =
+                            {
+                                state: 'failed',
+                                alertMessage:
+                                    parseColonBasedAnswer(latestResult),
+                            };
+                        eventEmitter.emit(
+                            'onLoadBatteryHealthProfileUpdate',
+                            profileDownload,
+                        );
+                    }
+                    shellParser?.setShellEchos(true);
+                },
+            ),
+        );
+
+        cleanupCallbacks.push(
+            shellParser.registerCommandCallback(
+                toRegex('fuel_gauge state download begin'),
+                () => shellParser?.setShellEchos(false),
+                () => shellParser?.setShellEchos(true),
+            ),
+        );
+
+        cleanupCallbacks.push(
+            shellParser.registerCommandCallback(
+                toRegex(
+                    'fuel_gauge health enable',
+                    true,
+                    undefined,
+                    onOffRegex,
+                ),
+                res =>
+                    eventEmitter.emitPartialEvent<FuelGauge>('onFuelGauge', {
+                        batteryHealthEnabled: parseOnOff(res),
+                    }),
+                noop,
+            ),
+        );
+
+        cleanupCallbacks.push(
+            shellParser.registerCommandCallback(
+                toRegex(
+                    'fuel_gauge health replacement_detection',
+                    true,
+                    undefined,
+                    onOffRegex,
+                ),
+                res =>
+                    eventEmitter.emitPartialEvent<FuelGauge>('onFuelGauge', {
+                        batteryReplacementDetection: parseOnOff(res),
+                    }),
+                noop,
+            ),
+        );
+
+        cleanupCallbacks.push(
+            shellParser.registerCommandCallback(
+                toRegex(
+                    'fuel_gauge health quick_convergence',
+                    true,
+                    undefined,
+                    onOffRegex,
+                ),
+                res =>
+                    eventEmitter.emitPartialEvent<FuelGauge>('onFuelGauge', {
+                        quickConvergenceMode: parseOnOff(res),
+                    }),
+                noop,
+            ),
+        );
+
+        cleanupCallbacks.push(
+            shellParser.registerCommandCallback(
+                toRegex('fuel_gauge health rated_min_capacity', true),
+                res =>
+                    eventEmitter.emitPartialEvent<FuelGauge>('onFuelGauge', {
+                        ratedMinBatteryCapacity: parseToNumber(res),
+                    }),
+                noop,
             ),
         );
     }

@@ -27,8 +27,33 @@ export class FuelGaugeSet {
         this.get = new FuelGaugeGet(sendCommand);
     }
 
-    async all(fuelGauge: FuelGaugeExport) {
-        await Promise.allSettled([this.enabled(fuelGauge.enabled)]);
+    async all(config: FuelGaugeExport) {
+        const promises = [this.enabled(config.enabled)];
+
+        if (config.batteryHealthEnabled !== undefined) {
+            promises.push(
+                this.batteryHealthEnabled(config.batteryHealthEnabled),
+            );
+        }
+        if (config.batteryReplacementDetection !== undefined) {
+            promises.push(
+                this.batteryReplacementDetection(
+                    config.batteryReplacementDetection,
+                ),
+            );
+        }
+        if (config.quickConvergenceMode !== undefined) {
+            promises.push(
+                this.quickConvergenceMode(config.quickConvergenceMode),
+            );
+        }
+        if (config.ratedMinBatteryCapacity !== undefined) {
+            promises.push(
+                this.ratedMinBatteryCapacity(config.ratedMinBatteryCapacity),
+            );
+        }
+
+        await Promise.allSettled(promises);
     }
 
     enabled(enabled: boolean) {
@@ -94,6 +119,86 @@ export class FuelGaugeSet {
                 () => resolve(),
                 () => reject(),
             );
+        });
+    }
+
+    batteryHealthEnabled(value: boolean) {
+        return new Promise<void>((resolve, reject) => {
+            if (this.offlineMode) {
+                this.eventEmitter.emitPartialEvent<FuelGauge>('onFuelGauge', {
+                    batteryHealthEnabled: value,
+                });
+                resolve();
+            } else {
+                this.sendCommand(
+                    `fuel_gauge health enable set ${value ? 'ON' : 'OFF'}`,
+                    () => resolve(),
+                    () => {
+                        this.get.batteryHealthEnabled();
+                        reject();
+                    },
+                );
+            }
+        });
+    }
+
+    batteryReplacementDetection(value: boolean) {
+        return new Promise<void>((resolve, reject) => {
+            if (this.offlineMode) {
+                this.eventEmitter.emitPartialEvent<FuelGauge>('onFuelGauge', {
+                    batteryReplacementDetection: value,
+                });
+                resolve();
+            } else {
+                this.sendCommand(
+                    `fuel_gauge health replacement_detection set ${value ? 'ON' : 'OFF'}`,
+                    () => resolve(),
+                    () => {
+                        this.get.batteryReplacementDetection();
+                        reject();
+                    },
+                );
+            }
+        });
+    }
+
+    quickConvergenceMode(value: boolean) {
+        return new Promise<void>((resolve, reject) => {
+            if (this.offlineMode) {
+                this.eventEmitter.emitPartialEvent<FuelGauge>('onFuelGauge', {
+                    quickConvergenceMode: value,
+                });
+                resolve();
+            } else {
+                this.sendCommand(
+                    `fuel_gauge health quick_convergence set ${value ? 'ON' : 'OFF'}`,
+                    () => resolve(),
+                    () => {
+                        this.get.quickConvergenceMode();
+                        reject();
+                    },
+                );
+            }
+        });
+    }
+
+    ratedMinBatteryCapacity(value: number) {
+        return new Promise<void>((resolve, reject) => {
+            if (this.offlineMode) {
+                this.eventEmitter.emitPartialEvent<FuelGauge>('onFuelGauge', {
+                    ratedMinBatteryCapacity: value,
+                });
+                resolve();
+            } else {
+                this.sendCommand(
+                    `fuel_gauge health rated_min_capacity set ${value}`,
+                    () => resolve(),
+                    () => {
+                        this.get.ratedMinBatteryCapacity();
+                        reject();
+                    },
+                );
+            }
         });
     }
 }
