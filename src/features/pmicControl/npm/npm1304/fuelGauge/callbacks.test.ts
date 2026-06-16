@@ -170,5 +170,109 @@ Battery models stored in database:
         expect(mockOnStoredBatteryModelUpdate).toBeCalledTimes(1);
         expect(mockOnStoredBatteryModelUpdate).toBeCalledWith([]);
     });
+
+    test.each(
+        [true, false]
+            .map(enabled => [
+                {
+                    enabled,
+                    append: 'get',
+                },
+                {
+                    enabled,
+                    append: `set ${enabled ? 'on' : 'off'}`,
+                },
+            ])
+            .flat(),
+    )('fuel_gauge health enable %p', ({ enabled, append }) => {
+        const command = `fuel_gauge health enable ${append}`;
+        const callback =
+            eventHandlers.mockRegisterCommandCallbackHandler(command);
+
+        callback?.onSuccess(`Value: ${enabled ? 'on' : 'off'}`, command);
+
+        expect(mockOnFuelGaugeUpdate).toBeCalledTimes(1);
+        expect(mockOnFuelGaugeUpdate).toBeCalledWith({
+            batteryHealthEnabled: enabled,
+        } satisfies Partial<FuelGauge>);
+    });
+
+    test.each(
+        [true, false]
+            .map(enabled => [
+                {
+                    enabled,
+                    append: 'get',
+                },
+                {
+                    enabled,
+                    append: `set ${enabled ? 'on' : 'off'}`,
+                },
+            ])
+            .flat(),
+    )('fuel_gauge health replacement_detection %p', ({ enabled, append }) => {
+        const command = `fuel_gauge health replacement_detection ${append}`;
+        const callback =
+            eventHandlers.mockRegisterCommandCallbackHandler(command);
+
+        callback?.onSuccess(`Value: ${enabled ? 'on' : 'off'}`, command);
+
+        expect(mockOnFuelGaugeUpdate).toBeCalledTimes(1);
+        expect(mockOnFuelGaugeUpdate).toBeCalledWith({
+            batteryReplacementDetection: enabled,
+        } satisfies Partial<FuelGauge>);
+    });
+
+    test.each(
+        [true, false]
+            .map(enabled => [
+                {
+                    enabled,
+                    append: 'get',
+                },
+                {
+                    enabled,
+                    append: `set ${enabled ? 'on' : 'off'}`,
+                },
+            ])
+            .flat(),
+    )('fuel_gauge health quick_convergence %p', ({ enabled, append }) => {
+        const command = `fuel_gauge health quick_convergence ${append}`;
+        const callback =
+            eventHandlers.mockRegisterCommandCallbackHandler(command);
+
+        callback?.onSuccess(`Value: ${enabled ? 'on' : 'off'}`, command);
+
+        expect(mockOnFuelGaugeUpdate).toBeCalledTimes(1);
+        expect(mockOnFuelGaugeUpdate).toBeCalledWith({
+            quickConvergenceMode: enabled,
+        } satisfies Partial<FuelGauge>);
+    });
+
+    test.each(
+        [100]
+            .map(value => [
+                {
+                    append: 'get',
+                    value,
+                },
+                {
+                    append: `set ${value}`,
+                    value,
+                },
+            ])
+            .flat(),
+    )('fuel_gauge health rated_min_capacity %p', ({ value, append }) => {
+        const command = `fuel_gauge health rated_min_capacity ${append}`;
+        const callback =
+            eventHandlers.mockRegisterCommandCallbackHandler(command);
+
+        callback?.onSuccess(`Value: ${value}`, command);
+
+        expect(mockOnFuelGaugeUpdate).toBeCalledTimes(1);
+        expect(mockOnFuelGaugeUpdate).toBeCalledWith({
+            ratedMinBatteryCapacity: value,
+        } satisfies Partial<FuelGauge>);
+    });
 });
 export {};
