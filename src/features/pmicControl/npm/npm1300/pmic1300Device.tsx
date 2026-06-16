@@ -421,4 +421,30 @@ export default class Npm1300 extends BaseNpmDevice {
     generateOverlay(npmExport: NpmExportV2) {
         return overlay(npmExport, this);
     }
+
+    requestBatteryHealthProfileData() {
+        return new Promise<string>((resolve, reject) => {
+            this.shellParser?.enqueueRequest(
+                'fuel_gauge state get',
+                {
+                    onSuccess: result => {
+                        const match = result.match(/(?<json>{[^}]+})/);
+                        const jsonDataString = match?.groups?.json;
+                        if (jsonDataString === undefined) {
+                            reject();
+                            return;
+                        }
+                        resolve(jsonDataString);
+                    },
+                    onError: reject,
+                    onTimeout: error => {
+                        console.warn(error);
+                        reject();
+                    },
+                },
+                undefined,
+                true,
+            );
+        });
+    }
 }
