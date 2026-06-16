@@ -889,7 +889,13 @@ export default () => {
             dispatch(
                 setPaneHidden({
                     name: 'Fuel Gauge',
-                    hidden: !npmDevice?.fuelGaugeModule,
+                    hidden:
+                        !npmDevice?.fuelGaugeModule ||
+                        !(
+                            npmDevice.deviceType === 'npm1012' ||
+                            npmDevice.deviceType === 'npm1300' ||
+                            npmDevice.deviceType === 'npm1304'
+                        ),
                 }),
             );
 
