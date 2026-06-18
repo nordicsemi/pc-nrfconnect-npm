@@ -630,6 +630,7 @@ export interface FuelGaugeModule {
         activeBatteryModel: () => void;
         storedBatteryModel: () => void;
 
+        batteryHealthAll?: () => void;
         batteryHealthEnabled?: () => void;
         batteryReplacementDetection?: () => void;
         discardPosiiveDeltaZ?: () => void;
