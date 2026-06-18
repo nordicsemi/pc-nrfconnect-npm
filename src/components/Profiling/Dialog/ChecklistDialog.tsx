@@ -15,8 +15,10 @@ import {
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import {
+    getBucks,
     getCharger,
     getLatestAdcSample,
+    getLdos,
     getNpmDevice,
     getPmicState,
     getUsbPower,
@@ -43,7 +45,9 @@ export default ({ isVisible }: { isVisible: boolean }) => {
         usbPower && usbPower.detectStatus !== 'No USB connection';
     const batteryConnected = useSelector(isBatteryConnected);
     const waitingForDevice = useSelector(getWaitingForDeviceTimeout);
-    const index = useSelector(getProfileIndex);
+    const profileIndex = useSelector(getProfileIndex);
+    const ldos = useSelector(getLdos);
+    const bucks = useSelector(getBucks);
 
     const dispatch = useDispatch();
 
@@ -51,7 +55,7 @@ export default ({ isVisible }: { isVisible: boolean }) => {
         <GenericDialog
             title={`Battery Profiling ${
                 profile.name.length > 0 ? `- ${profile.name}` : ''
-            } @ ${profile.temperatures[index]}°C`}
+            } @ ${profile.temperatures[profileIndex]}°C`}
             isVisible={isVisible}
             className="app-dialog"
             closeOnEsc={false}
@@ -64,17 +68,21 @@ export default ({ isVisible }: { isVisible: boolean }) => {
                         }
                         variant="primary"
                         onClick={async () => {
-                            await npmDevice?.ldoModule[0]?.set.enabled(false);
-                            await npmDevice?.ldoModule[1]?.set.enabled(false);
+                            bucks.forEach((buck, index) => {
+                                if (buck.enabledWhenProfiling !== undefined) {
+                                    npmDevice?.buckModule[index].set.enabled(
+                                        buck.enabledWhenProfiling,
+                                    );
+                                }
+                            });
 
-                            if (
-                                npmDevice?.deviceType === 'npm1300' ||
-                                npmDevice?.deviceType === 'npm1304'
-                            ) {
-                                await npmDevice?.buckModule[0]?.set.enabled(
-                                    false,
-                                );
-                            }
+                            ldos.forEach((ldo, index) => {
+                                if (ldo.enabledWhenProfiling !== undefined) {
+                                    npmDevice?.ldoModule[index].set.enabled(
+                                        ldo.enabledWhenProfiling,
+                                    );
+                                }
+                            });
 
                             await npmDevice?.fuelGaugeModule?.set.enabled(
                                 false,
