@@ -274,20 +274,26 @@ export default () => {
                         message: ` The profiling process was interrupted, as LDO was enabled while ${profilingStage}.`,
                     }),
                 );
-            } else if (
-                (npmDevice?.deviceType === 'npm1300' ||
-                    npmDevice?.deviceType === 'npm1304') &&
-                bucks.length > 1 &&
-                bucks[0].enabled
-            ) {
-                npmDevice?.setAutoRebootDevice(true);
-                npmDevice?.batteryProfiler?.stopProfiling();
-                dispatch(
-                    setCompleteStep({
-                        level: 'danger',
-                        message: ` The profiling process was interrupted, as Buck 0 was enabled while ${profilingStage}.`,
-                    }),
-                );
+            }
+
+            for (let i = 0; i < bucks.length; i += 1) {
+                const expectedState = bucks[i].enabledWhenProfiling;
+                const enabledState = bucks[i].enabled;
+
+                if (
+                    expectedState !== undefined &&
+                    expectedState !== enabledState
+                ) {
+                    npmDevice?.setAutoRebootDevice(true);
+                    npmDevice?.batteryProfiler?.stopProfiling();
+                    dispatch(
+                        setCompleteStep({
+                            level: 'danger',
+                            message: ` The profiling process was interrupted, as Buck ${i} was ${enabledState ? 'enabled' : 'disabled'} while ${profilingStage}.`,
+                        }),
+                    );
+                    break;
+                }
             }
         }
     }, [
