@@ -17,6 +17,9 @@ export class FuelGaugeGet {
         this.enabled();
         this.activeBatteryModel();
         this.storedBatteryModel();
+    }
+
+    batteryHealthAll() {
         this.batteryHealthEnabled();
         this.batteryReplacementDetection();
         this.quickConvergenceMode();
