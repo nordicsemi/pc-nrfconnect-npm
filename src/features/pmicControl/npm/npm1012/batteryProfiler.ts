@@ -90,6 +90,8 @@ export class BatteryProfiler extends nPM1300BatteryProfiler {
         vLowerCutOff: number,
         vTerm: number,
     ): CCProfile[] {
+        const vRange = vTerm - vLowerCutOff; // usable window
+
         return [
             {
                 tLoad: 500,
@@ -103,14 +105,14 @@ export class BatteryProfiler extends nPM1300BatteryProfiler {
                 tRest: 2400000, // 40Min
                 iLoad: capacity / 6 / 1000, // A
                 iRest: 0,
-                vCutoff: Math.min(vLowerCutOff + 0.8, vTerm),
+                vCutoff: vLowerCutOff + 0.65 * vRange,
             },
             {
                 tLoad: 300000, // 5Min
                 tRest: 2400000, // 40Min
                 iLoad: capacity / 6 / 1000, // A
                 iRest: 0,
-                vCutoff: Math.min(vLowerCutOff + 0.5, vTerm),
+                vCutoff: vLowerCutOff + 0.4 * vRange,
             },
             {
                 tLoad: 300000, // 5Min
