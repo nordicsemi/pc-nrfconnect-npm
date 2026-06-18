@@ -67,6 +67,7 @@ export default class Module implements LdoModule {
             activeDischarge: false,
             cardLabel: `Load Switch/LDO ${index + 1}`,
             enabled: false,
+            enabledWhenProfiling: false,
             mode: 'Load_switch',
             onOffControl: 'SW',
             onOffSoftwareControlEnabled: true,
