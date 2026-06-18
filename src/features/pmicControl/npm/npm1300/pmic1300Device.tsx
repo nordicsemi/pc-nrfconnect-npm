@@ -447,4 +447,17 @@ export default class Npm1300 extends BaseNpmDevice {
             );
         });
     }
+
+    startAdcSample(intervalMs: number, samplingRate: number) {
+        return new Promise<void>((resolve, reject) => {
+            this.sendCommand(
+                `npm_adc sample ${samplingRate} ${intervalMs}`,
+                () => {
+                    this.fuelGaugeModule?.get.batteryHealthAll?.(); // need to be requested after "npm_adc sample"
+                    resolve();
+                },
+                () => reject(),
+            );
+        });
+    }
 }
