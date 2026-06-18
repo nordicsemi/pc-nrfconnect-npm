@@ -25,6 +25,7 @@ const ldoDefaults = (index: number): Ldo => {
         activeDischarge: false,
         cardLabel: `Load Switch/LDO ${index + 1}`,
         enabled: false,
+        enabledWhenProfiling: false,
         onOffControl: 'Software',
         onOffSoftwareControlEnabled: true,
         overcurrentProtection: false,
