@@ -41,6 +41,7 @@ const buckDefaults = (): Buck => ({
     alternateVOut: buckVoltageRange().min,
     alternateVOutControl: 'Off',
     automaticPassthrough: false,
+    enabledWhenProfiling: true, // in the default EK configuration VDDIO is connected to the buck output
     peakCurrentLimit: peakCurrentLimitValues[0],
     quickVOutDischarge: false,
     shortCircuitProtection: false,
