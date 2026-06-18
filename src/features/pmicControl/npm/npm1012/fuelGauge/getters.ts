@@ -15,12 +15,15 @@ export class FuelGaugeGet {
 
     all() {
         this.activeBatteryModel();
+        this.enabled();
+        this.storedBatteryModel();
+    }
+
+    batteryHealthAll() {
         this.batteryHealthEnabled();
         this.batteryReplacementDetection();
-        this.enabled();
         this.quickConvergenceMode();
         this.ratedMinBatteryCapacity();
-        this.storedBatteryModel();
     }
 
     activeBatteryModel() {
