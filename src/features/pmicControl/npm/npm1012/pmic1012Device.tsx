@@ -21,6 +21,7 @@ import {
     type OnBoardLoad,
     type PmicDialog,
 } from '../types';
+import { BatteryProfiler } from './batteryProfiler';
 import BuckModule, { toBuckExport } from './buck';
 import ChargerModule from './charger';
 import FuelGaugeModule from './fuelGauge';
@@ -54,6 +55,7 @@ export default class Npm1012 extends BaseNpmDevice {
                     Module: LedModule,
                     count: 1,
                 },
+                BatteryProfiler,
                 FuelGaugeModule,
                 UsbCurrentLimiterModule,
                 OnBoardLoadModule,
@@ -246,7 +248,7 @@ export default class Npm1012 extends BaseNpmDevice {
 
     // eslint-disable-next-line class-methods-use-this
     get canUploadBatteryProfiles() {
-        return false;
+        return true;
     }
 
     // TODO: Enable when overlay format is known

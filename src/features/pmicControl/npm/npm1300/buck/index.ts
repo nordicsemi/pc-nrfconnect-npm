@@ -30,6 +30,7 @@ const buckDefaults = (index: number): Buck => ({
     vOutRetention: 1,
     mode: 'vSet',
     enabled: true,
+    enabledWhenProfiling: index === 0 ? false : undefined,
     modeControl: 'Auto',
     onOffControl: 'Off',
     onOffSoftwareControlEnabled: true,

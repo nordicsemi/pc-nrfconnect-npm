@@ -281,6 +281,7 @@ export type Buck = {
     alternateVOut?: number;
     alternateVOutControl?: BuckAlternateVOutControl;
     automaticPassthrough?: boolean;
+    enabledWhenProfiling?: boolean;
     peakCurrentLimit?: number;
     quickVOutDischarge?: boolean;
     retentionControl?: BuckRetentionControl;
@@ -299,6 +300,7 @@ export type Ldo = {
     onOffControl: LdoOnOffControl;
     onOffSoftwareControlEnabled: boolean;
 
+    enabledWhenProfiling?: boolean;
     halt?: boolean;
     mode?: LdoMode;
     modeControl?: LdoModeControl;
