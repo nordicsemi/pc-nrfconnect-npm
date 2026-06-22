@@ -27,6 +27,7 @@ import { type RootState } from '../../../appReducer';
 import { PROFILE_FOLDER_PREFIX } from '../../../components/Profiling/helpers';
 import { getShellParser } from '../../serial/serialSlice';
 import {
+    fuelGaugeBatteryHealthSupported,
     getBucks,
     getEventRecording,
     getEventRecordingPath,
@@ -105,6 +106,9 @@ export default () => {
     const profilingStage = useSelector(getProfilingStage);
     const bucks = useSelector(getBucks);
     const preventSleepId = useRef<number | null>();
+    const fuelGaugeBatteryHealthSupport = useSelector(
+        fuelGaugeBatteryHealthSupported,
+    );
 
     useEffect(() => {
         if (shellParser) {
@@ -889,13 +893,7 @@ export default () => {
             dispatch(
                 setPaneHidden({
                     name: 'Fuel Gauge',
-                    hidden:
-                        !npmDevice?.fuelGaugeModule ||
-                        !(
-                            npmDevice.deviceType === 'npm1012' ||
-                            npmDevice.deviceType === 'npm1300' ||
-                            npmDevice.deviceType === 'npm1304'
-                        ),
+                    hidden: !fuelGaugeBatteryHealthSupport,
                 }),
             );
 
@@ -909,7 +907,7 @@ export default () => {
                 dispatch(setCurrentPane('Welcome'));
             }
         });
-    }, [dispatch, npmDevice, pmicState]);
+    }, [dispatch, npmDevice, pmicState, fuelGaugeBatteryHealthSupport]);
 
     useEffect(() => {
         if (
