@@ -17,7 +17,7 @@ import {
 } from '../../features/pmicControl/pmicControlSlice';
 import useIsUIDisabled from '../../features/useIsUIDisabled';
 import BatteryCard from '../Cards/Battery/BatteryCard';
-import BatteryHealthCard from '../Cards/FuelGauge/BatteryHealth';
+import BatteryHealthCard from '../Cards/Battery/BatteryHealth';
 
 export default ({ active }: PaneProps) => {
     const disabled = useIsUIDisabled();
