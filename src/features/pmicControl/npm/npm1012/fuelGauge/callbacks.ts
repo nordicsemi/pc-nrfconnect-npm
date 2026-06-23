@@ -129,6 +129,10 @@ export default (
                         }
                         break;
 
+                    case 'Fuel gauge state loaded from NVM':
+                        get.batteryHealthAll();
+                        break;
+
                     case 'JSON data download timeout':
                         shellParser?.setShellEchos(true);
 
@@ -147,6 +151,10 @@ export default (
                                 payload,
                             );
                         }
+                        break;
+
+                    case 'No stored fuel gauge state found':
+                        get.batteryHealthAll();
                         break;
                 }
             });
