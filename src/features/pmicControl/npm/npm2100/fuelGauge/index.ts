@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-/* eslint-disable no-underscore-dangle */
-
 import {
     type FuelGauge,
     type FuelGaugeModule as FuelGaugeModuleBase,
@@ -15,6 +13,9 @@ import { FuelGaugeActions } from './fuelGaugeActions';
 import fuelGaugeCallbacks from './fuelGaugeCallbacks';
 import { FuelGaugeGet } from './fuelGaugeGet';
 import { FuelGaugeSet } from './fuelGaugeSet';
+
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable class-methods-use-this */
 
 export default class Module implements FuelGaugeModuleBase {
     profileDownloadInProgress = false;
@@ -65,7 +66,6 @@ export default class Module implements FuelGaugeModuleBase {
         return this._callbacks;
     }
 
-    // eslint-disable-next-line class-methods-use-this
     get defaults(): FuelGauge {
         return {
             enabled: false,
@@ -73,5 +73,9 @@ export default class Module implements FuelGaugeModuleBase {
             notChargingSamplingRate: 1000,
             reportingRate: 2000,
         };
+    }
+
+    get ranges() {
+        return {};
     }
 }

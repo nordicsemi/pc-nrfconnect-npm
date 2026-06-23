@@ -17,17 +17,21 @@ import path from 'path';
 import {
     getProfileBuffer,
     loadBatteryProfile,
+    saveBatteryHealthProfileDialog,
 } from '../../actions/fileActions';
 import { getBundledBatteries } from '../../features/helpers';
 import { showDialog } from '../../features/pmicControl/downloadBatteryModelSlice';
 import { DocumentationTooltip } from '../../features/pmicControl/npm/documentation/documentation';
 import {
     dialogHandler,
+    DOWNLOAD_BATTERY_HEALTH_PROFILE_DIALOG_ID,
+    DOWNLOAD_BATTERY_HEALTH_PROFILE_DIALOG_TITLE,
     DOWNLOAD_BATTERY_PROFILE_DIALOG_ID,
 } from '../../features/pmicControl/npm/pmicHelpers';
 import { type BatteryModel } from '../../features/pmicControl/npm/types';
 import {
     canProfile,
+    fuelGaugeBatteryHealthProfileSupported,
     getActiveBatterModel,
     getHardcodedBatterModels,
     getLatestAdcSample,
@@ -45,6 +49,9 @@ export default ({ disabled }: { disabled: boolean }) => {
     const hardcodedBatterModels = useSelector(getHardcodedBatterModels);
     const latestAdcSample = useSelector(getLatestAdcSample);
     const profilingSupported = useSelector(canProfile);
+    const batteryHealthProfileSupported = useSelector(
+        fuelGaugeBatteryHealthProfileSupported,
+    );
 
     const getClosest = (
         batteryModel: BatteryModel | undefined,
@@ -264,6 +271,99 @@ export default ({ disabled }: { disabled: boolean }) => {
                         Profile Battery
                     </Button>
                 </DocumentationTooltip>
+            )}
+            {batteryHealthProfileSupported && (
+                <>
+                    <DocumentationTooltip
+                        placement="right-start"
+                        card="sidePanel"
+                        item="ActiveBatteryHealthProfile"
+                        keepShowingOnHoverTooltip
+                    >
+                        Active Battery Health Profile
+                    </DocumentationTooltip>
+                    <Button
+                        className="w-100"
+                        onClick={async () => {
+                            const result =
+                                await npmDevice?.requestBatteryHealthProfileData?.();
+
+                            if (result !== undefined) {
+                                saveBatteryHealthProfileDialog(result);
+                            }
+                        }}
+                        variant="secondary"
+                    >
+                        Save Battery Health Profile
+                    </Button>
+                    <Button
+                        variant="secondary"
+                        className="w-100"
+                        onClick={() => {
+                            getProfileBuffer()
+                                .then(result => {
+                                    dispatch(
+                                        dialogHandler({
+                                            cancelLabel: 'Cancel',
+                                            confirmLabel: 'Confirm',
+                                            message: (
+                                                <>
+                                                    <div>
+                                                        Replace currently stored
+                                                        battery health profile
+                                                        with data from external
+                                                        file?
+                                                    </div>
+                                                    <br />
+                                                    Selected file:{' '}
+                                                    {result.filePath}
+                                                </>
+                                            ),
+                                            onCancel: () => {},
+                                            onConfirm: () => {
+                                                if (
+                                                    activeBatteryModel !==
+                                                    undefined
+                                                ) {
+                                                    npmDevice?.fuelGaugeModule?.actions.loadBatteryHealthProfile?.(
+                                                        result.buffer,
+                                                        activeBatteryModel.name,
+                                                    );
+                                                }
+                                            },
+                                            title: DOWNLOAD_BATTERY_HEALTH_PROFILE_DIALOG_TITLE,
+                                            uuid: DOWNLOAD_BATTERY_HEALTH_PROFILE_DIALOG_ID,
+                                        }),
+                                    );
+                                })
+                                .catch(res => {
+                                    dispatch(
+                                        dialogHandler({
+                                            cancelLabel: 'Cancel',
+                                            confirmLabel: 'Confirm',
+                                            confirmDisabled: true,
+                                            message: (
+                                                <Alert
+                                                    label="Error "
+                                                    variant="danger"
+                                                >
+                                                    {res}
+                                                </Alert>
+                                            ),
+                                            onCancel: () => {},
+                                            onConfirm: () => {},
+                                            title: DOWNLOAD_BATTERY_HEALTH_PROFILE_DIALOG_TITLE,
+                                            type: 'alert',
+                                            uuid: DOWNLOAD_BATTERY_HEALTH_PROFILE_DIALOG_ID,
+                                        }),
+                                    );
+                                });
+                        }}
+                        disabled={disabled}
+                    >
+                        Load Battery Health Profile
+                    </Button>
+                </>
             )}
         </>
     );

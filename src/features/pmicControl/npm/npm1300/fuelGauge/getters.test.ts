@@ -117,6 +117,54 @@ describe('PMIC 1300 - Request update commands', () => {
             true,
         );
     });
+
+    test('Request update fuelGauge batteryHealthEnabled', () => {
+        pmic.fuelGaugeModule?.get.batteryHealthEnabled?.();
+
+        expect(mockEnqueueRequest).toBeCalledTimes(1);
+        expect(mockEnqueueRequest).toBeCalledWith(
+            'fuel_gauge health enable get',
+            expect.anything(),
+            undefined,
+            true,
+        );
+    });
+
+    test('Request update fuelGauge batteryReplacementDetection', () => {
+        pmic.fuelGaugeModule?.get.batteryReplacementDetection?.();
+
+        expect(mockEnqueueRequest).toBeCalledTimes(1);
+        expect(mockEnqueueRequest).toBeCalledWith(
+            'fuel_gauge health replacement_detection get',
+            expect.anything(),
+            undefined,
+            true,
+        );
+    });
+
+    test('Request update fuelGauge quickConvergenceMode', () => {
+        pmic.fuelGaugeModule?.get.quickConvergenceMode?.();
+
+        expect(mockEnqueueRequest).toBeCalledTimes(1);
+        expect(mockEnqueueRequest).toBeCalledWith(
+            'fuel_gauge health quick_convergence get',
+            expect.anything(),
+            undefined,
+            true,
+        );
+    });
+
+    test('Request update fuelGauge ratedMinBatteryCapacity', () => {
+        pmic.fuelGaugeModule?.get.ratedMinBatteryCapacity?.();
+
+        expect(mockEnqueueRequest).toBeCalledTimes(1);
+        expect(mockEnqueueRequest).toBeCalledWith(
+            'fuel_gauge health rated_min_capacity get',
+            expect.anything(),
+            undefined,
+            true,
+        );
+    });
 });
 
 export {};

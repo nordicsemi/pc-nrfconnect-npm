@@ -418,6 +418,14 @@ export const getHardcodedBatterModels = (state: RootState) =>
     state.app.pmicControl.hardcodedBatterModels;
 export const getStoredBatterModels = (state: RootState) =>
     state.app.pmicControl.storedBatterModel;
+export const fuelGaugeBatteryHealthSupported = (state: RootState) =>
+    state.app.pmicControl.npmDevice?.fuelGaugeModule &&
+    state.app.pmicControl.fuelGaugeSettings.batteryHealthEnabled !== undefined;
+export const fuelGaugeBatteryHealthProfileSupported = (state: RootState) =>
+    state.app.pmicControl.npmDevice?.fuelGaugeModule &&
+    state.app.pmicControl.npmDevice.fuelGaugeModule.actions
+        .loadBatteryHealthProfile &&
+    state.app.pmicControl.npmDevice.requestBatteryHealthProfileData;
 export const getUsbPower = (state: RootState) => state.app.pmicControl.usbPower;
 export const canProfile = (state: RootState) =>
     state.app.pmicControl.npmDevice?.batteryProfiler !== undefined;

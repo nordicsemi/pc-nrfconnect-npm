@@ -27,6 +27,7 @@ import { type RootState } from '../../../appReducer';
 import { PROFILE_FOLDER_PREFIX } from '../../../components/Profiling/helpers';
 import { getShellParser } from '../../serial/serialSlice';
 import {
+    fuelGaugeBatteryHealthSupported,
     getBucks,
     getEventRecording,
     getEventRecordingPath,
@@ -82,6 +83,8 @@ import {
 import { getNpmDevice } from './npmFactory';
 import {
     dialogHandler,
+    DOWNLOAD_BATTERY_HEALTH_PROFILE_DIALOG_ID,
+    DOWNLOAD_BATTERY_HEALTH_PROFILE_DIALOG_TITLE,
     DOWNLOAD_BATTERY_PROFILE_DIALOG_ID,
     noop,
     SupportsErrorLogs,
@@ -103,6 +106,9 @@ export default () => {
     const profilingStage = useSelector(getProfilingStage);
     const bucks = useSelector(getBucks);
     const preventSleepId = useRef<number | null>();
+    const fuelGaugeBatteryHealthSupport = useSelector(
+        fuelGaugeBatteryHealthSupported,
+    );
 
     useEffect(() => {
         if (shellParser) {
@@ -481,6 +487,99 @@ export default () => {
             );
 
             releaseAll.push(
+                npmDevice.onLoadBatteryHealthProfileUpdate(payload => {
+                    const initialProgressDialog: PmicDialog = {
+                        cancelDisabled: false,
+                        cancelLabel: 'Close',
+                        confirmDisabled: true,
+                        confirmLabel: 'Confirm',
+                        message: DOWNLOAD_BATTERY_HEALTH_PROFILE_DIALOG_TITLE,
+                        onCancel: () => {},
+                        onConfirm: () => {},
+                        title: DOWNLOAD_BATTERY_HEALTH_PROFILE_DIALOG_TITLE,
+                        uuid: DOWNLOAD_BATTERY_HEALTH_PROFILE_DIALOG_ID,
+                    };
+
+                    switch (payload.state) {
+                        case 'downloading':
+                            dispatch(
+                                dialogHandler({
+                                    ...initialProgressDialog,
+                                    cancelLabel: 'Abort',
+                                    cancelClosesDialog: false,
+                                    onCancel: () => {
+                                        npmDevice.fuelGaugeModule?.actions.abortLoadBatteryHealthProfile?.();
+                                    },
+                                    message: (
+                                        <>
+                                            <strong>Status: </strong>
+                                            Downloading...
+                                        </>
+                                    ),
+                                    progress: 50,
+                                }),
+                            );
+                            break;
+                        case 'aborting':
+                            dispatch(
+                                dialogHandler({
+                                    ...initialProgressDialog,
+                                    message: (
+                                        <>
+                                            <strong>Status: </strong>
+                                            Aborting download
+                                        </>
+                                    ),
+                                }),
+                            );
+                            break;
+                        case 'aborted':
+                            dispatch(
+                                dialogHandler({
+                                    ...initialProgressDialog,
+                                    message: (
+                                        <Alert
+                                            label="Caution: "
+                                            variant="warning"
+                                        >
+                                            {payload.alertMessage}
+                                        </Alert>
+                                    ),
+                                }),
+                            );
+                            break;
+                        case 'applied':
+                            dispatch(
+                                dialogHandler({
+                                    ...initialProgressDialog,
+                                    message: (
+                                        <Alert
+                                            label="Success: "
+                                            variant="success"
+                                        >
+                                            {payload.alertMessage}
+                                        </Alert>
+                                    ),
+                                }),
+                            );
+                            break;
+                        case 'failed':
+                            dispatch(
+                                dialogHandler({
+                                    ...initialProgressDialog,
+                                    message: (
+                                        <Alert label="Error: " variant="danger">
+                                            {payload.alertMessage}
+                                        </Alert>
+                                    ),
+                                }),
+                            );
+                            break;
+                    }
+                }),
+            );
+
+            releaseAll.push(
                 npmDevice.onBeforeReboot(() => {
                     dispatch((dis, getState) => {
                         const previousWaitForDevice =
@@ -555,6 +654,12 @@ export default () => {
             dispatch(setPmicState(npmDevice.pmicState));
             dispatch(setCharger(npmDevice.chargerModule?.defaults));
             dispatch(setOnBoardLoad(npmDevice.onBoardLoadModule?.defaults));
+
+            dispatch(
+                npmDevice.fuelGaugeModule
+                    ? updateFuelGauge(npmDevice.fuelGaugeModule.defaults)
+                    : noop,
+            );
 
             dispatch(
                 setBoosts(npmDevice.boostModule.map(boost => boost.defaults)),
@@ -785,6 +890,12 @@ export default () => {
                     hidden: !npmDevice?.canUploadBatteryProfiles,
                 }),
             );
+            dispatch(
+                setPaneHidden({
+                    name: 'Fuel Gauge',
+                    hidden: !fuelGaugeBatteryHealthSupport,
+                }),
+            );
 
             dispatch(
                 setPaneHidden({
@@ -796,7 +907,7 @@ export default () => {
                 dispatch(setCurrentPane('Welcome'));
             }
         });
-    }, [dispatch, npmDevice, pmicState]);
+    }, [dispatch, npmDevice, pmicState, fuelGaugeBatteryHealthSupport]);
 
     useEffect(() => {
         if (

@@ -198,9 +198,16 @@ export type FuelGauge = {
     enabled: boolean;
     notChargingSamplingRate: number;
     reportingRate: number;
-    chargingSamplingRate?: number;
+
     activeBatterModel?: BatteryModel;
+    actualCapacity?: number;
+    batteryHealthEnabled?: boolean;
+    batteryReplacementDetection?: boolean;
+    chargingSamplingRate?: number;
+    cycleCount?: number;
     discardPosiiveDeltaZ?: boolean;
+    quickConvergenceMode?: boolean;
+    ratedMinBatteryCapacity?: number;
 };
 
 export type Charger = {
@@ -591,6 +598,10 @@ export interface ProfileDownload {
     alertMessage?: string;
     slot?: number;
 }
+export interface BatteryHealthProfileLoadUpdate {
+    alertMessage?: string;
+    state: 'downloading' | 'aborted' | 'aborting' | 'applied' | 'failed';
+}
 
 export type FixedListRange = number[] | FixedListRangeWithLabel;
 export type FixedListRangeWithLabel = number[] & {
@@ -618,14 +629,29 @@ export interface FuelGaugeModule {
         enabled: () => void;
         activeBatteryModel: () => void;
         storedBatteryModel: () => void;
+
+        batteryHealthAll?: () => void;
+        batteryHealthEnabled?: () => void;
+        batteryReplacementDetection?: () => void;
         discardPosiiveDeltaZ?: () => void;
+        quickConvergenceMode?: () => void;
+        ratedMinBatteryCapacity?: () => void;
     };
     set: {
         all: (config: FuelGaugeExport) => Promise<void>;
         enabled: (enabled: boolean) => Promise<void>;
         activeBatteryModel: (name: string) => Promise<void>;
+
+        adcSample?: (
+            reportingRate: number,
+            samplingInterval: number,
+        ) => Promise<void>;
+        batteryHealthEnabled?: (value: boolean) => Promise<void>;
+        batteryReplacementDetection?: (value: boolean) => Promise<void>;
         batteryStatusCheckEnabled?: (enabled: boolean) => Promise<void>;
         discardPosiiveDeltaZ?: (value: boolean) => void;
+        quickConvergenceMode?: (value: boolean) => Promise<void>;
+        ratedMinBatteryCapacity?: (value: number) => Promise<void>;
     };
     actions: {
         abortDownloadFuelGaugeProfile: () => Promise<void>;
@@ -635,6 +661,18 @@ export interface FuelGaugeModule {
             slot?: number,
         ) => Promise<void>;
         reset: () => Promise<void>;
+
+        abortLoadBatteryHealthProfile?: () => Promise<void>;
+        loadBatteryHealthProfile?: (
+            profile: Buffer,
+            batteryModelName: string,
+            slot?: number,
+        ) => Promise<void>;
+        resetBatteryHealthData?: () => Promise<void>;
+    };
+    ranges: {
+        ratedMinBatteryCapacity?: Range;
+        samplingInterval?: Range;
     };
     callbacks: (() => void)[];
     defaults: FuelGauge;

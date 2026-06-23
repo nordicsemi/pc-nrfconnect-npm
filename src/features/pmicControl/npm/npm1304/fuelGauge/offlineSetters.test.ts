@@ -23,6 +23,42 @@ describe('PMIC 1304 - Setters Offline tests', () => {
             enabled: false,
         } satisfies Partial<FuelGauge>);
     });
+
+    test('Set fuelGauge batteryHealthEnabled', async () => {
+        await pmic.fuelGaugeModule?.set.batteryHealthEnabled?.(false);
+
+        expect(mockOnFuelGaugeUpdate).toBeCalledTimes(1);
+        expect(mockOnFuelGaugeUpdate).toBeCalledWith({
+            batteryHealthEnabled: false,
+        } satisfies Partial<FuelGauge>);
+    });
+
+    test('Set fuelGauge batteryReplacementDetection', async () => {
+        await pmic.fuelGaugeModule?.set.batteryReplacementDetection?.(false);
+
+        expect(mockOnFuelGaugeUpdate).toBeCalledTimes(1);
+        expect(mockOnFuelGaugeUpdate).toBeCalledWith({
+            batteryReplacementDetection: false,
+        } satisfies Partial<FuelGauge>);
+    });
+
+    test('Set fuelGauge quickConvergenceMode', async () => {
+        await pmic.fuelGaugeModule?.set.quickConvergenceMode?.(false);
+
+        expect(mockOnFuelGaugeUpdate).toBeCalledTimes(1);
+        expect(mockOnFuelGaugeUpdate).toBeCalledWith({
+            quickConvergenceMode: false,
+        } satisfies Partial<FuelGauge>);
+    });
+
+    test('Set fuelGauge ratedMinBatteryCapacity', async () => {
+        await pmic.fuelGaugeModule?.set.ratedMinBatteryCapacity?.(100);
+
+        expect(mockOnFuelGaugeUpdate).toBeCalledTimes(1);
+        expect(mockOnFuelGaugeUpdate).toBeCalledWith({
+            ratedMinBatteryCapacity: 100,
+        } satisfies Partial<FuelGauge>);
+    });
 });
 
 export {};

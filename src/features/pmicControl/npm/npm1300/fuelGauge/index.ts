@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-/* eslint-disable no-underscore-dangle */
+import { type Range } from '@nordicsemiconductor/pc-nrfconnect-shared';
+
 import {
     type FuelGauge,
     type FuelGaugeModule as FuelGaugeModuleBase,
@@ -15,7 +16,26 @@ import fuelGaugeCallbacks from './callbacks';
 import { FuelGaugeGet } from './getters';
 import { FuelGaugeSet } from './setters';
 
+const ratedMinBatteryCapacityRange: Range = {
+    decimals: 0,
+    max: 1000,
+    min: 1,
+    step: 1,
+};
+
+const samplingIntervalRange: Range = {
+    decimals: 1,
+    max: 3600,
+    min: 0.1,
+    step: 0.1,
+};
+
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable class-methods-use-this */
+
 export default class Module implements FuelGaugeModuleBase {
+    batteryHealthProfileLoadInProgress = false;
+    batteryHealthProfileLoadAborting = false;
     profileDownloadInProgress = false;
     profileDownloadAborting = false;
     private _get: FuelGaugeGet;
@@ -56,13 +76,25 @@ export default class Module implements FuelGaugeModuleBase {
         return this._callbacks;
     }
 
-    // eslint-disable-next-line class-methods-use-this
     get defaults(): FuelGauge {
         return {
-            enabled: false,
+            actualCapacity: Number.NaN,
+            batteryHealthEnabled: false,
+            batteryReplacementDetection: false,
             chargingSamplingRate: 500,
+            cycleCount: Number.NaN,
+            enabled: false,
             notChargingSamplingRate: 1000,
+            quickConvergenceMode: false,
+            ratedMinBatteryCapacity: ratedMinBatteryCapacityRange.min,
             reportingRate: 2000,
+        };
+    }
+
+    get ranges() {
+        return {
+            ratedMinBatteryCapacity: ratedMinBatteryCapacityRange,
+            samplingInterval: samplingIntervalRange,
         };
     }
 }

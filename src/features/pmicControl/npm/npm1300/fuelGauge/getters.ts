@@ -19,6 +19,13 @@ export class FuelGaugeGet {
         this.storedBatteryModel();
     }
 
+    batteryHealthAll() {
+        this.batteryHealthEnabled();
+        this.batteryReplacementDetection();
+        this.quickConvergenceMode();
+        this.ratedMinBatteryCapacity();
+    }
+
     enabled() {
         this.sendCommand('fuel_gauge get');
     }
@@ -29,5 +36,21 @@ export class FuelGaugeGet {
 
     storedBatteryModel() {
         this.sendCommand(`fuel_gauge model list`);
+    }
+
+    batteryHealthEnabled() {
+        this.sendCommand('fuel_gauge health enable get');
+    }
+
+    batteryReplacementDetection() {
+        this.sendCommand('fuel_gauge health replacement_detection get');
+    }
+
+    quickConvergenceMode() {
+        this.sendCommand('fuel_gauge health quick_convergence get');
+    }
+
+    ratedMinBatteryCapacity() {
+        this.sendCommand('fuel_gauge health rated_min_capacity get');
     }
 }

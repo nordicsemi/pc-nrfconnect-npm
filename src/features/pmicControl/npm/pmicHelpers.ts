@@ -321,6 +321,10 @@ export const isNpm2100SerialRecoverMode = (device: Device) =>
 export const MAX_TIMESTAMP = 2 ** 32 - 1; //  2^32
 export const DOWNLOAD_BATTERY_PROFILE_DIALOG_ID = 'downloadBatteryProfile';
 export const GENERATE_BATTERY_PROFILE_DIALOG_ID = 'generateBatteryProfile';
+export const DOWNLOAD_BATTERY_HEALTH_PROFILE_DIALOG_ID =
+    'downloadBatteryHealthProfile';
+export const DOWNLOAD_BATTERY_HEALTH_PROFILE_DIALOG_TITLE =
+    'Load battery health profile';
 
 export class NpmEventEmitter extends EventEmitter {
     emitPartialEvent<T>(eventName: string, data: Partial<T>, index?: number) {

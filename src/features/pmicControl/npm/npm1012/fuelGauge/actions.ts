@@ -5,7 +5,10 @@
  */
 
 import { type NpmEventEmitter, parseColonBasedAnswer } from '../../pmicHelpers';
-import { type ProfileDownload } from '../../types';
+import {
+    type BatteryHealthProfileLoadUpdate,
+    type ProfileDownload,
+} from '../../types';
 import type FuelGaugeModule from '.';
 import { FuelGaugeGet } from './getters';
 
@@ -23,6 +26,25 @@ export class FuelGaugeActions {
         private fuelGaugeModule: FuelGaugeModule,
     ) {
         this.get = new FuelGaugeGet(sendCommand);
+    }
+
+    abortLoadBatteryHealthProfile() {
+        return new Promise<void>((resolve, reject) => {
+            const profileDownload: BatteryHealthProfileLoadUpdate = {
+                state: 'aborting',
+            };
+            this.eventEmitter.emit(
+                'onLoadBatteryHealthProfileUpdate',
+                profileDownload,
+            );
+
+            this.fuelGaugeModule.batteryHealthProfileLoadAborting = true;
+            this.sendCommand(
+                `fuel_gauge state download abort`,
+                () => resolve(),
+                () => reject(),
+            );
+        });
     }
 
     abortDownloadFuelGaugeProfile() {
@@ -52,6 +74,41 @@ export class FuelGaugeActions {
                 () => {
                     resolve();
                 },
+                () => reject(),
+            );
+        });
+    }
+
+    loadBatteryHealthProfile(
+        profile: Buffer,
+        batteryModelName: string,
+        slot = 0,
+    ) {
+        return new Promise<void>((resolve, reject) => {
+            const onDownload = () => {
+                const profileDownload: BatteryHealthProfileLoadUpdate = {
+                    state: 'downloading',
+                };
+                this.eventEmitter.emit(
+                    'onLoadBatteryHealthProfileUpdate',
+                    profileDownload,
+                );
+
+                const dataString = profile.toString().replaceAll('"', '\\"');
+                this.sendCommand(`fuel_gauge state download "${dataString}"`);
+
+                this.sendCommand(
+                    `fuel_gauge state download apply ${slot} ${batteryModelName}`,
+                    () => resolve(),
+                    () => reject(),
+                );
+            };
+
+            this.fuelGaugeModule.batteryHealthProfileLoadAborting = false;
+            this.fuelGaugeModule.batteryHealthProfileLoadInProgress = true;
+            this.sendCommand(
+                'fuel_gauge state download begin',
+                onDownload,
                 () => reject(),
             );
         });
@@ -131,6 +188,16 @@ export class FuelGaugeActions {
                 () => {
                     resolve();
                 },
+                () => reject(),
+            );
+        });
+    }
+
+    resetBatteryHealthData() {
+        return new Promise<void>((resolve, reject) => {
+            this.sendCommand(
+                'fuel_gauge health reset',
+                () => resolve(),
                 () => reject(),
             );
         });
