@@ -41,7 +41,7 @@ export default ({
     // NumberInputSliderWithUnit do not use config.<prop> as value as we send only at on change complete
     useEffect(() => {
         setInternalRatedMinBatteryCapacity(config.ratedMinBatteryCapacity);
-    }, [config]);
+    }, [config.ratedMinBatteryCapacity]);
 
     return (
         <Card
