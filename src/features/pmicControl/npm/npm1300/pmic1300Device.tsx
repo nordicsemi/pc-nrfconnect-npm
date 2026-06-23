@@ -41,7 +41,7 @@ import ResetModule from './reset';
 import TimerConfigModule from './timerConfig';
 import UsbCurrentLimiterModule from './universalSerialBusCurrentLimiter';
 
-export const npm1300FWVersion = '1.3.6+0';
+export const npm1300FWVersion = '1.5.0+0';
 
 export default class Npm1300 extends BaseNpmDevice {
     constructor(
