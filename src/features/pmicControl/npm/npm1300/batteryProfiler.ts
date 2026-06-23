@@ -302,8 +302,10 @@ export class BatteryProfiler implements BatteryProfilerBase {
         capacity: number,
         vUpperCutOff: number,
         vLowerCutOff: number,
-        vTerm: number,
+        _vTerm: number,
     ): CCProfile[] {
+        const vRange = vUpperCutOff - vLowerCutOff; // usable discharge window
+
         return [
             {
                 tLoad: 500,
@@ -317,14 +319,14 @@ export class BatteryProfiler implements BatteryProfilerBase {
                 tRest: 2400000, // 40Min // 1304 1hr
                 iLoad: capacity / 5 / 1000, // A // 1304 apacity / 6 / 1000
                 iRest: 0,
-                vCutoff: vUpperCutOff - 0.3,
+                vCutoff: vLowerCutOff + 0.65 * vRange,
             },
             {
                 tLoad: 300000, // 5Min
                 tRest: 1800000, // 30Min // 1304 45min
                 iLoad: capacity / 5 / 1000, // A  // 1304 apacity / 6 / 1000
                 iRest: 0,
-                vCutoff: Math.min(vLowerCutOff + 0.5, vTerm),
+                vCutoff: vLowerCutOff + 0.4 * vRange,
             },
             {
                 tLoad: 300000, // 5Min

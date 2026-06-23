@@ -86,10 +86,12 @@ export class BatteryProfiler extends nPM1300BatteryProfiler {
     // eslint-disable-next-line class-methods-use-this
     loadProfile(
         capacity: number,
-        _vUpperCutOff: number,
+        vUpperCutOff: number,
         vLowerCutOff: number,
-        vTerm: number,
+        _vTerm: number,
     ): CCProfile[] {
+        const vRange = vUpperCutOff - vLowerCutOff; // usable discharge window
+
         return [
             {
                 tLoad: 500,
@@ -103,14 +105,14 @@ export class BatteryProfiler extends nPM1300BatteryProfiler {
                 tRest: 2400000, // 40Min
                 iLoad: capacity / 6 / 1000, // A
                 iRest: 0,
-                vCutoff: Math.min(vLowerCutOff + 0.8, vTerm),
+                vCutoff: vLowerCutOff + 0.65 * vRange,
             },
             {
                 tLoad: 300000, // 5Min
                 tRest: 2400000, // 40Min
                 iLoad: capacity / 6 / 1000, // A
                 iRest: 0,
-                vCutoff: Math.min(vLowerCutOff + 0.5, vTerm),
+                vCutoff: vLowerCutOff + 0.4 * vRange,
             },
             {
                 tLoad: 300000, // 5Min
