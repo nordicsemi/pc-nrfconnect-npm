@@ -14,6 +14,7 @@ import {
 import {
     getFuelGaugeSettings,
     getNpmDevice,
+    isBatteryConnected,
 } from '../../features/pmicControl/pmicControlSlice';
 import useIsUIDisabled from '../../features/useIsUIDisabled';
 import BatteryCard from '../Cards/Battery/BatteryCard';
@@ -23,6 +24,7 @@ export default ({ active }: PaneProps) => {
     const disabled = useIsUIDisabled();
     const npmDevice = useSelector(getNpmDevice);
     const fuelGaugeConfig = useSelector(getFuelGaugeSettings);
+    const batteryConnected = useSelector(isBatteryConnected);
 
     return active ? (
         <MasonryLayout className="masonry-layout" minWidth={300}>
@@ -31,7 +33,11 @@ export default ({ active }: PaneProps) => {
                 <BatteryHealthCard
                     config={fuelGaugeConfig}
                     module={npmDevice.fuelGaugeModule}
-                    disabled={disabled}
+                    disabled={
+                        disabled ||
+                        !batteryConnected ||
+                        !fuelGaugeConfig.enabled
+                    }
                 />
             )}
         </MasonryLayout>
