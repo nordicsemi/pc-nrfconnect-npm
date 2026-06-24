@@ -122,6 +122,13 @@ export default (
                                     payload,
                                 );
                             }
+                        } else if (
+                            loggingEvent.message ===
+                                'Fuel gauge state loaded from NVM' ||
+                            loggingEvent.message ===
+                                'No stored fuel gauge state found'
+                        ) {
+                            get.batteryHealthAll();
                         }
                     }
                 });
