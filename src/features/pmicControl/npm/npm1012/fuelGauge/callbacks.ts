@@ -15,7 +15,7 @@ import {
     parseLogData,
     parseOnOff,
     parseToBoolean,
-    parseToNumber,
+    parseToFloat,
     toRegex,
 } from '../../pmicHelpers';
 import {
@@ -359,7 +359,9 @@ export default (
             toRegex('fuel_gauge health rated_min_capacity', true),
             res =>
                 eventEmitter.emitPartialEvent<FuelGauge>('onFuelGauge', {
-                    ratedMinBatteryCapacity: parseToNumber(res),
+                    ratedMinBatteryCapacity: Number.parseFloat(
+                        parseToFloat(res).toFixed(1),
+                    ),
                 }),
             noop,
         ),
