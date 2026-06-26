@@ -250,7 +250,7 @@ Battery models stored in database:
     });
 
     test.each(
-        [100]
+        [100.155]
             .map(value => [
                 {
                     append: 'get',
@@ -271,7 +271,7 @@ Battery models stored in database:
 
         expect(mockOnFuelGaugeUpdate).toBeCalledTimes(1);
         expect(mockOnFuelGaugeUpdate).toBeCalledWith({
-            ratedMinBatteryCapacity: value,
+            ratedMinBatteryCapacity: Number.parseFloat(value.toFixed(1)), // expect float with 1 decimal of precision
         } satisfies Partial<FuelGauge>);
     });
 });
