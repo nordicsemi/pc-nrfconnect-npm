@@ -64,8 +64,13 @@ describe('PMIC 1012 - Logging', () => {
     });
 
     describe('Specific logging events', () => {
-        let { eventHandlers, mockOnAdcSample, mockOnBeforeReboot, pmic } =
-            setupMocksWithShellParser();
+        let {
+            eventHandlers,
+            mockOnAdcSample,
+            mockOnFuelGaugeUpdate,
+            mockOnBeforeReboot,
+            pmic,
+        } = setupMocksWithShellParser();
 
         beforeEach(() => {
             const setupMock = setupMocksWithShellParser();
@@ -73,6 +78,7 @@ describe('PMIC 1012 - Logging', () => {
             eventHandlers = setupMock.eventHandlers;
             mockOnAdcSample = setupMock.mockOnAdcSample;
             mockOnBeforeReboot = setupMock.mockOnBeforeReboot;
+            mockOnFuelGaugeUpdate = setupMock.mockOnFuelGaugeUpdate;
             pmic = setupMock.pmic;
         });
 
@@ -99,63 +105,69 @@ describe('PMIC 1012 - Logging', () => {
 
         test('Adc Sample Logging event once', () => {
             eventHandlers.mockOnShellLoggingEventHandler(
-                '[00:00:17.525,000] <inf> module_pmic_adc: ibat=0.000617,vbat=4.248000,tdie=26.656051,soc=98.705001,tte=312,ttf=514',
+                '[00:00:17.525,000] <inf> module_pmic_adc: ibat=0.000617,vbat=4.248000,tbat=26.656051,soc=98.705001,tte=312,ttf=514,soh=98.76,cycle_count=10',
             );
 
             expect(mockOnAdcSample).toBeCalledTimes(1);
             expect(mockOnAdcSample).toBeCalledWith({
-                iBat: 0.62,
-                soc: 98.7,
-                tBat: 0,
+                iBat: 0.617, // converted to mA
+                soc: 98.705001,
+                tBat: 26.656051,
                 timestamp: 17525,
                 tte: 312,
                 ttf: 514,
-                vBat: 4.25,
+                vBat: 4.248,
+            });
+
+            expect(mockOnFuelGaugeUpdate).toBeCalledTimes(1);
+            expect(mockOnFuelGaugeUpdate).toBeCalledWith({
+                actualCapacity: 98.76,
+                cycleCount: 10,
             });
         });
 
         test('Adc Sample Logging event - overflow 1193.046471111111 hrs +', () => {
             eventHandlers.mockOnShellLoggingEventHandler(
-                '[00:00:16.525,000] <inf> module_pmic_adc: ibat=0.000617,vbat=4.248000,tdie=26.656051,soc=98.705001,tte=312,ttf=514',
+                '[00:00:16.525,000] <inf> module_pmic_adc: ibat=0.000617,vbat=4.248000,tbat=26.656051,soc=98.705001,tte=312,ttf=514,soh=98.76,cycle_count=10',
             );
 
             eventHandlers.mockOnShellLoggingEventHandler(
-                '[00:00:10.525,000] <inf> module_pmic_adc: ibat=0.000617,vbat=4.248000,tdie=26.656051,soc=98.705001,tte=312,ttf=514',
+                '[00:00:10.525,000] <inf> module_pmic_adc: ibat=0.000617,vbat=4.248000,tbat=26.656051,soc=98.705001,tte=312,ttf=514,soh=98.76,cycle_count=10',
             );
 
             eventHandlers.mockOnShellLoggingEventHandler(
-                '[00:00:8.525,000] <inf> module_pmic_adc: ibat=0.000617,vbat=4.248000,tdie=26.656051,soc=98.705001,tte=312,ttf=514',
+                '[00:00:8.525,000] <inf> module_pmic_adc: ibat=0.000617,vbat=4.248000,tbat=26.656051,soc=98.705001,tte=312,ttf=514,soh=98.76,cycle_count=10',
             );
 
             expect(mockOnAdcSample).toBeCalledTimes(3);
             expect(mockOnAdcSample).nthCalledWith(1, {
-                iBat: 0.62,
-                soc: 98.7,
-                tBat: 0,
+                iBat: 0.617, // converted to mA
+                soc: 98.705001,
+                tBat: 26.656051,
                 timestamp: 16525,
                 tte: 312,
                 ttf: 514,
-                vBat: 4.25,
+                vBat: 4.248,
             });
 
             expect(mockOnAdcSample).nthCalledWith(2, {
-                iBat: 0.62,
-                soc: 98.7,
-                tBat: 0,
+                iBat: 0.617,
+                soc: 98.705001,
+                tBat: 26.656051,
                 timestamp: 2 ** 32 - 1 + 10525, // 1193hrs 02min 47sec 295ms + 10.525 sec
                 tte: 312,
                 ttf: 514,
-                vBat: 4.25,
+                vBat: 4.248,
             });
 
             expect(mockOnAdcSample).nthCalledWith(3, {
-                iBat: 0.62,
-                soc: 98.7,
-                tBat: 0,
+                iBat: 0.617,
+                soc: 98.705001,
+                tBat: 26.656051,
                 timestamp: (2 ** 32 - 1) * 2 + 8525, // 1193hrs 02min 47sec 295ms + 8.525 sec
                 tte: 312,
                 ttf: 514,
-                vBat: 4.25,
+                vBat: 4.248,
             });
         });
     });
