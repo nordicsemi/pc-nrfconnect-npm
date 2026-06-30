@@ -1,3 +1,9 @@
+## 2.2.6 - 2026-07-01
+
+### Added
+
+- nPM1300 and nPM1304: Fuel Gauge 2.0 Support.
+
 ## 2.2.5 - 2026-05-19
 
 ### Fixed
