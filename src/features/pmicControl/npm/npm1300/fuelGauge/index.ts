@@ -17,10 +17,10 @@ import { FuelGaugeGet } from './getters';
 import { FuelGaugeSet } from './setters';
 
 const ratedMinBatteryCapacityRange: Range = {
-    decimals: 0,
+    decimals: 1,
     max: 1000,
-    min: 1,
-    step: 1,
+    min: 0.1,
+    step: 0.1,
 };
 
 const samplingIntervalRange: Range = {
