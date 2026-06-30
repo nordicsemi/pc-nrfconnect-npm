@@ -136,81 +136,49 @@ export default class Npm1012 extends BaseNpmDevice {
         }
     }
 
-    private processModulePmicAdc({
-        timestamp,
-        message,
-        logLevel,
-    }: LoggingEvent) {
+    private processModulePmicAdc({ timestamp, message }: LoggingEvent) {
+        const match = message.match(
+            /ibat=(?<ibat>[^,]+),vbat=(?<vbat>[^,]+),tbat=(?<tbat>[^,]+),soc=(?<soc>[^,]+),tte=(?<tte>[^,]+),ttf=(?<ttf>[^,]+),soh=(?<soh>[^,]+),cycle_count=(?<cycle_count>[^,]+)/,
+        );
+
         if (
-            logLevel === 'err' &&
-            message.startsWith('Error: ADC reading failed')
+            !match?.groups ||
+            !match.groups.cycle_count ||
+            !match.groups.ibat ||
+            !match.groups.soc ||
+            !match.groups.soh ||
+            !match.groups.tbat ||
+            !match.groups.tte ||
+            !match.groups.ttf ||
+            !match.groups.vbat
         ) {
-            // TODO: handle event
             return;
         }
 
-        const messageParts = message.split(',');
         const adcSample: AdcSample = {
-            iBat: NaN,
-            soc: NaN,
-            tBat: 0,
+            iBat: Number(match.groups.ibat) * 1000, // convert to mA
+            soc: Number(match.groups.soc),
+            tBat: Number(match.groups.tbat),
             timestamp,
-            tte: NaN,
-            ttf: NaN,
-            vBat: 0,
+            tte: Number(match.groups.tte),
+            ttf: Number(match.groups.ttf),
+            vBat: Number(match.groups.vbat),
         };
-
-        const fixed = (dp: number, value?: string | number) =>
-            Number(Number(value ?? 0).toFixed(dp));
-
-        const fuelGaugeUpdate: Partial<FuelGauge> = {};
-
-        messageParts.forEach(part => {
-            const pair = part.split('=');
-            switch (pair[0]) {
-                case 'cycle_count':
-                    fuelGaugeUpdate.cycleCount = Number(pair[1]);
-                    break;
-                case 'ibat':
-                    adcSample.iBat = fixed(2, Number(pair[1] ?? NaN) * 1000);
-                    break;
-                case 'soc':
-                    adcSample.soc = Math.min(
-                        100,
-                        Math.max(0, fixed(1, pair[1])),
-                    );
-                    break;
-                case 'soh':
-                    fuelGaugeUpdate.actualCapacity = Number(pair[1]);
-                    break;
-                case 'tbat':
-                    adcSample.tBat = fixed(1, pair[1]);
-                    break;
-                case 'tte':
-                    adcSample.tte = Number(pair[1] ?? NaN);
-                    break;
-                case 'ttf':
-                    adcSample.ttf = Number(pair[1] ?? NaN);
-                    break;
-                case 'vbat':
-                    adcSample.vBat = fixed(2, pair[1]);
-                    break;
-            }
-        });
-
         if (adcSample.timestamp < this.lastUptime) {
             this.uptimeOverflowCounter += 1;
             adcSample.timestamp += MAX_TIMESTAMP * this.uptimeOverflowCounter;
         }
+        this.lastUptime = adcSample.timestamp;
+        this.eventEmitter.emit('onAdcSample', adcSample);
 
+        const fuelGaugeUpdate: Partial<FuelGauge> = {
+            actualCapacity: Number(match.groups.soh),
+            cycleCount: Number(match.groups.cycle_count),
+        };
         this.eventEmitter.emitPartialEvent<FuelGauge>(
             'onFuelGauge',
             fuelGaugeUpdate,
         );
-
-        this.lastUptime = adcSample.timestamp;
-
-        this.eventEmitter.emit('onAdcSample', adcSample);
     }
 
     // eslint-disable-next-line class-methods-use-this
@@ -292,19 +260,6 @@ export default class Npm1012 extends BaseNpmDevice {
                 },
                 undefined,
                 true,
-            );
-        });
-    }
-
-    startAdcSample(intervalMs: number, samplingRate: number) {
-        return new Promise<void>((resolve, reject) => {
-            this.sendCommand(
-                `npm_adc sample ${samplingRate} ${intervalMs}`,
-                () => {
-                    this.fuelGaugeModule?.get.batteryHealthAll?.(); // need to be requested after "npm_adc sample"
-                    resolve();
-                },
-                () => reject(),
             );
         });
     }

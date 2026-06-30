@@ -15,7 +15,7 @@ import {
     parseLogData,
     parseOnOff,
     parseToBoolean,
-    parseToNumber,
+    parseToFloat,
     toRegex,
 } from '../../pmicHelpers';
 import {
@@ -122,6 +122,13 @@ export default (
                                     payload,
                                 );
                             }
+                        } else if (
+                            loggingEvent.message ===
+                                'Fuel gauge state loaded from NVM' ||
+                            loggingEvent.message ===
+                                'No stored fuel gauge state found'
+                        ) {
+                            get.batteryHealthAll();
                         }
                     }
                 });
@@ -337,7 +344,9 @@ export default (
                 toRegex('fuel_gauge health rated_min_capacity', true),
                 res =>
                     eventEmitter.emitPartialEvent<FuelGauge>('onFuelGauge', {
-                        ratedMinBatteryCapacity: parseToNumber(res),
+                        ratedMinBatteryCapacity: Number.parseFloat(
+                            parseToFloat(res).toFixed(1),
+                        ),
                     }),
                 noop,
             ),

@@ -108,11 +108,11 @@ describe('PMIC 1012 - Setters Online tests', () => {
         );
 
         test('Set fuelGauge ratedMinBatteryCapacity: %p', async () => {
-            await pmic.fuelGaugeModule?.set.ratedMinBatteryCapacity?.(100);
+            await pmic.fuelGaugeModule?.set.ratedMinBatteryCapacity?.(100.1);
 
             expect(mockEnqueueRequest).toBeCalledTimes(1);
             expect(mockEnqueueRequest).toBeCalledWith(
-                'fuel_gauge health rated_min_capacity set 100',
+                'fuel_gauge health rated_min_capacity set 100.1',
                 expect.anything(),
                 undefined,
                 true,
@@ -269,13 +269,13 @@ describe('PMIC 1012 - Setters Online tests', () => {
 
         test('Set fuelGauge ratedMinBatteryCapacity - Fail immediately', async () => {
             await expect(
-                pmic.fuelGaugeModule?.set.ratedMinBatteryCapacity?.(100),
+                pmic.fuelGaugeModule?.set.ratedMinBatteryCapacity?.(100.1),
             ).rejects.toBeUndefined();
 
             expect(mockEnqueueRequest).toBeCalledTimes(2);
             expect(mockEnqueueRequest).nthCalledWith(
                 1,
-                'fuel_gauge health rated_min_capacity set 100',
+                'fuel_gauge health rated_min_capacity set 100.1',
                 expect.anything(),
                 undefined,
                 true,

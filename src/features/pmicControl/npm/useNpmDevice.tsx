@@ -33,6 +33,7 @@ import {
     getEventRecordingPath,
     getNpmDevice as getNpmDeviceSlice,
     getPmicState,
+    isBatteryConnected,
     isSupportedVersion,
     setActiveBatterModel,
     setBatteryAddonBoardId,
@@ -109,6 +110,9 @@ export default () => {
     const fuelGaugeBatteryHealthSupport = useSelector(
         fuelGaugeBatteryHealthSupported,
     );
+    const batteryConnected = useSelector(isBatteryConnected);
+    const [internalBatteryConnected, setInternalBatteryConnected] =
+        useState(batteryConnected);
 
     useEffect(() => {
         if (shellParser) {
@@ -926,4 +930,12 @@ export default () => {
             return () => clearInterval(t);
         }
     }, [bucks, npmDevice]);
+
+    // Request battery health state update when battery is connected
+    useEffect(() => {
+        if (!internalBatteryConnected && batteryConnected) {
+            npmDevice?.fuelGaugeModule?.get.batteryHealthAll?.();
+        }
+        setInternalBatteryConnected(batteryConnected);
+    }, [batteryConnected, internalBatteryConnected, npmDevice]);
 };
