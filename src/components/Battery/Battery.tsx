@@ -18,6 +18,7 @@ import {
     getPmicChargingState,
     isBatteryConnected,
 } from '../../features/pmicControl/pmicControlSlice';
+import { clamp } from '../../utils/helpers';
 
 import './battery.scss';
 import styles from './Battery.module.scss';
@@ -27,6 +28,9 @@ const card = 'battery';
 interface BatteryIconProperties {
     pmicChargingState: PmicChargingState;
 }
+
+const formatStateOfChargeValue = (val: number): number =>
+    Number(clamp(val, 0, 100).toFixed(1));
 
 const BatterIcon = ({ pmicChargingState }: BatteryIconProperties) => {
     const [iconSize, setIconSize] = useState(0);
@@ -121,9 +125,9 @@ const SideText = ({
                 <DocumentationTooltip card={card} item="StateOfCharge">
                     <h2>
                         {fuelGaugeEnabled &&
-                        latestAdcSample &&
+                        latestAdcSample?.soc !== undefined &&
                         !Number.isNaN(latestAdcSample.soc)
-                            ? `${latestAdcSample.soc ?? 0}%`
+                            ? `${formatStateOfChargeValue(latestAdcSample.soc)}%`
                             : 'N/A %'}
                     </h2>
                 </DocumentationTooltip>
@@ -174,10 +178,12 @@ export default ({ disabled }: BatteryProperties) => {
                                         height: `calc(${
                                             fuelGaugeEnabled &&
                                             batteryConnected &&
-                                            !Number.isNaN(
-                                                latestAdcSample?.soc ?? 0,
-                                            )
-                                                ? (latestAdcSample?.soc ?? 0)
+                                            latestAdcSample?.soc !==
+                                                undefined &&
+                                            !Number.isNaN(latestAdcSample.soc)
+                                                ? formatStateOfChargeValue(
+                                                      latestAdcSample.soc,
+                                                  )
                                                 : 0
                                         }% + 2px)`,
                                     }}

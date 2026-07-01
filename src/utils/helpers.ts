@@ -6,6 +6,9 @@
 
 import { type Range } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
+export const clamp = (val: number, min: number, max: number) =>
+    Math.min(Math.max(val, min), max);
+
 const getDecimalPlaces = (value: number): number => {
     if (!Number.isFinite(value)) return 0;
 

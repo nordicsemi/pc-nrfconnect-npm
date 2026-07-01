@@ -52,11 +52,11 @@ describe('PMIC 1012 - Setters Offline tests', () => {
     });
 
     test('Set fuelGauge ratedMinBatteryCapacity', async () => {
-        await pmic.fuelGaugeModule?.set.ratedMinBatteryCapacity?.(100);
+        await pmic.fuelGaugeModule?.set.ratedMinBatteryCapacity?.(100.1);
 
         expect(mockOnFuelGaugeUpdate).toBeCalledTimes(1);
         expect(mockOnFuelGaugeUpdate).toBeCalledWith({
-            ratedMinBatteryCapacity: 100,
+            ratedMinBatteryCapacity: 100.1,
         } satisfies Partial<FuelGauge>);
     });
 });

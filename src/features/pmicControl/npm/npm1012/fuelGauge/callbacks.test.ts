@@ -125,7 +125,7 @@ describe('PMIC 1012 - Command callbacks', () => {
     });
 
     test.each(
-        [100]
+        [100.155]
             .map(value => [
                 {
                     append: 'get',
@@ -146,7 +146,7 @@ describe('PMIC 1012 - Command callbacks', () => {
 
         expect(mockOnFuelGaugeUpdate).toBeCalledTimes(1);
         expect(mockOnFuelGaugeUpdate).toBeCalledWith({
-            ratedMinBatteryCapacity: value,
+            ratedMinBatteryCapacity: Number.parseFloat(value.toFixed(1)), // expect float with 1 decimal of precision
         } satisfies Partial<FuelGauge>);
     });
 

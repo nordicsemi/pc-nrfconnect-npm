@@ -33,10 +33,12 @@ import {
     canProfile,
     fuelGaugeBatteryHealthProfileSupported,
     getActiveBatterModel,
+    getFuelGaugeSettings,
     getHardcodedBatterModels,
     getLatestAdcSample,
     getNpmDevice,
     getStoredBatterModels,
+    isBatteryConnected,
 } from '../../features/pmicControl/pmicControlSlice';
 import { setProfilingStage } from '../../features/pmicControl/profilingSlice';
 
@@ -52,6 +54,8 @@ export default ({ disabled }: { disabled: boolean }) => {
     const batteryHealthProfileSupported = useSelector(
         fuelGaugeBatteryHealthProfileSupported,
     );
+    const batteryConnected = useSelector(isBatteryConnected);
+    const fuelGaugeSettings = useSelector(getFuelGaugeSettings);
 
     const getClosest = (
         batteryModel: BatteryModel | undefined,
@@ -284,6 +288,11 @@ export default ({ disabled }: { disabled: boolean }) => {
                     </DocumentationTooltip>
                     <Button
                         className="w-100"
+                        disabled={
+                            disabled ||
+                            !batteryConnected ||
+                            !fuelGaugeSettings.enabled
+                        }
                         onClick={async () => {
                             const result =
                                 await npmDevice?.requestBatteryHealthProfileData?.();
@@ -359,7 +368,11 @@ export default ({ disabled }: { disabled: boolean }) => {
                                     );
                                 });
                         }}
-                        disabled={disabled}
+                        disabled={
+                            disabled ||
+                            !batteryConnected ||
+                            !fuelGaugeSettings.enabled
+                        }
                     >
                         Load Battery Health Profile
                     </Button>
