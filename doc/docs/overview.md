@@ -63,7 +63,7 @@ This side panel area lets you select the following options:
 | -------------------------------- | ----------- |
 | **Active Battery Model**         | Select the battery model you want to use for Fuel Gauge in nPM PowerUP.        |
 | **Add New Active Battery Model** | Select a battery from selected vendors that has been profiled by Nordic Semiconductor or your own custom battery model, added with the **Profile Battery** feature and saved in the [**Profiles**](#npm1300-and-npm1304-profiles-tab) tab.        |
-| **Profile Battery**              | **This option is only available for nPM1300 and nPM1304 devices.**<br/><br/>Create your own, custom battery profile, and collect the data. The results are then saved in the [**Profiles**](#npm1300-and-npm1304-profiles-tab) tab and added to the **Add New Active Battery Model** drop-down menu.</br></br>Clicking the button opens a window where you can select several options for the battery profiling:<br/>![Profile Battery test configuration](./screenshots/battery_profiling.PNG "Profile Battery test configuration")<br/>See the tooltips for more information about each of the options.</br></br>To perform the battery profiling with the nPM1300 EK, you need the nPM Fuel Gauge Board. See [Profiling a battery with nPM PowerUP](profiling_battery.md) for more information. |
+| **Profile Battery**              | **This option is only available for nPM1300 and nPM1304 devices.**<br/><br/>Create your own, custom battery profile, and collect the data. The results are then saved in the [**Profiles**](#npm1300-and-npm1304-profiles-tab) tab and added to the **Add New Active Battery Model** drop-down menu. You can also configure the battery health tracking options in the [**Fuel Gauge**](#npm1300-and-npm1304-fuel-gauge-tab) tab.</br></br>Clicking the button opens a window where you can select several options for the battery profiling:<br/>![Profile Battery test configuration](./screenshots/battery_profiling.PNG "Profile Battery test configuration")<br/>See the tooltips for more information about each of the options.</br></br>To perform the battery profiling with the nPM1300 EK, you need the nPM Fuel Gauge Board. See [Profiling a battery with nPM PowerUP](profiling_battery.md) for more information. |
 
 ### nPM2100: Power Source
 
@@ -213,7 +213,7 @@ When you **Save Model**, the battery model is saved in the selected directory ei
 
 The **Fuel Gauge** tab lets you enable and configure Fuel Gauge and battery health monitoring for the active battery model that you selected in the [**Fuel Gauge** side panel](#fuel-gauge).
 
-The **Fuel Gauge** tile displays the battery State of Charge (SOC) and related settings, while the **Battery Health** tile lets you configure battery health tracking, including detection of battery replacement and a mode for quick convergence of fuel gauge estimates after initialization or unexpected reset conditions.
+The **Fuel Gauge** tile displays the battery State of Charge (SOC) and related settings. The **Battery Health** tile lets you configure battery health tracking options, including detection of battery replacement and a mode for quick convergence of fuel gauge estimates after initialization or unexpected reset conditions.
 
 ## Graph tab
 
