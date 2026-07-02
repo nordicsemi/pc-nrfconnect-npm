@@ -2,6 +2,9 @@ tool:
 - name: nPM PowerUP app
   link: true
 sections:
+- name: July 2026
+  entries:
+  - "Updated the [Overview and user interface](./overview.md) page with information about the new **Fuel Gauge** tab."
 - name: January 2026
   entries:
   - "Renamed the Home page to [Get started](./index.md)."
