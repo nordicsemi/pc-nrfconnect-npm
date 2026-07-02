@@ -64,7 +64,7 @@ This side panel area lets you select the following options:
 | **Active Battery Model**         | Select the battery model you want to use for Fuel Gauge in nPM PowerUP.        |
 | **Add New Active Battery Model** | Select a battery from selected vendors that has been profiled by Nordic Semiconductor or your own custom battery model, added with the **Profile Battery** feature and saved in the [**Profiles**](#npm1300-and-npm1304-profiles-tab) tab.        |
 | **Profile Battery**              | **This option is only available for nPM1300 and nPM1304 devices.**<br/><br/>Create your own, custom battery profile, and collect the data. The results are then saved in the [**Profiles**](#npm1300-and-npm1304-profiles-tab) tab and added to the **Add New Active Battery Model** drop-down menu. You can also configure the battery health tracking options in the [**Fuel Gauge**](#npm1300-and-npm1304-fuel-gauge-tab) tab.</br></br>Clicking the button opens a window where you can select several options for the battery profiling:<br/>![Profile Battery test configuration](./screenshots/battery_profiling.PNG "Profile Battery test configuration")<br/>See the tooltips for more information about each of the options.</br></br>To perform the battery profiling with the nPM1300 EK, you need the nPM Fuel Gauge Board. See [Profiling a battery with nPM PowerUP](profiling_battery.md) for more information. |
-| **Active Battery Health Profile** | **This option is only available for nPM1300 and nPM1304 devices.**<br/><br/>Save or load the battery health profile that you configured in the [**Fuel Gauge**](#npm1300-and-npm1304-fuel-gauge-tab) tab.     |
+| **Active Battery Health Profile** | **This option is only available for nPM1300 and nPM1304 devices.**<br/><br/>Save or load the battery health profile that you configured in the [**Fuel Gauge**](#npm1300-and-npm1304-fuel-gauge-tab) tab.<br/><br/>The battery health profile is a state linked to each battery model stored on the EK. Each time the active battery model is changed, the battery health profile also changes. If a new battery is profiled and loaded as a new model to the device and then selected, a new battery health state is initialized for that model. |
 
 ### nPM2100: Power Source
 
@@ -214,7 +214,9 @@ When you **Save Model**, the battery model is saved in the selected directory ei
 
 The **Fuel Gauge** tab lets you enable and configure Fuel Gauge and battery health monitoring for the active battery model that you selected in the [**Fuel Gauge** side panel](#fuel-gauge).
 
-The **Fuel Gauge** tile displays the battery State of Charge (SOC) and related settings. The **Battery Health** tile lets you configure battery health tracking options, including detection of battery replacement and a mode for quick convergence of fuel gauge estimates after initialization or unexpected reset conditions. You can [save or load](#fuel-gauge) battery health profiles from the **Fuel Gauge** side panel.
+The **Fuel Gauge** tile displays the battery State of Charge (SOC) and related settings.
+
+The **Battery Health** tile lets you configure battery health tracking options, including detection of battery replacement and a mode for quick convergence of fuel gauge estimates after initialization or unexpected reset conditions. You can [save or load](#fuel-gauge) battery health profiles from the **Fuel Gauge** side panel.
 
 ## Graph tab
 
