@@ -75,7 +75,7 @@ This side panel area lets you select the power source for nPM2100:
 |               Menu               | Description |
 | -------------------------------- | ----------- |
 | **Battery**                      | The default setting when a battery is connected to the nPM device. With this power source selected, the application automatically detects the battery type connected to the PMIC. You can also select the battery type from the drop-down menu.        |
-| **USB**                          | Select if you are powering the PMIC from the USB. With this power source selected, the application disables the **Fuel Gauge** tile on the [**Dashboard**](#dashboard-tab) tab, as no battery evaluation is available. If you are connecting your nPM device to the computer using an USB cable without a battery connected, **USB** is automatically selected as `VEXT` and cannot be unselected.        |
+| **USB**                          | Select if you are powering the PMIC from the USB. With this power source selected, the application disables the **Fuel Gauge** tile, as no battery evaluation is available. If you are connecting your nPM device to the computer using an USB cable without a battery connected, **USB** is automatically selected as `VEXT` and cannot be unselected.        |
 
 ### Settings
 
@@ -206,9 +206,18 @@ This can overwrite the [**Active Battery Model**](#fuel-gauge).
 
 When you **Save Model**, the battery model is saved in the selected directory either to a JSON file that can be downloaded to the nPM Controller or to an INC file. The INC file format is meant for integrating the battery model into your final application with a Nordic System on Chip (SoC).
 
+## nPM1300 and nPM1304: Fuel Gauge tab
+
+!!! note "Note"
+     This feature is available for the nPM1300 EK and the nPM1304 EK.
+
+The **Fuel Gauge** tab lets you enable and configure Fuel Gauge and battery health monitoring for the active battery model that you selected in the [**Fuel Gauge** side panel](#fuel-gauge).
+
+The **Fuel Gauge** tile displays the battery State of Charge (SOC) and related settings, while the **Battery Health** tile lets you configure battery health tracking, including detection of battery replacement and a mode for quick convergence of fuel gauge estimates after initialization or unexpected reset conditions.
+
 ## Graph tab
 
-Here you can monitor the state of the PMIC, including voltage, current, system temperature, internal resistance, and State of Charge (SOC). For SOC, make sure the battery Fuel Gauge in the **Dashboard** tab or **Fuel Gauge** side panel is enabled.
+Here you can monitor the state of the PMIC, including voltage, current, system temperature, internal resistance, and State of Charge (SOC). For SOC, make sure the battery Fuel Gauge is enabled (in the one of the tabs that feature it).
 
 The monitoring can happen in real time after [profiling a battery](profiling_battery.md). You can use the **Live** toggle to enable or disable real time monitoring.
 
