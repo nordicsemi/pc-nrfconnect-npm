@@ -2,7 +2,8 @@
 
 ### Added
 
-- nPM1300 and nPM1304: New Fuel Gauge tab, which includes the old Fuel Gauge feature and a new Battery Health tile.
+- nPM1300 and nPM1304: New Fuel Gauge tab, which includes the old Fuel Gauge
+  feature and a new Battery Health tile.
 
 ## 2.2.5 - 2026-05-19
 
