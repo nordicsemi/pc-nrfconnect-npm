@@ -1,3 +1,9 @@
+## 2.2.7 - 2026-09-14
+
+### Changed
+
+- nPM1300 and nPM1304: Updated battery profiling settings.
+
 ## 2.2.6 - 2026-07-01
 
 ### Added
