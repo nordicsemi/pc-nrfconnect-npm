@@ -5,7 +5,7 @@
  */
 
 export const timeToActiveKV = [
-    ['OFF', 'No Debounce'],
+    ['OFF', 'No debounce'],
     ['50ms', '50 ms'],
     ['100ms', '100 ms'],
     ['500ms', '500 ms'],
