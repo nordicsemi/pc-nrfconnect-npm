@@ -70,20 +70,15 @@ export default ({ config, disabled, module }: SysRegProperties) => {
                 }
                 disabled={disabled}
             />
-            <div className="tw-flex tw-flex-row tw-gap-4">
-                <DocumentationTooltip card={card} item="VBusPresent">
-                    <div className="tw-text-xs">VBUS Present</div>
-                </DocumentationTooltip>
+            <div className="tw-grid tw-grid-cols-[max-content_auto] tw-items-center tw-gap-x-4 tw-gap-y-2">
+                <div className="tw-text-xs">VBUS Present</div>
                 <div
                     className={`tw-h-4 tw-w-4 tw-rounded-full tw-border tw-border-solid tw-border-gray-200 ${classNames(
                         config.vBusPresent ? 'tw-bg-green' : 'tw-bg-red',
                     )}`}
                 />
-            </div>
-            <div className="tw-flex tw-flex-row tw-gap-4">
-                <DocumentationTooltip card={card} item="VBusGood">
-                    <div className="tw-text-xs">VBUS Good</div>
-                </DocumentationTooltip>
+
+                <div className="tw-text-xs">VBUS Good</div>
                 <div
                     className={`tw-h-4 tw-w-4 tw-rounded-full tw-border tw-border-solid tw-border-gray-200 ${classNames(
                         config.vBusGood ? 'tw-bg-green' : 'tw-bg-red',
