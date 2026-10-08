@@ -72,6 +72,7 @@ describe('PMIC 1300 - Logging', () => {
             mockOnAdcSample,
             mockOnBeforeReboot,
             mockOnFuelGaugeUpdate,
+            mockOnBoardLoadUpdate,
             mockOnUsbPower,
             mockOnErrorLogs,
             mockOnChargingStatusUpdate,
@@ -86,6 +87,7 @@ describe('PMIC 1300 - Logging', () => {
             mockOnAdcSample = setupMock.mockOnAdcSample;
             mockOnBeforeReboot = setupMock.mockOnBeforeReboot;
             mockOnFuelGaugeUpdate = setupMock.mockOnFuelGaugeUpdate;
+            mockOnBoardLoadUpdate = setupMock.mockOnBoardLoadUpdate;
             mockOnUsbPower = setupMock.mockOnUsbPower;
             mockOnErrorLogs = setupMock.mockOnErrorLogs;
             mockOnChargingStatusUpdate = setupMock.mockOnChargingStatusUpdate;
@@ -99,6 +101,14 @@ describe('PMIC 1300 - Logging', () => {
             );
 
             expect(mockOnBeforeReboot).toBeCalledTimes(1);
+        });
+
+        test('Updates active load from cc_sink logging', async () => {
+            await eventHandlers.mockOnShellLoggingEventHandler(
+                '[00:00:02.019,531] <inf> module_cc_sink: cc_level: 12.5',
+            );
+
+            expect(mockOnBoardLoadUpdate).toBeCalledWith({ iLoad: 12.5 });
         });
 
         test('Does not Reboot if auto reboot is off PMIC is available', async () => {

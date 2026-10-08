@@ -16,6 +16,7 @@ import {
     MAX_TIMESTAMP,
     NpmEventEmitter,
     parseLogData,
+    parseToFloat,
 } from '../pmicHelpers';
 import {
     type AdcSample,
@@ -24,6 +25,7 @@ import {
     type LoggingEvent,
     type NpmExportV2,
     type NpmPeripherals,
+    type OnBoardLoad,
     type PmicDialog,
     type USBPower,
 } from '../types';
@@ -36,6 +38,7 @@ import { numGPIOs } from './gpio/types';
 import LdoModule, { toLdoExport } from './ldo';
 import LedModule from './led';
 import LowPowerModule from './lowPower';
+import OnBoardLoadModule from './onBoardLoad';
 import overlay from './overlay';
 import PofModule from './pof';
 import ResetModule from './reset';
@@ -81,6 +84,7 @@ export default class Npm1300 extends BaseNpmDevice {
                     count: 3,
                 },
                 BatteryProfiler,
+                OnBoardLoadModule,
                 PofModule,
                 UsbCurrentLimiterModule,
                 TimerConfigModule,
@@ -119,6 +123,9 @@ export default class Npm1300 extends BaseNpmDevice {
                             case 'module_fg':
                                 // Handled in fuelGauge callbacks
                                 break;
+                            case 'module_cc_sink':
+                                this.processModuleCCSink(loggingEvent);
+                                break;
                         }
 
                         this.eventEmitter.emit('onLoggingEvent', {
@@ -128,6 +135,14 @@ export default class Npm1300 extends BaseNpmDevice {
                     });
                 }),
             );
+        }
+    }
+
+    private processModuleCCSink({ message }: LoggingEvent) {
+        if (message.startsWith('cc_level:')) {
+            this.eventEmitter.emit('onOnBoardLoadUpdate', {
+                iLoad: parseToFloat(message),
+            } satisfies OnBoardLoad);
         }
     }
 
@@ -389,6 +404,7 @@ export default class Npm1300 extends BaseNpmDevice {
                 chargingSamplingRate:
                     currentState.fuelGaugeSettings.chargingSamplingRate,
             },
+            onBoardLoad: currentState.onBoardLoad,
             firmwareVersion: currentState.npmDevice.supportedVersion,
             deviceType: currentState.npmDevice.deviceType,
             usbPower: currentState.usbPower

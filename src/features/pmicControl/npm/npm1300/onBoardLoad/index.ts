@@ -11,7 +11,7 @@ import {
     type OnBoardLoad,
     type OnBoardLoadModule,
 } from '../../types';
-import ldoCallbacks from './callbacks';
+import onBoardLoadCallbacks from './callbacks';
 import { OnBoardLoadGet } from './getters';
 import { OnBoardLoadSet } from './setters';
 
@@ -33,7 +33,7 @@ export default class Module implements OnBoardLoadModule {
     }: ModuleParams) {
         this._get = new OnBoardLoadGet(sendCommand);
         this._set = new OnBoardLoadSet(eventEmitter, sendCommand, offlineMode);
-        this._callbacks = ldoCallbacks(shellParser, eventEmitter);
+        this._callbacks = onBoardLoadCallbacks(shellParser, eventEmitter);
     }
 
     get get() {
