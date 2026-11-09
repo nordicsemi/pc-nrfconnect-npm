@@ -40,8 +40,8 @@ general_app_features:
     name: Charger control and monitoring
     description: Control and monitor the PMIC charging settings and status
   - id: estimate_time_to_full_time_to_empty
-    name: "Estimate time-to-full / time-to-empty"
-    description: "Provide charge/discharge time estimates using built-in battery models"
+    name: Estimate time-to-full / time-to-empty
+    description: Provide charge/discharge time estimates using built-in battery models
   - id: display_state_of_charge_soc
     name: Display State of Charge (SOC)
     description: Display the battery State of Charge percentage
@@ -55,20 +55,20 @@ general_app_features:
     name: Configure LDO / Load Switch mode
     description: Choose LDO or Load Switch mode and set output voltage (VOUTLDO)
   - id: configure_ldo_active_discharge_on_off_control
-    name: "Configure LDO active discharge / on-off control"
+    name: Configure LDO active discharge / on-off control
     description: Configure Active Discharge and On/Off Control options for a Load Switch/LDO
   - id: configure_ldo_soft_start
     name: Configure LDO Soft Start
     description: Set the soft start current limit for the LDO output ramp
   - id: read_pmic_hardware_revision
     name: Read PMIC hardware revision
-    description: "Read the PMIC revision on connection to enable/disable revision-dependent controls"
+    description: Read the PMIC revision on connection to enable/disable revision-dependent controls
   - id: configure_gpio_and_led_pins
     name: Configure GPIO and LED pins
     description: Configure the GPIO and LED pins on the PMIC device
   - id: configure_shphld_debounce_time
     name: Configure SHPHLD debounce time
-    description: "Set the SHPHLD_DEB_HIB debounce period for low power wake-up"
+    description: Set the SHPHLD_DEB_HIB debounce period for low power wake-up
   - id: configure_reset_pin_selection
     name: Configure reset pin selection
     description: Select the reset pin (e.g. PG/RESET)
@@ -80,16 +80,16 @@ general_app_features:
     description: Set the long press reset debounce time
   - id: configure_vbus_input_current_limiter
     name: Configure Vbus input current limiter
-    description: "Configure the Vbus input current limiter (device-dependent)"
+    description: Configure the Vbus input current limiter (device-dependent)
   - id: graph_real_time_monitoring
-    name: "Graph real-time monitoring"
+    name: Graph real-time monitoring
     description: Monitor voltage, current, temperature, internal resistance, and SOC over time
   - id: toggle_live_monitoring
     name: Toggle live monitoring
-    description: "Enable or disable real-time graph monitoring via the Live toggle"
+    description: Enable or disable real-time graph monitoring via the Live toggle
   - id: graph_mouse_over_details
-    name: "Graph mouse-over details"
-    description: Display the graphs details on hover
+    name: Graph mouse-over details
+    description: Display the graph details on hover
   - id: enable_fuel_gauge
     name: Enable fuel gauge
     description: Enable fuel gauge evaluation for the active battery model
@@ -98,7 +98,7 @@ general_app_features:
     description: Select the battery model used for fuel gauge evaluation
   - id: add_new_active_battery_model
     name: Add new active battery model
-    description: "Add a vendor-profiled or custom battery model as the active model"
+    description: Add a vendor-profiled or custom battery model as the active model
   - id: load_custom_battery_model_to_soc
     name: Load custom battery model to SoC
     description: Load a generated JSON battery model to the host SoC of the EK
@@ -110,7 +110,7 @@ general_app_features:
     description: Activate Ship Mode to isolate the battery and minimize quiescent current
   - id: enter_hibernate_mode
     name: Enter Hibernate Mode
-    description: "Activate Hibernate Mode to isolate the battery, with optional wake-up timer"
+    description: Activate Hibernate Mode to isolate the battery, with optional wake-up timer
   - id: restart_application
     name: Restart application
     description: Restart the app via a keyboard shortcut (Ctrl+R / Command+R)
@@ -118,10 +118,10 @@ general_app_features:
 device_specific_features:
   - id: enter_hibernate_pt_mode
     name: Enter Hibernate PT Mode
-    description: "Enter Hibernate pass-through mode (nPM2100) with BOOST in pass-through and Load Switch/LDO disabled"
+    description: Enter Hibernate pass-through mode (nPM2100) with BOOST in pass-through and Load Switch/LDO disabled
   - id: enter_break_to_wake_mode
-    name: "Enter Break-to-wake Mode"
-    description: "Enter Break-to-wake mode (nPM2100) where disconnecting the SHPHLD-GND wire wakes the device"
+    name: Enter Break-to-wake Mode
+    description: Enter Break-to-wake mode (nPM2100) where disconnecting the SHPHLD-GND wire wakes the device
   - id: toggle_power_off_button
     name: Toggle Power Off Button
     description: Enable or disable the Power Off Button (nPM2100)
@@ -132,11 +132,11 @@ device_specific_features:
     name: Select power source
     description: Select Battery or USB power source for nPM2100
   - id: auto_detect_battery_type
-    name: "Auto-detect battery type"
+    name: Auto-detect battery type
     description: Automatically detect the connected battery type (nPM2100 Battery mode)
   - id: configure_power_failure
     name: Configure power failure
-    description: "Configure Power Failure (device-dependent)"
+    description: Configure Power Failure (device-dependent)
   - id: save_overwrite_battery_health_profile
     name: Save/overwrite battery health profile
     description: Save the fuel gauge battery health state or overwrite it with a saved state
@@ -144,10 +144,10 @@ device_specific_features:
     name: Profile battery
     description: Create a custom battery profile and collect measurement data across temperatures
   - id: auto_process_profiling_measurement_data
-    name: "Auto-process profiling measurement data"
+    name: Auto-process profiling measurement data
     description: Automatically process measurement data into a battery model file per temperature
   - id: auto_merge_temperature_profiles
-    name: "Auto-merge temperature profiles"
+    name: Auto-merge temperature profiles
     description: Automatically merge individual temperature models into a final battery model
   - id: save_battery_model_json_inc
     name: Save battery model (JSON/INC)
@@ -180,8 +180,8 @@ device_specific_features:
     name: Remove profile
     description: Remove an individual battery profile
   - id: use_bundled_pre_profiled_battery_model
-    name: "Use bundled pre-profiled battery model"
-    description: "Access battery models pre-profiled by Nordic Semiconductor"
+    name: Use bundled pre-profiled battery model
+    description: Access battery models pre-profiled by Nordic Semiconductor
   - id: write_bundled_model_to_controller
     name: Write bundled model to controller
     description: Write a bundled battery model to a controller battery model slot
@@ -202,15 +202,15 @@ device_specific_features:
     description: Process the data for a single temperature profile
   - id: write_battery_model_to_controller_project
     name: Write battery model to controller (project)
-    description: "Write a project's battery model to the nPM Controller on the EK"
+    description: Write a project's battery model to the nPM Controller on the EK
   - id: write_single_profile_battery_model
     name: Write single profile battery model
-    description: "Write a single profile's battery model to the nPM Controller"
+    description: Write a single profile's battery model to the nPM Controller
 
 shared_features:
   - id: restore_defaults
     name: Restore defaults
-    description: "Restore all app's settings to default"
+    description: Restore all app's settings to default
   - id: give_feedback
     name: Give Feedback
     description: Send a feedback message
@@ -343,16 +343,16 @@ supported_devices:
       write_single_profile_battery_model: unsupported
 
 unsupported_devices:
-  - device: "Nordic Thingy:52"
+  - device: Nordic Thingy:52
     pca: PCA20020
 
-  - device: "Nordic Thingy:53"
+  - device: Nordic Thingy:53
     pca: PCA20053
 
-  - device: "Nordic Thingy:91"
+  - device: Nordic Thingy:91
     pca: PCA20035
 
-  - device: "Nordic Thingy:91 X"
+  - device: Nordic Thingy:91 X
     pca: PCA20049
 
   - device: nRF51 DK
