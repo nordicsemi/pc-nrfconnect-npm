@@ -36,9 +36,6 @@ general_app_features:
   - id: display_connection_status
     name: Display connection status
     description: Show the connection status to the selected device
-  - id: charger_control_and_monitoring
-    name: Charger control and monitoring
-    description: Control and monitor the PMIC charging settings and status
   - id: estimate_time_to_full_time_to_empty
     name: Estimate time-to-full / time-to-empty
     description: Provide charge/discharge time estimates using built-in battery models
@@ -78,9 +75,6 @@ general_app_features:
   - id: configure_long_press_reset_debounce
     name: Configure Long Press Reset debounce
     description: Set the long press reset debounce time
-  - id: configure_vbus_input_current_limiter
-    name: Configure Vbus input current limiter
-    description: Configure the Vbus input current limiter (device-dependent)
   - id: graph_real_time_monitoring
     name: Graph real-time monitoring
     description: Monitor voltage, current, temperature, internal resistance, and SOC over time
@@ -102,9 +96,6 @@ general_app_features:
   - id: load_custom_battery_model_to_soc
     name: Load custom battery model to SoC
     description: Load a generated JSON battery model to the host SoC of the EK
-  - id: configure_battery_health_tracking
-    name: Configure battery health tracking
-    description: Configure battery health options including battery replacement detection and quick convergence
   - id: enter_ship_mode
     name: Enter Ship Mode
     description: Activate Ship Mode to isolate the battery and minimize quiescent current
@@ -206,6 +197,18 @@ device_specific_features:
   - id: write_single_profile_battery_model
     name: Write single profile battery model
     description: Write a single profile's battery model to the nPM Controller
+  - id: configure_on_board_load
+    name: Configure on-board load
+    description: Set the current (iLoad, 0-99 mA) of the EK's on-board active load used for battery profiling
+  - id: charger_control_and_monitoring
+    name: Charger control and monitoring
+    description: Control and monitor the PMIC charging settings and status
+  - id: configure_vbus_input_current_limiter
+    name: Configure Vbus input current limiter
+    description: Configure the Vbus input current limiter
+  - id: configure_battery_health_tracking
+    name: Configure battery health tracking
+    description: Configure battery health options including battery replacement detection and quick convergence
 
 shared_features:
   - id: restore_defaults
@@ -271,6 +274,10 @@ supported_devices:
       process_single_profile_data: full
       write_battery_model_to_controller_project: full
       write_single_profile_battery_model: full
+      configure_on_board_load: unsupported
+      charger_control_and_monitoring: full
+      configure_vbus_input_current_limiter: full
+      configure_battery_health_tracking: full
 
   - device: nPM 1304 EK
     pca: PCA10195
@@ -306,6 +313,10 @@ supported_devices:
       process_single_profile_data: full
       write_battery_model_to_controller_project: full
       write_single_profile_battery_model: full
+      configure_on_board_load: full
+      charger_control_and_monitoring: full
+      configure_vbus_input_current_limiter: full
+      configure_battery_health_tracking: full
 
   - device: nPM 2100 EK
     pca: PCA10170
@@ -341,6 +352,10 @@ supported_devices:
       process_single_profile_data: unsupported
       write_battery_model_to_controller_project: unsupported
       write_single_profile_battery_model: unsupported
+      configure_on_board_load: unsupported
+      charger_control_and_monitoring: unsupported
+      configure_vbus_input_current_limiter: unsupported
+      configure_battery_health_tracking: unsupported
 
 unsupported_devices:
   - device: Nordic Thingy:52
@@ -353,7 +368,7 @@ unsupported_devices:
     pca: PCA20035
 
   - device: Nordic Thingy:91 X
-    pca: PCA20049
+    pca: PCA20065
 
   - device: nRF51 DK
     pca: PCA10028
