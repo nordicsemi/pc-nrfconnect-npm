@@ -43,6 +43,7 @@ describe('PMIC 1300 - Apply Config ', () => {
         mockOnResetUpdate,
         mockOnTimerConfigUpdate,
         mockOnFuelGaugeUpdate,
+        mockOnBoardLoadUpdate,
         mockDialogHandler,
         mockOnUsbPower,
         pmic,
@@ -278,6 +279,9 @@ describe('PMIC 1300 - Apply Config ', () => {
             enabled: true,
             chargingSamplingRate: 1000,
         },
+        onBoardLoad: {
+            iLoad: 42,
+        },
         firmwareVersion: npm1300FWVersion,
         deviceType: 'npm1300',
         usbPower: {
@@ -420,6 +424,7 @@ describe('PMIC 1300 - Apply Config ', () => {
         expect(ldos.map(toLdoExport)).toStrictEqual(sampleConfig.ldos);
 
         expect(gpios).toStrictEqual(sampleConfig.gpios);
+        expect(mockOnBoardLoadUpdate).toHaveBeenCalledWith({ iLoad: 42 });
 
         expect(mockOnChargerUpdate).toBeCalledTimes(17);
         expect(mockOnBuckUpdate).toBeCalledTimes(18); // 7 states + 1 (mode change on vOut) * 2 Bucks
