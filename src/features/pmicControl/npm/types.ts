@@ -1194,6 +1194,14 @@ export interface BuckModule {
     defaults: Buck;
 }
 
+export type LdoSetExtraArgs = {
+    currState: {
+        mode?: Ldo['mode'];
+        onOffControl?: Ldo['onOffControl'];
+        vOutSel?: Ldo['vOutSel'];
+    };
+};
+
 export interface LdoModule {
     index: number;
     get: {
@@ -1218,13 +1226,19 @@ export interface LdoModule {
     };
     set: {
         all: (config: LdoExport) => Promise<void>;
-        enabled: (enabled: boolean) => Promise<void>;
+        enabled: (
+            enabled: boolean,
+            extraArgs?: LdoSetExtraArgs,
+        ) => Promise<void>;
 
         activeDischarge?: (activeDischarge: boolean) => Promise<void>;
         halt?: (halt: boolean) => Promise<void>;
-        mode?: (mode: LdoMode) => Promise<void>;
+        mode?: (mode: LdoMode, extraArgs?: LdoSetExtraArgs) => Promise<void>;
         modeControl?: (modeCtrl: LdoModeControl) => Promise<void>;
-        onOffControl?: (onOffControl: LdoOnOffControl) => Promise<void>;
+        onOffControl?: (
+            onOffControl: LdoOnOffControl,
+            extraArgs?: LdoSetExtraArgs,
+        ) => Promise<void>;
         overcurrentProtection?: (ocp: boolean) => Promise<void>;
         pinMode?: (pinMode: LdoGPIOControlMode) => Promise<void>;
         pinSel?: (pinSel: LdoGPIOControlPinSelect) => Promise<void>;
@@ -1233,10 +1247,12 @@ export interface LdoModule {
         softStartCurrent?: (
             value: LdoSoftStartCurrent,
             mode?: LdoMode,
+        vOutSel?: (
+            mode: LdoVOutSel,
+            extraArgs?: LdoSetExtraArgs,
         ) => Promise<void>;
         softStartTime?: (value: number) => Promise<void>;
-        vOutSel?: (mode: LdoVOutSel) => Promise<void>;
-        voltage?: (value: number) => Promise<void>;
+        voltage?: (value: number, extraArgs?: LdoSetExtraArgs) => Promise<void>;
         weakPullDown?: (enable: boolean) => Promise<void>;
     };
     callbacks: (() => void)[];
