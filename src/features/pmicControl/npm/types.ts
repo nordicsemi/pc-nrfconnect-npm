@@ -47,6 +47,21 @@ import type {
     VBusILim as VBusILim1012,
 } from './npm1012/sysReg/types';
 import type { Mode as TimerMode1012 } from './npm1012/timerConfig/types';
+import type {
+    ConfigChargerITermLvl as npm1012UserOtpConfigChargerITermLvl,
+    ConfigChargerITrickleLvl as npm1012UserOtpConfigChargerITrickleLvl,
+    ConfigChargerVBatLowLvl as npm1012UserOtpConfigChargerVBatLowLvl,
+    ConfigChargerVTrickleLvl as npm1012UserOtpConfigChargerVTrickleLvl,
+    ConfigRegulatorsBuckVOutSel as npm1012UserOtpConfigRegulatorsBuckVOutSel,
+    ConfigRegulatorsColdStartSel as npm1012UserOtpConfigRegulatorsColdStartSel,
+    ConfigRegulatorsLdoSoftStartILimLvl as npm1012UserOtpConfigRegulatorsLdoSoftStartILimLvl,
+    ConfigRegulatorsLdoSoftStartTime as npm1012UserOtpConfigRegulatorsLdoSoftStartTime,
+    ConfigRegulatorsLdoVOutSel as npm1012UserOtpConfigRegulatorsLdoVOutSel,
+    ConfigSysFeatPwrWait as npm1012UserOtpConfigSysFeatPwrWait,
+    ConfigSysFeatShpHldDebounce as npm1012UserOtpConfigSysFeatShpHldDebounce,
+    ConfigSysFeatTwiSlaveAddress as npm1012UserOtpConfigSysFeatTwiSlaveAddress,
+    ConfigSysFeatVBusILimLvl as npm1012UserOtpConfigSysFeatVBusILimLvl,
+} from './npm1012/userOtp/types';
 import {
     type ITermNpm1300,
     type VTrickleFast1300,
@@ -611,6 +626,213 @@ export interface ProfileDownload {
 export interface BatteryHealthProfileLoadUpdate {
     alertMessage?: string;
     state: 'downloading' | 'aborted' | 'aborting' | 'applied' | 'failed';
+}
+
+export type UserOtpConfigChargerITermLvl = npm1012UserOtpConfigChargerITermLvl;
+export type UserOtpConfigChargerITrickleLvl =
+    npm1012UserOtpConfigChargerITrickleLvl;
+export type UserOtpConfigChargerVBatLowLvl =
+    npm1012UserOtpConfigChargerVBatLowLvl;
+export type UserOtpConfigChargerVTrickleLvl =
+    npm1012UserOtpConfigChargerVTrickleLvl;
+export type UserOtpConfigRegulatorsBuckVOutSel =
+    npm1012UserOtpConfigRegulatorsBuckVOutSel;
+export type UserOtpConfigRegulatorsLdoSoftStartILimLvl =
+    npm1012UserOtpConfigRegulatorsLdoSoftStartILimLvl;
+export type UserOtpConfigRegulatorsLdoSoftStartTime =
+    npm1012UserOtpConfigRegulatorsLdoSoftStartTime;
+export type UserOtpConfigRegulatorsLdoVOutSel =
+    npm1012UserOtpConfigRegulatorsLdoVOutSel;
+export type UserOtpConfigRegulatorsColdStartSel =
+    npm1012UserOtpConfigRegulatorsColdStartSel;
+export type UserOtpConfigSysFeatPwrWait = npm1012UserOtpConfigSysFeatPwrWait;
+export type UserOtpConfigSysFeatShpHldDebounce =
+    npm1012UserOtpConfigSysFeatShpHldDebounce;
+export type UserOtpConfigSysFeatTwiSlaveAddress =
+    npm1012UserOtpConfigSysFeatTwiSlaveAddress;
+export type UserOtpConfigSysFeatVBusILimLvl =
+    npm1012UserOtpConfigSysFeatVBusILimLvl;
+
+export type UserOtpConfig = {
+    charger: boolean;
+    chargerEnable: boolean;
+    chargerIChgCoolLvl: number;
+    chargerIChgDouble: boolean;
+    chargerIChgLvl: number;
+    chargerIChgWarmLvl: number;
+    chargerITermLvl: UserOtpConfigChargerITermLvl;
+    chargerITrickleLvl: UserOtpConfigChargerITrickleLvl;
+    chargerJeitaEnable: boolean;
+    chargerVBatLowChgEnable: boolean;
+    chargerVBatLowLvl: UserOtpConfigChargerVBatLowLvl;
+    chargerVTermCoolLvl: number;
+    chargerVTermLvl: number;
+    chargerVTermWarmLvl: number;
+    chargerVTrickleLvl: UserOtpConfigChargerVTrickleLvl;
+    chargerVWeakLvl: number;
+    chargerWeakChgEnable: boolean;
+    gpio: boolean;
+    gpio0InputBufferAndPullDownEnable: boolean;
+    gpio1InputBufferAndPullDownEnable: boolean;
+    gpio2InputBufferAndPullDownEnable: boolean;
+    mainOtp: boolean;
+    mainOtpLockState: boolean;
+    mainOtpLockVersion: number;
+    regulators: boolean;
+    regulatorsBuckVOutLvl: number;
+    regulatorsBuckVOutSel: UserOtpConfigRegulatorsBuckVOutSel;
+    sysFeat: boolean;
+    sysFeatBootMonEnable: boolean;
+    sysFeatHibernateWakeupByButtonEnable: boolean;
+    sysFeatPwrWait: UserOtpConfigSysFeatPwrWait;
+    sysFeatShpHldDebounce: UserOtpConfigSysFeatShpHldDebounce;
+    sysFeatShpHldDebounceEnable: boolean;
+    sysFeatVBusILimLvl: UserOtpConfigSysFeatVBusILimLvl;
+
+    regulatorsColdStartSel?: UserOtpConfigRegulatorsColdStartSel;
+    regulatorsLdoSoftStartILimLvl?: UserOtpConfigRegulatorsLdoSoftStartILimLvl;
+    regulatorsLdoSoftStartTime?: UserOtpConfigRegulatorsLdoSoftStartTime;
+    regulatorsLdoVOutSel?: UserOtpConfigRegulatorsLdoVOutSel;
+    sysFeatTwiSlaveAddress?: UserOtpConfigSysFeatTwiSlaveAddress;
+};
+
+export type UserOtpConfigKey = keyof UserOtpConfig;
+export type UserOtpSetting<T> = {
+    hide: boolean;
+    lock: boolean;
+    program: boolean;
+    value: T;
+};
+export type UserOtpConfigSettingUpdatePayload = {
+    key: UserOtpConfigKey;
+    update: Partial<UserOtpSetting<UserOtpConfig[UserOtpConfigKey]>>;
+};
+export type UserOtpConfigSettings = {
+    [K in keyof UserOtpConfig]: UserOtpSetting<UserOtpConfig[K]>;
+};
+export type UserOtp = {
+    otpLocked: boolean;
+    settings: UserOtpConfigSettings;
+    updateInProgress: boolean;
+
+    regulatorsLdoSoftStartILimLvlLabel?: string;
+};
+export type UserOtpGetConfigValueArgs = {
+    key: UserOtpConfigKey;
+};
+export type UserOtpGetConfigLockArgs = UserOtpGetConfigValueArgs;
+export type UserOtpSetConfigProgramArgs = {
+    key: UserOtpConfigKey;
+    value: boolean;
+};
+export type UserOtpSetConfigValueKVArgs = {
+    key: UserOtpConfigKey;
+    value: UserOtpConfig[UserOtpConfigKey];
+};
+export type UserOtpSetConfigValueExtraArgs = {
+    otpLocked: boolean;
+    settingLocked: boolean;
+
+    chargerIChgState?: {
+        iChgCoolLvl: number;
+        iChgDouble: boolean;
+        iChgDoubleLocked: boolean;
+        iChgLvl: number;
+        iChgWarmLvl: number;
+    };
+};
+
+export interface UserOtpModule {
+    actions: {
+        configureAndExport: (
+            settings: UserOtpConfigSettings,
+        ) => Promise<string>;
+        read: () => void;
+        write: (settings: UserOtpConfigSettings, dryRun: boolean) => void;
+
+        programConfigValue?: (
+            kvArgs: UserOtpSetConfigValueKVArgs,
+        ) => Promise<void>;
+    };
+    callbacks: (() => void)[];
+    defaults: UserOtp;
+    get: {
+        configValue: (args: UserOtpGetConfigValueArgs) => void;
+        configLock: (args: UserOtpGetConfigLockArgs) => void;
+    };
+    ranges: {
+        configChargerIChgLvl: number[];
+        configChargerIChgCoolLvl: number[];
+        configChargerIChgWarmLvl: number[];
+        configChargerVTermLvl: Range;
+        configChargerVTermCoolLvl: Range;
+        configChargerVTermWarmLvl: Range;
+        configChargerVWeakLvl: Range;
+        configOtpControlLockVersion: Range;
+        configRegulatorsBuckVOutLvl: Range;
+    };
+    set: {
+        configProgram: (args: UserOtpSetConfigProgramArgs) => Promise<void>;
+        configValue: (
+            kvArgs: UserOtpSetConfigValueKVArgs,
+            extraArgs: UserOtpSetConfigValueExtraArgs,
+        ) => Promise<void>;
+    };
+    values: {
+        configChargerITermLvl: {
+            label: string;
+            value: UserOtpConfigChargerITermLvl;
+        }[];
+        configChargerITrickleLvl: {
+            label: string;
+            value: UserOtpConfigChargerITrickleLvl;
+        }[];
+        configChargerVBatLowLvl: {
+            label: string;
+            value: UserOtpConfigChargerVBatLowLvl;
+        }[];
+        configChargerVTrickleLvl: {
+            label: string;
+            value: UserOtpConfigChargerVTrickleLvl;
+        }[];
+        configRegulatorsBuckVOutSel: {
+            label: string;
+            value: UserOtpConfigRegulatorsBuckVOutSel;
+        }[];
+        configSysFeatPwrWait: {
+            label: string;
+            value: UserOtpConfigSysFeatPwrWait;
+        }[];
+        configSysFeatShpHldDebounce: {
+            label: string;
+            value: UserOtpConfigSysFeatShpHldDebounce;
+        }[];
+        configSysFeatVBusILimLvl: {
+            label: string;
+            value: UserOtpConfigSysFeatVBusILimLvl;
+        }[];
+
+        configRegulatorsColdStartSel?: {
+            label: string;
+            value: UserOtpConfigRegulatorsColdStartSel;
+        }[];
+        configRegulatorsLdoVOutSel?: {
+            label: string;
+            value: UserOtpConfigRegulatorsLdoVOutSel;
+        }[];
+        configRegulatorsLdoSoftStartILimLvl?: {
+            label: string;
+            value: UserOtpConfigRegulatorsLdoSoftStartILimLvl;
+        }[];
+        configRegulatorsLdoSoftStartTime?: {
+            label: string;
+            value: UserOtpConfigRegulatorsLdoSoftStartTime;
+        }[];
+        configSysFeatTwiSlaveAddress?: {
+            label: string;
+            value: UserOtpConfigSysFeatTwiSlaveAddress;
+        }[];
+    };
 }
 
 export type FixedListRange = number[] | FixedListRangeWithLabel;
@@ -1587,4 +1809,5 @@ export type NpmPeripherals = {
     SysRegModule?: IModule<SysRegModule>;
     FuelGaugeModule?: IModule<FuelGaugeModule>;
     OnBoardLoadModule?: IModule<OnBoardLoadModule>;
+    UserOtpModule?: IModule<UserOtpModule>;
 };
