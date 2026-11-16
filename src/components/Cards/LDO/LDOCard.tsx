@@ -53,14 +53,18 @@ export default ({
         },
     ];
 
-    const [internalOnOffControl, setInternalOnOffControl] = useState(
-        ldo.onOffControl,
-    );
-
     // NumberInputSliderWithUnit do not use ldo.<prop> as value as we send only at on change complete
     useEffect(() => {
         setInternalVLdo(ldo.voltage);
-    }, [ldo]);
+    }, [ldo.voltage]);
+
+    const ldoSetExtraArgs = {
+        currState: {
+            mode: ldo.mode,
+            onOffControl: ldo.onOffControl,
+            vOutSel: ldo.vOutSel,
+        },
+    };
 
     return ldo ? (
         <Card
@@ -74,7 +78,9 @@ export default ({
                         <Toggle
                             label="Enable"
                             isToggled={ldo.enabled}
-                            onToggle={value => ldoModule.set.enabled(value)}
+                            onToggle={value =>
+                                ldoModule.set.enabled(value, ldoSetExtraArgs)
+                            }
                             disabled={
                                 disabled || !ldo.onOffSoftwareControlEnabled
                             }
@@ -101,7 +107,10 @@ export default ({
                     disabled={disabled}
                     items={modeItems}
                     onSelect={i =>
-                        ldoModule.set.mode?.(i === 0 ? 'LDO' : 'Load_switch')
+                        ldoModule.set.mode?.(
+                            i === 0 ? 'LDO' : 'Load_switch',
+                            ldoSetExtraArgs,
+                        )
                     }
                     selectedItem={
                         ldo.mode === 'Load_switch' ? modeItems[1] : modeItems[0]
@@ -114,7 +123,10 @@ export default ({
                     disabled={disabled}
                     items={vOutSelItems}
                     onSelect={i =>
-                        ldoModule.set.vOutSel?.(i === 0 ? 'Software' : 'Vset')
+                        ldoModule.set.vOutSel?.(
+                            i === 0 ? 'Software' : 'Vset',
+                            ldoSetExtraArgs,
+                        )
                     }
                     selectedItem={
                         ldo.vOutSel === 'Software'
@@ -141,7 +153,9 @@ export default ({
                     range={ldoModule.ranges.voltage}
                     value={internalVLdo}
                     onChange={setInternalVLdo}
-                    onChangeComplete={value => ldoModule.set.voltage?.(value)}
+                    onChangeComplete={value =>
+                        ldoModule.set.voltage?.(value, ldoSetExtraArgs)
+                    }
                     showSlider
                 />
             )}
@@ -155,35 +169,20 @@ export default ({
                                 ldo.mode,
                                 ldo.vOutSel,
                             )}
-                            onSelect={item => {
-                                if (internalOnOffControl !== item.value) {
-                                    setInternalOnOffControl(item.value);
-                                    ldoModule.set.onOffControl?.(item.value);
-                                }
-                            }}
-                            selectedItem={(() => {
-                                const prev = ldoModule.values
-                                    .onOffControl?.(ldo.mode, ldo.vOutSel)
+                            onSelect={item =>
+                                ldoModule.set.onOffControl?.(item.value)
+                            }
+                            selectedItem={
+                                ldoModule.values
+                                    .onOffControl(ldo.mode, ldo.vOutSel)
                                     .find(
                                         item => item.value === ldo.onOffControl,
-                                    );
-
-                                if (prev !== undefined) {
-                                    return prev;
-                                }
-
-                                const next = ldoModule.values.onOffControl?.(
+                                    ) ??
+                                ldoModule.values.onOffControl(
                                     ldo.mode,
                                     ldo.vOutSel,
-                                )[0];
-
-                                if (internalOnOffControl !== next.value) {
-                                    setInternalOnOffControl(next.value);
-                                    ldoModule.set.onOffControl?.(next.value);
-                                }
-
-                                return next;
-                            })()}
+                                )[0]
+                            }
                             disabled={disabled}
                         />
                     )}
