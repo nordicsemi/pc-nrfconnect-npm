@@ -9,17 +9,15 @@ import { type Range } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import {
     type Ldo,
     type LdoExport,
-    type LdoMode,
     type LdoModule,
-    type LdoSoftStartCurrent,
     type ModuleParams,
 } from '../../types';
 import {
     nPM2100GPIOControlModeValues,
     nPM2100GPIOControlPinSelectValues,
     nPM2100LdoModeControlValues,
-    softStartCurrentLDOModeKeys,
-    softStartCurrentLDOModeValues,
+    softStartCurrentLdoModeKeys,
+    softStartCurrentLdoModeValues,
     softStartCurrentLoadSwitchModeKeys,
     softStartCurrentLoadSwitchModeValues,
 } from '../types';
@@ -44,7 +42,7 @@ const ldoDefaults = (index: number): Ldo => ({
     pinSel: 'GPIO0HI',
     ramp: false,
     softStart: true,
-    softStartCurrentLDOMode: 75,
+    softStartCurrentLdoMode: 75,
     softStartCurrentLoadSwitchMode: 75,
     voltage: getLdoVoltageRange().min,
 });
@@ -61,7 +59,7 @@ export const toLdoExport = (ldo: Ldo): LdoExport => ({
     pinSel: ldo.pinSel,
     ramp: ldo.ramp,
     softStart: ldo.softStart,
-    softStartCurrentLDOMode: ldo.softStartCurrentLDOMode,
+    softStartCurrentLdoMode: ldo.softStartCurrentLdoMode,
     softStartCurrentLoadSwitchMode: ldo.softStartCurrentLoadSwitchMode,
     voltage: ldo.voltage,
 });
@@ -112,24 +110,7 @@ export default class Module implements LdoModule {
             voltage: getLdoVoltageRange(),
         };
     }
-    get values(): LdoModule['values'] {
-        const getSoftStartCurrentValues = (mode?: LdoMode) => {
-            if (mode === undefined) {
-                return [{ label: 'n/a', value: 0 }];
-            }
-
-            if (mode === 'LDO') {
-                return softStartCurrentLDOModeValues.map((item, i) => ({
-                    label: `${softStartCurrentLDOModeKeys[i]}`,
-                    value: item as LdoSoftStartCurrent,
-                }));
-            }
-
-            return softStartCurrentLoadSwitchModeValues.map((item, i) => ({
-                label: `${softStartCurrentLoadSwitchModeKeys[i]}`,
-                value: item as LdoSoftStartCurrent,
-            }));
-        };
+    get values() {
         return {
             modeControl: nPM2100LdoModeControlValues.map(item => ({
                 label: item,
@@ -143,7 +124,17 @@ export default class Module implements LdoModule {
                 label: item,
                 value: item,
             })),
-            softStartCurrent: getSoftStartCurrentValues,
+            softStartCurrentLdoMode: softStartCurrentLdoModeValues.map(
+                (item, i) => ({
+                    label: `${softStartCurrentLdoModeKeys[i]}`,
+                    value: item,
+                }),
+            ),
+            softStartCurrentLoadSwitchMode:
+                softStartCurrentLoadSwitchModeValues.map((item, i) => ({
+                    label: `${softStartCurrentLoadSwitchModeKeys[i]}`,
+                    value: item,
+                })),
         };
     }
     get defaults(): Ldo {

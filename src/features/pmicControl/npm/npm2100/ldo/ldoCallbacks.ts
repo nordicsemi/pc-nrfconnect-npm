@@ -149,7 +149,7 @@ export default (
                     eventEmitter.emitPartialEvent<Ldo>(
                         'onLdoUpdate',
                         {
-                            softStartCurrentLDOMode: parseToNumber(res),
+                            softStartCurrentLdoMode: parseToNumber(res),
                         },
                         0,
                     );
