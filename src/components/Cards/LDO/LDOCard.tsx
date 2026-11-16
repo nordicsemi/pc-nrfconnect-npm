@@ -209,22 +209,21 @@ export default ({
                                         card={card}
                                         item="SoftStartCurrent"
                                     >
-                                        Soft Start Current Limit
+                                        {ldo.softStartCurrentUILabel !==
+                                        undefined
+                                            ? ldo.softStartCurrentUILabel
+                                            : 'Soft Start Current Limit'}
                                     </DocumentationTooltip>
                                 }
-                                items={ldoModule.values.softStartCurrent()}
+                                items={ldoModule.values.softStartCurrent}
                                 onSelect={item =>
                                     ldoModule.set.softStartCurrent?.(item.value)
                                 }
                                 selectedItem={
-                                    ldoModule.values
-                                        .softStartCurrent()
-                                        .find(
-                                            item =>
-                                                item.value ===
-                                                ldo.softStartCurrent,
-                                        ) ??
-                                    ldoModule.values.softStartCurrent()[0]
+                                    ldoModule.values.softStartCurrent.find(
+                                        item =>
+                                            item.value === ldo.softStartCurrent,
+                                    ) ?? ldoModule.values.softStartCurrent[0]
                                 }
                                 disabled={
                                     disabled ||
@@ -232,8 +231,8 @@ export default ({
                                 }
                             />
                         )}
-                    {ldoModule.values.softStartCurrent &&
-                        ldo.softStartCurrentLDOMode !== undefined && (
+                    {ldoModule.values.softStartCurrentLdoMode &&
+                        ldo.softStartCurrentLdoMode !== undefined && (
                             <Dropdown
                                 label={
                                     <DocumentationTooltip
@@ -243,27 +242,24 @@ export default ({
                                         Soft Start Current Limit (LDO Mode)
                                     </DocumentationTooltip>
                                 }
-                                items={ldoModule.values.softStartCurrent('LDO')}
+                                items={ldoModule.values.softStartCurrentLdoMode}
                                 onSelect={item =>
-                                    ldoModule.set.softStartCurrent?.(
+                                    ldoModule.set.softStartCurrentLdoMode?.(
                                         item.value,
-                                        'LDO',
                                     )
                                 }
                                 selectedItem={
-                                    ldoModule.values
-                                        .softStartCurrent('LDO')
-                                        .find(
-                                            item =>
-                                                item.value ===
-                                                ldo.softStartCurrentLDOMode,
-                                        ) ??
-                                    ldoModule.values.softStartCurrent('LDO')[0]
+                                    ldoModule.values.softStartCurrentLdoMode.find(
+                                        item =>
+                                            item.value ===
+                                            ldo.softStartCurrentLdoMode,
+                                    ) ??
+                                    ldoModule.values.softStartCurrentLdoMode[0]
                                 }
                                 disabled={disabled}
                             />
                         )}
-                    {ldoModule.values.softStartCurrent &&
+                    {ldoModule.values.softStartCurrentLoadSwitchMode &&
                         ldo.softStartCurrentLoadSwitchMode !== undefined && (
                             <Dropdown
                                 label={
@@ -275,26 +271,23 @@ export default ({
                                         Mode)
                                     </DocumentationTooltip>
                                 }
-                                items={ldoModule.values.softStartCurrent(
-                                    'Load_switch',
-                                )}
+                                items={
+                                    ldoModule.values
+                                        .softStartCurrentLoadSwitchMode
+                                }
                                 onSelect={item =>
-                                    ldoModule.set.softStartCurrent?.(
+                                    ldoModule.set.softStartCurrentLoadSwitchMode?.(
                                         item.value,
-                                        'Load_switch',
                                     )
                                 }
                                 selectedItem={
+                                    ldoModule.values.softStartCurrentLoadSwitchMode.find(
+                                        item =>
+                                            item.value ===
+                                            ldo.softStartCurrentLoadSwitchMode,
+                                    ) ??
                                     ldoModule.values
-                                        .softStartCurrent('Load_switch')
-                                        .find(
-                                            item =>
-                                                item.value ===
-                                                ldo.softStartCurrentLoadSwitchMode,
-                                        ) ??
-                                    ldoModule.values.softStartCurrent(
-                                        'Load_switch',
-                                    )[0]
+                                        .softStartCurrentLoadSwitchMode[0]
                                 }
                                 disabled={disabled}
                             />
