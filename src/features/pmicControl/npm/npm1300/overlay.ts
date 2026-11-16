@@ -188,7 +188,7 @@ const generateLDO = (
                   )} GPIO_ACTIVE_HIGH>;` // Is this correct?
                 : ''
         }
-		${ldo.softStartCurrent !== undefined ? `soft-start-microamp = <${toMicro(ldo.softStartCurrent)}>;` : ''}
+		${typeof ldo.softStartCurrent === 'number' ? `soft-start-microamp = <${toMicro(ldo.softStartCurrent)}>;` : ''}
 		${ldo.activeDischarge ? 'active-discharge;' : ''}
 	};
 `;
