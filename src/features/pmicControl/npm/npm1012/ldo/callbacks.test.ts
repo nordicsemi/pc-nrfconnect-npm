@@ -6,7 +6,7 @@
 
 import { LdoVOutSelValues } from '../../types';
 import { PMIC_1012_LDOS, setupMocksWithShellParser } from '../tests/helpers';
-import { onOffControlValues } from './types';
+import { onOffControlValues, type SoftStartILimLdsw } from './types';
 
 describe('PMIC 1012 - Command callbacks', () => {
     const { eventHandlers, mockOnLdoUpdate } = setupMocksWithShellParser();
@@ -16,22 +16,20 @@ describe('PMIC 1012 - Command callbacks', () => {
     });
 
     test.each(
-        PMIC_1012_LDOS.map(index => [
-            ...[true, false].map(enabled =>
-                [
-                    {
-                        index,
-                        append: `get ${index}`,
-                        enabled,
-                    },
-                    {
-                        index,
-                        append: `set ${index} ${enabled ? 'on' : 'off'} `,
-                        enabled,
-                    },
-                ].flat(),
-            ),
-        ]).flat(),
+        PMIC_1012_LDOS.flatMap(index =>
+            [true, false].flatMap(enabled => [
+                {
+                    index,
+                    append: `get ${index}`,
+                    enabled,
+                },
+                {
+                    index,
+                    append: `set ${index} ${enabled ? 'on' : 'off'} `,
+                    enabled,
+                },
+            ]),
+        ),
     )('npm1012 ldosw %p', ({ index, append, enabled }) => {
         const command = `npm1012 ldosw enable ${append}`;
         const callback =
@@ -47,18 +45,16 @@ describe('PMIC 1012 - Command callbacks', () => {
     });
 
     test.each(
-        PMIC_1012_LDOS.map(index => [
-            [
-                {
-                    index,
-                    append: `get ${index}`,
-                },
-                {
-                    index,
-                    append: `set ${index} 1.5`,
-                },
-            ].flat(),
-        ]).flat(),
+        PMIC_1012_LDOS.flatMap(index => [
+            {
+                index,
+                append: `get ${index}`,
+            },
+            {
+                index,
+                append: `set ${index} 1.5`,
+            },
+        ]),
     )('npm1012 ldosw vout software %p', ({ index, append }) => {
         const command = `npm1012 ldosw vout software ${append}`;
         const callback =
@@ -80,22 +76,20 @@ describe('PMIC 1012 - Command callbacks', () => {
     });
 
     test.each(
-        PMIC_1012_LDOS.map(index => [
-            ...['LDO', 'Load_switch'].map(mode =>
-                [
-                    {
-                        index,
-                        append: `get ${index}`,
-                        mode,
-                    },
-                    {
-                        index,
-                        append: `set ${index} ${mode} `,
-                        mode,
-                    },
-                ].flat(),
-            ),
-        ]).flat(),
+        PMIC_1012_LDOS.flatMap(index =>
+            ['LDO', 'Load_switch'].flatMap(mode => [
+                {
+                    index,
+                    append: `get ${index}`,
+                    mode,
+                },
+                {
+                    index,
+                    append: `set ${index} ${mode} `,
+                    mode,
+                },
+            ]),
+        ),
     )('npm1012 ldosw mode %p', ({ index, append, mode }) => {
         const command = `npm1012 ldosw mode ${append}`;
         const callback =
@@ -117,22 +111,20 @@ describe('PMIC 1012 - Command callbacks', () => {
     });
 
     test.each(
-        PMIC_1012_LDOS.map(index => [
-            ...[true, false].map(enabled =>
-                [
-                    {
-                        index,
-                        append: `get ${index}`,
-                        enabled,
-                    },
-                    {
-                        index,
-                        append: `set ${index} ${enabled ? 'on' : 'off'} `,
-                        enabled,
-                    },
-                ].flat(),
-            ),
-        ]).flat(),
+        PMIC_1012_LDOS.flatMap(index =>
+            [true, false].flatMap(enabled => [
+                {
+                    index,
+                    append: `get ${index}`,
+                    enabled,
+                },
+                {
+                    index,
+                    append: `set ${index} ${enabled ? 'on' : 'off'} `,
+                    enabled,
+                },
+            ]),
+        ),
     )('npm1012 ldosw softstart %p', ({ index, append, enabled }) => {
         const command = `npm1012 ldosw softstart ${append}`;
         const callback =
@@ -147,46 +139,52 @@ describe('PMIC 1012 - Command callbacks', () => {
         });
     });
 
+    const softStartILimTestValues: {
+        index: number;
+        value: SoftStartILimLdsw;
+    }[] = [
+        { index: 0, value: '30mA/40mA' },
+        { index: 1, value: '15mA' },
+    ];
+
     test.each(
-        PMIC_1012_LDOS.map(index => [
-            [
-                {
-                    index,
-                    append: `get ${index}`,
-                },
-                {
-                    index,
-                    append: `set ${index} 10`,
-                },
-            ].flat(),
-        ]).flat(),
-    )('npm1012 ldosw softstartilim %p', ({ index, append }) => {
+        softStartILimTestValues.flatMap(({ index, value }) => [
+            {
+                append: `get ${index}`,
+                index,
+                value,
+            },
+            {
+                append: `set ${index} ${value}`,
+                index,
+                value,
+            },
+        ]),
+    )('npm1012 ldosw softstartilim %p', ({ append, index, value }) => {
         const command = `npm1012 ldosw softstartilim ${append}`;
         const callback =
             eventHandlers.mockRegisterCommandCallbackHandler(command);
 
-        callback?.onSuccess(`Value: 10mA`, command);
+        callback?.onSuccess(`Value: ${value}`, command);
 
         expect(mockOnLdoUpdate).toBeCalledTimes(1);
         expect(mockOnLdoUpdate).toBeCalledWith({
-            data: { softStartCurrent: 10 },
+            data: { softStartCurrent: value },
             index,
         });
     });
 
     test.each(
-        PMIC_1012_LDOS.map(index => [
-            [
-                {
-                    index,
-                    append: `get ${index}`,
-                },
-                {
-                    index,
-                    append: `set ${index} 4.5`,
-                },
-            ].flat(),
-        ]).flat(),
+        PMIC_1012_LDOS.flatMap(index => [
+            {
+                index,
+                append: `get ${index}`,
+            },
+            {
+                index,
+                append: `set ${index} 4.5ms`,
+            },
+        ]),
     )('npm1012 ldosw softstarttime %p', ({ index, append }) => {
         const command = `npm1012 ldosw softstarttime ${append}`;
         const callback =
@@ -196,28 +194,26 @@ describe('PMIC 1012 - Command callbacks', () => {
 
         expect(mockOnLdoUpdate).toBeCalledTimes(1);
         expect(mockOnLdoUpdate).toBeCalledWith({
-            data: { softStartTime: 4.5 },
+            data: { softStartTime: '4.5ms' },
             index,
         });
     });
 
     test.each(
-        PMIC_1012_LDOS.map(index => [
-            ...[true, false].map(activeDischarge =>
-                [
-                    {
-                        index,
-                        append: `get ${index}`,
-                        activeDischarge,
-                    },
-                    {
-                        index,
-                        append: `set ${index} ${activeDischarge ? 'on' : 'off'} `,
-                        activeDischarge,
-                    },
-                ].flat(),
-            ),
-        ]).flat(),
+        PMIC_1012_LDOS.flatMap(index =>
+            [true, false].flatMap(activeDischarge => [
+                {
+                    index,
+                    append: `get ${index}`,
+                    activeDischarge,
+                },
+                {
+                    index,
+                    append: `set ${index} ${activeDischarge ? 'on' : 'off'} `,
+                    activeDischarge,
+                },
+            ]),
+        ),
     )(
         'npm1012 ldosw activedischarge %p',
         ({ index, append, activeDischarge }) => {
@@ -239,22 +235,20 @@ describe('PMIC 1012 - Command callbacks', () => {
     );
 
     test.each(
-        PMIC_1012_LDOS.map(index => [
-            ...[true, false].map(ocp =>
-                [
-                    {
-                        index,
-                        append: `get ${index}`,
-                        ocp,
-                    },
-                    {
-                        index,
-                        append: `set ${index} ${ocp ? 'on' : 'off'} `,
-                        ocp,
-                    },
-                ].flat(),
-            ),
-        ]).flat(),
+        PMIC_1012_LDOS.flatMap(index =>
+            [true, false].flatMap(ocp => [
+                {
+                    index,
+                    append: `get ${index}`,
+                    ocp,
+                },
+                {
+                    index,
+                    append: `set ${index} ${ocp ? 'on' : 'off'} `,
+                    ocp,
+                },
+            ]),
+        ),
     )('npm1012 ldosw ocp %p', ({ index, append, ocp }) => {
         const command = `npm1012 ldosw ocp ${append}`;
         const callback =
@@ -270,22 +264,20 @@ describe('PMIC 1012 - Command callbacks', () => {
     });
 
     test.each(
-        PMIC_1012_LDOS.map(index => [
-            ...onOffControlValues.map(value =>
-                [
-                    {
-                        index,
-                        append: `get ${index}`,
-                        value,
-                    },
-                    {
-                        index,
-                        append: `set ${index} ${value}`,
-                        value,
-                    },
-                ].flat(),
-            ),
-        ]).flat(),
+        PMIC_1012_LDOS.flatMap(index =>
+            onOffControlValues.flatMap(value => [
+                {
+                    index,
+                    append: `get ${index}`,
+                    value,
+                },
+                {
+                    index,
+                    append: `set ${index} ${value}`,
+                    value,
+                },
+            ]),
+        ),
     )('npm1012 ldosw enablectrl %p', ({ index, append, value }) => {
         const command = `npm1012 ldosw enablectrl ${append}`;
         const callback =
@@ -303,22 +295,20 @@ describe('PMIC 1012 - Command callbacks', () => {
     });
 
     test.each(
-        PMIC_1012_LDOS.map(index => [
-            ...LdoVOutSelValues.map(value =>
-                [
-                    {
-                        index,
-                        append: `get ${index}`,
-                        value,
-                    },
-                    {
-                        index,
-                        append: `set ${index} ${value}`,
-                        value,
-                    },
-                ].flat(),
-            ),
-        ]).flat(),
+        PMIC_1012_LDOS.flatMap(index =>
+            LdoVOutSelValues.flatMap(value => [
+                {
+                    index,
+                    append: `get ${index}`,
+                    value,
+                },
+                {
+                    index,
+                    append: `set ${index} ${value}`,
+                    value,
+                },
+            ]),
+        ),
     )('npm1012 ldosw voutselctrl %p', ({ index, append, value }) => {
         const command = `npm1012 ldosw voutselctrl ${append}`;
         const callback =
@@ -342,22 +332,20 @@ describe('PMIC 1012 - Command callbacks', () => {
     });
 
     test.each(
-        PMIC_1012_LDOS.map(index => [
-            ...[true, false].map(weakPullDown =>
-                [
-                    {
-                        index,
-                        append: `get ${index}`,
-                        weakPullDown,
-                    },
-                    {
-                        index,
-                        append: `set ${index} ${weakPullDown ? 'on' : 'off'} `,
-                        weakPullDown,
-                    },
-                ].flat(),
-            ),
-        ]).flat(),
+        PMIC_1012_LDOS.flatMap(index =>
+            [true, false].flatMap(weakPullDown => [
+                {
+                    index,
+                    append: `get ${index}`,
+                    weakPullDown,
+                },
+                {
+                    index,
+                    append: `set ${index} ${weakPullDown ? 'on' : 'off'} `,
+                    weakPullDown,
+                },
+            ]),
+        ),
     )('npm1012 ldosw weakpull %p', ({ index, append, weakPullDown }) => {
         const command = `npm1012 ldosw weakpull ${append}`;
         const callback =
@@ -378,4 +366,5 @@ describe('PMIC 1012 - Command callbacks', () => {
         });
     });
 });
+
 export {};
