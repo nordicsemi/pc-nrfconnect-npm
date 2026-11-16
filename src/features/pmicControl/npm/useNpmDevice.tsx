@@ -874,13 +874,16 @@ export default () => {
                     name: 'System Features',
                     hidden:
                         !npmDevice ||
-                        (!npmDevice.lowPowerModule &&
-                            !npmDevice.pofModule &&
-                            !npmDevice.resetModule &&
-                            !npmDevice.sysRegModule &&
-                            !npmDevice.timerConfigModule &&
-                            !npmDevice.usbCurrentLimiterModule &&
-                            !SupportsErrorLogs(npmDevice)),
+                        !(
+                            npmDevice.lowPowerModule ||
+                            npmDevice.pofModule ||
+                            npmDevice.resetModule ||
+                            npmDevice.sysRegModule ||
+                            npmDevice.timerConfigModule ||
+                            npmDevice.usbCurrentLimiterModule ||
+                            (SupportsErrorLogs(npmDevice) &&
+                                pmicState === 'pmic-connected')
+                        ),
                 }),
             );
             dispatch(
