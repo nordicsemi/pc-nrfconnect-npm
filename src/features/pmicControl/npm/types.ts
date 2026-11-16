@@ -35,7 +35,11 @@ import type {
     LEDDrive as GPIOLEDDrvLEDDrive1012,
     LEDMode as GPIOLEDDrvLEDMode1012,
 } from './npm1012/gpioleddrv/types';
-import type { OnOffControl as LdoOnOffControl1012 } from './npm1012/ldo/types';
+import type {
+    OnOffControl as LdoOnOffControl1012,
+    SoftStartILimLdsw as LdoSoftStartCurrent1012,
+    SoftStartTime as LdoSoftStartTime1012,
+} from './npm1012/ldo/types';
 import type { TimeToActive as TimeToActive1012 } from './npm1012/lowPower/types';
 import type {
     LongPressResetDebounce as LongPressResetDebounce1012,
@@ -138,10 +142,13 @@ export type RebootMode = 'cold' | 'warm';
 export const LdoModeValues = ['Load_switch', 'LDO'] as const;
 export type LdoMode = (typeof LdoModeValues)[number];
 export type LdoSoftStartCurrent =
-    | LdoSoftStartCurrent1300
-    | LdoSoftStartCurrentLDOMode2100
-    | LdoSoftStartCurrentLoadSwitchMode2100
-    | number;
+    | number
+    | LdoSoftStartCurrent1012
+    | LdoSoftStartCurrent1300;
+export type LdoSoftStartCurrentLdoMode = LdoSoftStartCurrentLDOMode2100;
+export type LdoSoftStartCurrentLoadSwitchMode =
+    LdoSoftStartCurrentLoadSwitchMode2100;
+export type LdoSoftStartTime = LdoSoftStartTime1012;
 export type LdoGPIOControlPinSelect = nPM2100GPIOControlPinSelect;
 export type LdoGPIOControlMode = nPM2100GPIOControlMode;
 export type LdoModeControl = nPM2100LdoModeControl;
@@ -347,10 +354,11 @@ export type Ldo = {
     ramp?: boolean;
     softStart?: boolean;
     softStartCurrent?: LdoSoftStartCurrent;
+    softStartCurrentUILabel?: string;
     softStartCurrentDropdownDisabled?: boolean;
-    softStartCurrentLDOMode?: LdoSoftStartCurrent;
-    softStartCurrentLoadSwitchMode?: LdoSoftStartCurrent;
-    softStartTime?: number;
+    softStartCurrentLdoMode?: LdoSoftStartCurrentLdoMode;
+    softStartCurrentLoadSwitchMode?: LdoSoftStartCurrentLoadSwitchMode;
+    softStartTime?: LdoSoftStartTime;
     vOutSel?: LdoVOutSel;
     voltage?: number;
     weakPullDown?: boolean;
@@ -1218,7 +1226,9 @@ export interface LdoModule {
         pinSel?: () => void;
         ramp?: () => void;
         softStart?: () => void;
-        softStartCurrent?: (mode?: LdoMode) => void;
+        softStartCurrent?: () => void;
+        softStartCurrentLdoMode?: () => void;
+        softStartCurrentLoadSwitchMode?: () => void;
         softStartTime?: () => void;
         vOutSel?: () => void;
         voltage?: () => void;
@@ -1244,14 +1254,18 @@ export interface LdoModule {
         pinSel?: (pinSel: LdoGPIOControlPinSelect) => Promise<void>;
         ramp?: (ramp: boolean) => Promise<void>;
         softStart?: (enabled: boolean) => Promise<void>;
-        softStartCurrent?: (
-            value: LdoSoftStartCurrent,
-            mode?: LdoMode,
+        softStartCurrent?: (value: LdoSoftStartCurrent) => Promise<void>;
+        softStartCurrentLdoMode?: (
+            value: LdoSoftStartCurrentLdoMode,
+        ) => Promise<void>;
+        softStartCurrentLoadSwitchMode?: (
+            value: LdoSoftStartCurrentLoadSwitchMode,
+        ) => Promise<void>;
+        softStartTime?: (value: LdoSoftStartTime) => Promise<void>;
         vOutSel?: (
             mode: LdoVOutSel,
             extraArgs?: LdoSetExtraArgs,
         ) => Promise<void>;
-        softStartTime?: (value: number) => Promise<void>;
         voltage?: (value: number, extraArgs?: LdoSetExtraArgs) => Promise<void>;
         weakPullDown?: (enable: boolean) => Promise<void>;
     };
@@ -1267,11 +1281,19 @@ export interface LdoModule {
         ) => { label: string; value: LdoOnOffControl }[];
         pinMode?: { label: string; value: LdoGPIOControlMode }[];
         pinSel?: { label: string; value: LdoGPIOControlPinSelect }[];
-        softStartCurrent?: (mode?: LdoMode) => {
+        softStartCurrent?: {
             label: string;
             value: LdoSoftStartCurrent;
         }[];
-        softStartTime?: { label: string; value: number }[];
+        softStartCurrentLdoMode?: {
+            label: string;
+            value: LdoSoftStartCurrentLdoMode;
+        }[];
+        softStartCurrentLoadSwitchMode?: {
+            label: string;
+            value: LdoSoftStartCurrentLoadSwitchMode;
+        }[];
+        softStartTime?: { label: string; value: LdoSoftStartTime }[];
     };
     defaults: Ldo;
 }
