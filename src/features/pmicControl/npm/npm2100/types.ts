@@ -37,13 +37,13 @@ export enum SoftStartCurrentLDOMode {
     '75 mA' = 75,
     '150 mA' = 150,
 } // Default 75
-export const softStartCurrentLDOModeKV = Object.entries(
+export const softStartCurrentLdoModeKV = Object.entries(
     SoftStartCurrentLDOMode,
 ).filter(entry => !Number.isNaN(Number(entry[1])));
-export const softStartCurrentLDOModeKeys = softStartCurrentLDOModeKV.map(
+export const softStartCurrentLdoModeKeys = softStartCurrentLdoModeKV.map(
     kv => kv[0],
 );
-export const softStartCurrentLDOModeValues = softStartCurrentLDOModeKV.map(kv =>
+export const softStartCurrentLdoModeValues = softStartCurrentLdoModeKV.map(kv =>
     Number(kv[1]),
 );
 
