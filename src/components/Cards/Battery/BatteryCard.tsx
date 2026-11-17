@@ -97,7 +97,7 @@ export default ({ disabled }: BatteryCardProperties) => {
                                         !Number.isNaN(
                                             fuelGaugeSettings.actualCapacity,
                                         )
-                                            ? `${fuelGaugeSettings.actualCapacity.toFixed(1)}%`
+                                            ? `${fuelGaugeSettings.actualCapacity.toFixed(1)} %`
                                             : 'N/A'}
                                     </div>
                                 </div>
@@ -112,6 +112,20 @@ export default ({ disabled }: BatteryCardProperties) => {
                                             : 'N/A'}
                                     </div>
                                 </div>
+                                {fuelGaugeSettings.estimatedBatteryResistance !==
+                                    undefined && (
+                                    <div className="tw-flex">
+                                        <div>ESR:</div>
+                                        <div className="tw-ml-auto">
+                                            {fuelGaugeSettings.enabled &&
+                                            !Number.isNaN(
+                                                fuelGaugeSettings.estimatedBatteryResistance,
+                                            )
+                                                ? `${fuelGaugeSettings.estimatedBatteryResistance.toFixed(3)} Ω`
+                                                : 'N/A'}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )
