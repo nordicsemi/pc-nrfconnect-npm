@@ -89,7 +89,8 @@ describe('PMIC 1300 - Apply Config ', () => {
         retentionControl: 'GPIO0',
         activeDischarge: false,
         cardLabel: 'Buck',
-        vSetLabel: 'Vset',
+        vOutSubscriptLabel: 'OUT',
+        vSetSubscriptLabel: 'SET',
     };
 
     const initLdo: Ldo = {
