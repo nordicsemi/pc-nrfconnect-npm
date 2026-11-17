@@ -6,10 +6,11 @@
 
 import {
     type Charger,
+    type ChargerIBatLim,
+    type ChargerITerm,
     ChargerModuleSetBase,
-    type ITerm,
+    type ChargerVTrickleFast,
     type NTCThermistor,
-    type VTrickleFast,
 } from '../../types';
 
 export class ChargerSet extends ChargerModuleSetBase {
@@ -20,8 +21,8 @@ export class ChargerSet extends ChargerModuleSetBase {
             this.iTerm(charger.iTerm),
         ];
 
-        if (charger.iBatLim && this.batLim) {
-            promises.push(this.batLim(charger.iBatLim));
+        if (charger.iBatLim && this.iBatLim) {
+            promises.push(this.iBatLim(charger.iBatLim));
         }
 
         promises.push(
@@ -132,7 +133,7 @@ export class ChargerSet extends ChargerModuleSetBase {
         });
     }
 
-    vTrickleFast(value: VTrickleFast) {
+    vTrickleFast(value: ChargerVTrickleFast) {
         return new Promise<void>((resolve, reject) => {
             this.eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
                 vTrickleFast: value,
@@ -144,7 +145,7 @@ export class ChargerSet extends ChargerModuleSetBase {
                 this.enabled(false)
                     .then(() => {
                         this.sendCommand(
-                            `npmx charger trickle_voltage set ${value * 1000}`,
+                            `npmx charger trickle_voltage set ${Number(value) * 1000}`,
                             () => resolve(),
                             () => {
                                 this.get.vTrickleFast();
@@ -160,7 +161,7 @@ export class ChargerSet extends ChargerModuleSetBase {
         });
     }
 
-    iTerm(iTerm: ITerm) {
+    iTerm(iTerm: ChargerITerm) {
         return new Promise<void>((resolve, reject) => {
             this.eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
                 iTerm,
@@ -188,8 +189,8 @@ export class ChargerSet extends ChargerModuleSetBase {
         });
     }
 
-    batLim: ((iBatLim: number) => Promise<void>) | undefined = (
-        iBatLim: number,
+    iBatLim: ((iBatLim: ChargerIBatLim) => Promise<void>) | undefined = (
+        iBatLim: ChargerIBatLim,
     ) =>
         new Promise<void>((resolve, reject) => {
             this.eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
@@ -205,13 +206,13 @@ export class ChargerSet extends ChargerModuleSetBase {
                             `npm_adc fullscale set ${iBatLim}`,
                             () => resolve(),
                             () => {
-                                this.get.batLim?.();
+                                this.get.iBatLim?.();
                                 reject();
                             },
                         );
                     })
                     .catch(() => {
-                        this.get.batLim?.();
+                        this.get.iBatLim?.();
                         reject();
                     });
             }
