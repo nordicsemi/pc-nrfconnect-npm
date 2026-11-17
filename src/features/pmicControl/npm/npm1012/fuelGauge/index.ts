@@ -77,6 +77,7 @@ export default class Module implements FuelGaugeModuleBase {
             chargingSamplingRate: 500,
             cycleCount: Number.NaN,
             enabled: false,
+            estimatedBatteryResistance: Number.NaN,
             notChargingSamplingRate: 1000,
             quickConvergenceMode: false,
             ratedMinBatteryCapacity: ratedMinBatteryCapacityRange.min,
