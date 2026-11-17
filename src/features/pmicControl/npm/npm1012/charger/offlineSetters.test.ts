@@ -36,10 +36,10 @@ describe('PMIC 1012 - Setters Offline tests', () => {
     });
 
     test('Set setChargerITerm', async () => {
-        await pmic.chargerModule?.set.iTerm(3.125);
+        await pmic.chargerModule?.set.iTerm('3.125%');
 
         expect(mockOnChargerUpdate).toBeCalledTimes(1);
-        expect(mockOnChargerUpdate).toBeCalledWith({ iTerm: 3.125 });
+        expect(mockOnChargerUpdate).toBeCalledWith({ iTerm: '3.125%' });
     });
 
     test('Set setChargerEnabledRecharging ', async () => {

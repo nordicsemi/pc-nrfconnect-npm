@@ -6,10 +6,11 @@
 
 import {
     type Charger,
+    type ChargerITerm,
+    type ChargerITrickle,
     ChargerModuleSetBase,
-    type ITerm,
-    type ITrickle,
-    type VTrickleFast,
+    type ChargerVBatLow,
+    type ChargerVTrickleFast,
 } from '../../types';
 import { advancedChargingProfileOnUpdate } from './helpers';
 
@@ -192,7 +193,7 @@ export class ChargerSet extends ChargerModuleSetBase {
         });
     }
 
-    vTrickleFast(value: VTrickleFast) {
+    vTrickleFast(value: ChargerVTrickleFast) {
         return new Promise<void>((resolve, reject) => {
             if (this.offlineMode) {
                 this.eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
@@ -219,7 +220,7 @@ export class ChargerSet extends ChargerModuleSetBase {
         });
     }
 
-    iTerm(iTerm: ITerm) {
+    iTerm(iTerm: ChargerITerm) {
         return new Promise<void>((resolve, reject) => {
             if (this.offlineMode) {
                 this.eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
@@ -232,7 +233,7 @@ export class ChargerSet extends ChargerModuleSetBase {
             this.enabled(false)
                 .then(() => {
                     this.sendCommand(
-                        `npm1012 charger current termination set ${iTerm}%`,
+                        `npm1012 charger current termination set ${iTerm}`,
                         () => resolve(),
                         () => {
                             this.get.iTerm();
@@ -247,7 +248,7 @@ export class ChargerSet extends ChargerModuleSetBase {
         });
     }
 
-    iTrickle(iTrickle: ITrickle) {
+    iTrickle(iTrickle: ChargerITrickle) {
         return new Promise<void>((resolve, reject) => {
             if (this.offlineMode) {
                 this.eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
@@ -256,7 +257,7 @@ export class ChargerSet extends ChargerModuleSetBase {
                 resolve();
             } else {
                 this.sendCommand(
-                    `npm1012 charger current trickle set ${iTrickle}%`,
+                    `npm1012 charger current trickle set ${iTrickle}`,
                     () => resolve(),
                     () => {
                         this.get.iTrickle?.();
@@ -708,7 +709,7 @@ export class ChargerSet extends ChargerModuleSetBase {
         });
     }
 
-    vBatLow(value: number) {
+    vBatLow(value: ChargerVBatLow) {
         return new Promise<void>((resolve, reject) => {
             if (this.offlineMode) {
                 this.eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
@@ -717,7 +718,7 @@ export class ChargerSet extends ChargerModuleSetBase {
                 resolve();
             } else {
                 this.sendCommand(
-                    `npm1012 charger voltage batlow set ${value}V`,
+                    `npm1012 charger voltage batlow set ${value}`,
                     () => resolve(),
                     () => {
                         this.get.vBatLow?.();
