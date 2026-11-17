@@ -37,7 +37,8 @@ const buckDefaults = (index: number): Buck => ({
     retentionControl: 'Off',
     activeDischarge: false,
     cardLabel: `BUCK ${index + 1}`,
-    vSetLabel: `Vset${index + 1}`,
+    vSetSubscriptLabel: `SET${index + 1}`,
+    vOutSubscriptLabel: `OUT${index + 1}`,
 });
 
 export const toBuckExport = (buck: Buck): BuckExport => ({
