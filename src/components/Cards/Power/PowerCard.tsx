@@ -18,9 +18,6 @@ import {
     type Charger,
     type ChargerModule,
     isFixedListRangeWithLabel,
-    type ITerm,
-    type ITrickle,
-    type VTrickleFast,
 } from '../../../features/pmicControl/npm/types';
 
 interface PowerCardProperties {
@@ -42,23 +39,25 @@ const IBatLimUI = ({
     charger: Charger;
     disabled: boolean;
 }) => {
-    const [internalBatLim, setInternalBatLim] = useState(charger.iBatLim);
+    const [internalIBatLim, setInternalIBatLim] = useState(charger.iBatLim);
 
     useEffect(() => {
-        setInternalBatLim(charger.iBatLim);
-    }, [charger]);
+        setInternalIBatLim(charger.iBatLim);
+    }, [charger.iBatLim]);
 
     const chargerIBatLimRange = chargerModule.ranges.iBatLim;
 
     if (
         !chargerIBatLimRange ||
-        !chargerModule.set.batLim ||
+        !chargerModule.set.iBatLim ||
         charger.iBatLim === undefined ||
-        internalBatLim === undefined
+        internalIBatLim === undefined ||
+        typeof charger.iBatLim !== 'number' ||
+        typeof internalIBatLim !== 'number'
     )
         return null;
 
-    const setBatLim = chargerModule.set.batLim.bind(chargerModule.set);
+    const setIBatLim = chargerModule.set.iBatLim.bind(chargerModule.set);
 
     if (
         isFixedListRangeWithLabel(chargerIBatLimRange) &&
@@ -91,7 +90,7 @@ const IBatLimUI = ({
                     </DocumentationTooltip>
                 }
                 disabled={disabled}
-                onSelect={v => setBatLim(v.value)}
+                onSelect={v => setIBatLim(v.value)}
                 selectedItem={{
                     value: charger.iBatLim,
                     label: chargerIBatLimRange.toLabel(charger.iBatLim),
@@ -113,9 +112,9 @@ const IBatLimUI = ({
             unit="mA"
             disabled={disabled}
             range={chargerIBatLimRange}
-            value={internalBatLim}
-            onChange={setInternalBatLim}
-            onChangeComplete={v => setBatLim(v)}
+            value={internalIBatLim}
+            onChange={setInternalIBatLim}
+            onChangeComplete={v => setIBatLim(v)}
             showSlider
         />
     );
@@ -139,7 +138,7 @@ export default ({
         setInternalVTerm(charger.vTerm);
         setInternalIChg(charger.iChg);
         setInternalVWeak(charger.vWeak);
-    }, [charger]);
+    }, [charger.vTerm, charger.iChg, charger.vWeak]);
 
     return (
         <Card
@@ -217,7 +216,7 @@ export default ({
                     </DocumentationTooltip>
                 }
                 items={chargerModule.values.iTerm}
-                onSelect={item => chargerModule.set.iTerm(item.value as ITerm)}
+                onSelect={item => chargerModule.set.iTerm(item.value)}
                 selectedItem={
                     chargerModule.values.iTerm.find(
                         item => item.value === charger.iTerm,
@@ -264,9 +263,7 @@ export default ({
                         }
                         items={chargerModule.values.vTrickleFast}
                         onSelect={item =>
-                            chargerModule.set.vTrickleFast(
-                                item.value as VTrickleFast,
-                            )
+                            chargerModule.set.vTrickleFast(item.value)
                         }
                         selectedItem={
                             chargerModule.values.vTrickleFast.find(
@@ -292,9 +289,7 @@ export default ({
                             }
                             items={chargerModule.values.iTrickle}
                             onSelect={item =>
-                                chargerModule.set.iTrickle?.(
-                                    item.value as ITrickle,
-                                )
+                                chargerModule.set.iTrickle?.(item.value)
                             }
                             selectedItem={
                                 chargerModule.values.iTrickle.find(
