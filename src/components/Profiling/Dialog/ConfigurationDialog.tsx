@@ -21,7 +21,6 @@ import type BaseNpmDevice from '../../../features/pmicControl/npm/basePmicDevice
 import { DocumentationTooltip } from '../../../features/pmicControl/npm/documentation/documentation';
 import {
     type CCProfile,
-    type ITerm,
     type NTCThermistor,
     NTCValues,
     type Profile,
@@ -72,7 +71,7 @@ export default ({
 
     const vTerm = Math.max(...npmDevice.chargerModule.ranges.voltage);
 
-    const [iTerm, setITerm] = useState<ITerm>(
+    const [iTerm, setITerm] = useState(
         charger.iTerm ?? npmDevice.chargerModule.values.iTerm[0].value,
     );
     const dispatch = useDispatch();
@@ -263,7 +262,7 @@ export default ({
                         </DocumentationTooltip>
                     }
                     items={npmDevice.chargerModule.values.iTerm}
-                    onSelect={item => setITerm(item.value as ITerm)}
+                    onSelect={item => setITerm(item.value)}
                     selectedItem={
                         npmDevice.chargerModule.values.iTerm.find(
                             item => item.value === iTerm,
