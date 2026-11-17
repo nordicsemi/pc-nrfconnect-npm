@@ -429,6 +429,7 @@ const Default = ({
         internalVTermr === undefined ||
         charger.ntcBeta === undefined ||
         charger.ntcThermistor === undefined ||
+        chargerModule.ranges.nTCBeta === undefined ||
         chargerModule.ranges.vTermR === undefined
     ) {
         return null;
