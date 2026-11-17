@@ -85,8 +85,8 @@ describe('PMIC 1300 - Request update commands', () => {
         );
     });
 
-    test('Request update chargerBatLim', () => {
-        pmic.chargerModule?.get.batLim?.();
+    test('Request update chargerIBatLim', () => {
+        pmic.chargerModule?.get.iBatLim?.();
 
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
