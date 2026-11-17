@@ -65,7 +65,14 @@ export default ({
         { key: 'Software', renderItem: <span>Software</span> },
         {
             key: 'Vset',
-            renderItem: vSetWithSubscriptOrUnchanged(buck.vSetLabel),
+            renderItem: (
+                <>
+                    V
+                    <span className="subscript">
+                        {`${buck.vSetSubscriptLabel}`}
+                    </span>
+                </>
+            ),
         },
     ];
 
@@ -139,8 +146,8 @@ export default ({
                     <DocumentationTooltip card={card} item="VOUT">
                         <div>
                             <span>V</span>
-                            <span className="subscript">{`OUT${
-                                buckModule.index + 1
+                            <span className="subscript">{`${
+                                buck.vOutSubscriptLabel
                             }`}</span>
                         </div>
                     </DocumentationTooltip>
@@ -424,93 +431,76 @@ export default ({
                             disabled={disabled}
                         />
                     )}
-                    {buckModule.values.vOutComparatorBiasCurrent && (
-                        <>
-                            {buck.vOutComparatorBiasCurrentLPMode !==
-                                undefined && (
-                                <Dropdown
-                                    label={
-                                        <DocumentationTooltip
-                                            card={card}
-                                            item="VOutComparatorBiasCurrentLPMode"
-                                        >
-                                            <span>
-                                                V
-                                                <span className="subscript">
-                                                    OUT
-                                                </span>{' '}
-                                                Comparator Bias Current (LP
-                                                Mode)
-                                            </span>
-                                        </DocumentationTooltip>
-                                    }
-                                    items={buckModule.values.vOutComparatorBiasCurrent?.(
-                                        'LP',
-                                    )}
-                                    onSelect={item =>
-                                        buckModule.set.vOutComparatorBiasCurrent?.(
-                                            'LP',
-                                            item.value,
-                                        )
-                                    }
-                                    selectedItem={
-                                        buckModule.values
-                                            .vOutComparatorBiasCurrent?.('LP')
-                                            .find(
-                                                item =>
-                                                    item.value ===
-                                                    buck.vOutComparatorBiasCurrentLPMode,
-                                            ) ??
-                                        buckModule.values.vOutComparatorBiasCurrent?.(
-                                            'LP',
-                                        )[0]
-                                    }
-                                    disabled={disabled}
-                                />
-                            )}
-                            {buck.vOutComparatorBiasCurrentULPMode !==
-                                undefined && (
-                                <Dropdown
-                                    label={
-                                        <DocumentationTooltip
-                                            card={card}
-                                            item="VOutComparatorBiasCurrentULPMode"
-                                        >
-                                            <span>
-                                                V
-                                                <span className="subscript">
-                                                    OUT
-                                                </span>{' '}
-                                                Comparator Bias Current (ULP
-                                                Mode)
-                                            </span>
-                                        </DocumentationTooltip>
-                                    }
-                                    items={buckModule.values.vOutComparatorBiasCurrent?.(
-                                        'ULP',
-                                    )}
-                                    onSelect={item =>
-                                        buckModule.set.vOutComparatorBiasCurrent?.(
-                                            'ULP',
-                                            item.value,
-                                        )
-                                    }
-                                    selectedItem={
-                                        buckModule.values
-                                            .vOutComparatorBiasCurrent?.('ULP')
-                                            .find(
-                                                item =>
-                                                    item.value ===
-                                                    buck.vOutComparatorBiasCurrentULPMode,
-                                            ) ??
-                                        buckModule.values.vOutComparatorBiasCurrent?.(
-                                            'ULP',
-                                        )[0]
-                                    }
-                                    disabled={disabled}
-                                />
-                            )}
-                        </>
+
+                    {buckModule.values.vOutComparatorBiasCurrentLPMode !==
+                        undefined && (
+                        <Dropdown
+                            label={
+                                <DocumentationTooltip
+                                    card={card}
+                                    item="VOutComparatorBiasCurrentLPMode"
+                                >
+                                    <span>
+                                        V<span className="subscript">OUT</span>{' '}
+                                        Comparator Bias Current (LP Mode)
+                                    </span>
+                                </DocumentationTooltip>
+                            }
+                            items={
+                                buckModule.values
+                                    .vOutComparatorBiasCurrentLPMode
+                            }
+                            onSelect={item =>
+                                buckModule.set.vOutComparatorBiasCurrentLPMode?.(
+                                    item.value,
+                                )
+                            }
+                            selectedItem={
+                                buckModule.values.vOutComparatorBiasCurrentLPMode.find(
+                                    item =>
+                                        item.value ===
+                                        buck.vOutComparatorBiasCurrentLPMode,
+                                ) ??
+                                buckModule.values
+                                    .vOutComparatorBiasCurrentLPMode[0]
+                            }
+                            disabled={disabled}
+                        />
+                    )}
+                    {buckModule.values.vOutComparatorBiasCurrentULPMode !==
+                        undefined && (
+                        <Dropdown
+                            label={
+                                <DocumentationTooltip
+                                    card={card}
+                                    item="VOutComparatorBiasCurrentULPMode"
+                                >
+                                    <span>
+                                        V<span className="subscript">OUT</span>{' '}
+                                        Comparator Bias Current (ULP Mode)
+                                    </span>
+                                </DocumentationTooltip>
+                            }
+                            items={
+                                buckModule.values
+                                    .vOutComparatorBiasCurrentULPMode
+                            }
+                            onSelect={item =>
+                                buckModule.set.vOutComparatorBiasCurrentULPMode?.(
+                                    item.value,
+                                )
+                            }
+                            selectedItem={
+                                buckModule.values.vOutComparatorBiasCurrentULPMode.find(
+                                    item =>
+                                        item.value ===
+                                        buck.vOutComparatorBiasCurrentULPMode,
+                                ) ??
+                                buckModule.values
+                                    .vOutComparatorBiasCurrentULPMode[0]
+                            }
+                            disabled={disabled}
+                        />
                     )}
                     {buck.automaticPassthrough !== undefined && (
                         <Toggle
