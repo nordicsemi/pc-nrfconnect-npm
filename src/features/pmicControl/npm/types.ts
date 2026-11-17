@@ -243,6 +243,7 @@ export type FuelGauge = {
     chargingSamplingRate?: number;
     cycleCount?: number;
     discardPosiiveDeltaZ?: boolean;
+    estimatedBatteryResistance?: number;
     quickConvergenceMode?: boolean;
     ratedMinBatteryCapacity?: number;
 };
