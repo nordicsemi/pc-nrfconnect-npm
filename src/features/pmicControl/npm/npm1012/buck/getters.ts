@@ -4,16 +4,10 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { type BuckModeControl } from '../../types';
+import { type ModuleParams } from '../../types';
 
 export class BuckGet {
-    constructor(
-        private sendCommand: (
-            command: string,
-            onSuccess?: (response: string, command: string) => void,
-            onError?: (response: string, command: string) => void,
-        ) => void,
-    ) {}
+    constructor(private sendCommand: ModuleParams['sendCommand']) {}
 
     all() {
         this.vOutNormal();
@@ -29,8 +23,8 @@ export class BuckGet {
         this.quickVOutDischarge();
         this.shortCircuitProtection();
         this.softStartPeakCurrentLimit();
-        this.vOutComparatorBiasCurrent('LP');
-        this.vOutComparatorBiasCurrent('ULP');
+        this.vOutComparatorBiasCurrentLPMode();
+        this.vOutComparatorBiasCurrentULPMode();
         this.vOutRippleControl();
     }
 
@@ -86,8 +80,12 @@ export class BuckGet {
         this.sendCommand(`npm1012 buck softstartilim get`);
     }
 
-    vOutComparatorBiasCurrent(mode: BuckModeControl) {
-        this.sendCommand(`npm1012 buck bias ${mode.toLowerCase()} get`);
+    vOutComparatorBiasCurrentLPMode() {
+        this.sendCommand(`npm1012 buck bias lp get`);
+    }
+
+    vOutComparatorBiasCurrentULPMode() {
+        this.sendCommand(`npm1012 buck bias ulp get`);
     }
 
     vOutRippleControl() {

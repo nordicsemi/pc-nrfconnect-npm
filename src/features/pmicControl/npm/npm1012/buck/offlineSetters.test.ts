@@ -85,12 +85,14 @@ describe('PMIC 1012 - Setters Offline tests', () => {
     test.each(PMIC_1012_BUCKS)(
         'Set setBuckActiveDischargeResistance index: %p',
         async index => {
-            await pmic.buckModule[index].set.activeDischargeResistance?.(250);
+            await pmic.buckModule[index].set.activeDischargeResistance?.(
+                '250Ohm',
+            );
 
             expect(mockOnBuckUpdate).toBeCalledTimes(1);
             expect(mockOnBuckUpdate).toBeCalledWith({
                 data: {
-                    activeDischargeResistance: 250,
+                    activeDischargeResistance: '250Ohm',
                 },
                 index,
             });
@@ -160,12 +162,12 @@ describe('PMIC 1012 - Setters Offline tests', () => {
     test.each(PMIC_1012_BUCKS)(
         'Set setBuckPeakCurrentLimit index: %p',
         async index => {
-            await pmic.buckModule[index].set.peakCurrentLimit?.(142);
+            await pmic.buckModule[index].set.peakCurrentLimit?.('142mA');
 
             expect(mockOnBuckUpdate).toBeCalledTimes(1);
             expect(mockOnBuckUpdate).toBeCalledWith({
                 data: {
-                    peakCurrentLimit: 142,
+                    peakCurrentLimit: '142mA',
                 },
                 index,
             });
@@ -190,12 +192,14 @@ describe('PMIC 1012 - Setters Offline tests', () => {
     test.each(PMIC_1012_BUCKS)(
         'Set setBuckSoftStartPeakCurrentLimit index: %p',
         async index => {
-            await pmic.buckModule[index].set.softStartPeakCurrentLimit?.(142);
+            await pmic.buckModule[index].set.softStartPeakCurrentLimit?.(
+                '142mA',
+            );
 
             expect(mockOnBuckUpdate).toBeCalledTimes(1);
             expect(mockOnBuckUpdate).toBeCalledWith({
                 data: {
-                    softStartPeakCurrentLimit: 142,
+                    softStartPeakCurrentLimit: '142mA',
                 },
                 index,
             });
@@ -205,15 +209,14 @@ describe('PMIC 1012 - Setters Offline tests', () => {
     test.each(PMIC_1012_BUCKS)(
         'Set setBuckVOutComparatorBiasCurrent LP mode index: %p',
         async index => {
-            await pmic.buckModule[index].set.vOutComparatorBiasCurrent?.(
-                'LP',
-                1.4,
+            await pmic.buckModule[index].set.vOutComparatorBiasCurrentLPMode?.(
+                '1.4uA',
             );
 
             expect(mockOnBuckUpdate).toBeCalledTimes(1);
             expect(mockOnBuckUpdate).toBeCalledWith({
                 data: {
-                    vOutComparatorBiasCurrentLPMode: 1.4,
+                    vOutComparatorBiasCurrentLPMode: '1.4uA',
                 },
                 index,
             });
@@ -223,15 +226,14 @@ describe('PMIC 1012 - Setters Offline tests', () => {
     test.each(PMIC_1012_BUCKS)(
         'Set setBuckVOutComparatorBiasCurrent ULP mode index: %p',
         async index => {
-            await pmic.buckModule[index].set.vOutComparatorBiasCurrent?.(
-                'ULP',
-                28,
+            await pmic.buckModule[index].set.vOutComparatorBiasCurrentULPMode?.(
+                '28nA',
             );
 
             expect(mockOnBuckUpdate).toBeCalledTimes(1);
             expect(mockOnBuckUpdate).toBeCalledWith({
                 data: {
-                    vOutComparatorBiasCurrentULPMode: 28,
+                    vOutComparatorBiasCurrentULPMode: '28nA',
                 },
                 index,
             });
@@ -241,12 +243,12 @@ describe('PMIC 1012 - Setters Offline tests', () => {
     test.each(PMIC_1012_BUCKS)(
         'Set setBuckVOutRippleControl index: %p',
         async index => {
-            await pmic.buckModule[index].set.vOutRippleControl?.('High');
+            await pmic.buckModule[index].set.vOutRippleControl?.('HIGH');
 
             expect(mockOnBuckUpdate).toBeCalledTimes(1);
             expect(mockOnBuckUpdate).toBeCalledWith({
                 data: {
-                    vOutRippleControl: 'High',
+                    vOutRippleControl: 'HIGH',
                 },
                 index,
             });

@@ -4,13 +4,10 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { type Range } from '@nordicsemiconductor/pc-nrfconnect-shared';
-
 import {
     type Buck,
     type BuckExport,
     type BuckMode,
-    type BuckModeControl,
     type BuckModule,
     type ModuleParams,
 } from '../../types';
@@ -18,112 +15,97 @@ import buckCallbacks from './callbacks';
 import { BuckGet } from './getters';
 import { BuckSet } from './setters';
 import {
-    BuckAlternateVOutControlValues1012,
-    BuckModeControlValues1012,
-    BuckOnOffControlValues1012,
-    BuckVOutRippleControlValues1012,
+    alternateVOutControlKV,
+    iLimLvlKV,
+    iLimStartLvlKV,
+    modeControlKV,
+    onOffControlKV,
+    pullDownResKV,
+    vOutCompBiasLPModeKV,
+    vOutCompBiasULPModeKV,
+    vOutRange,
+    vOutRippleControlKV,
 } from './types';
 
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-underscore-dangle */
 
-const buckDefaults = (): Buck => ({
-    vOutNormal: buckVoltageRange().min,
-    mode: 'vSet',
-    enabled: true,
-    modeControl: 'LP',
-    onOffControl: 'VSET',
-    onOffSoftwareControlEnabled: true,
-    cardLabel: 'BUCK',
-    vSetLabel: 'Vset',
-
-    activeDischargeResistance: 0,
-    alternateVOut: buckVoltageRange().min,
-    alternateVOutControl: 'Off',
-    automaticPassthrough: false,
-    enabledWhenProfiling: true, // in the default EK configuration VDDIO is connected to the buck output
-    peakCurrentLimit: peakCurrentLimitValues[0],
-    quickVOutDischarge: false,
-    shortCircuitProtection: false,
-    softStartPeakCurrentLimit: softStartPeakCurrentLimitValues[0],
-    vOutComparatorBiasCurrentLPMode: vOutComparatorBiasCurrentLPModeValues[0],
-    vOutComparatorBiasCurrentULPMode: vOutComparatorBiasCurrentULPModeValues[0],
-    vOutRippleControl: 'Nominal',
-});
-
 export const toBuckExport = (buck: Buck): BuckExport => ({
-    vOutNormal: buck.vOutNormal,
-    mode: buck.mode,
-    modeControl: buck.modeControl,
-    onOffControl: buck.onOffControl,
-    retentionControl: buck.retentionControl,
-    enabled: buck.enabled,
-
     activeDischargeResistance: buck.activeDischargeResistance,
     alternateVOut: buck.alternateVOut,
     alternateVOutControl: buck.alternateVOutControl,
     automaticPassthrough: buck.automaticPassthrough,
+    enabled: buck.enabled,
+    mode: buck.mode,
+    modeControl: buck.modeControl,
+    onOffControl: buck.onOffControl,
     peakCurrentLimit: buck.peakCurrentLimit,
     quickVOutDischarge: buck.quickVOutDischarge,
+    retentionControl: buck.retentionControl,
     shortCircuitProtection: buck.shortCircuitProtection,
     softStartPeakCurrentLimit: buck.softStartPeakCurrentLimit,
     vOutComparatorBiasCurrentLPMode: buck.vOutComparatorBiasCurrentLPMode,
     vOutComparatorBiasCurrentULPMode: buck.vOutComparatorBiasCurrentULPMode,
+    vOutNormal: buck.vOutNormal,
     vOutRippleControl: buck.vOutRippleControl,
 });
 
-const buckVoltageRange = () =>
-    ({
-        decimals: 2,
-        max: 3.3,
-        min: 1,
-        step: 0.05,
-    }) as Range;
-
-const activeDischargeResistanceValues = [
-    0, 250, 500, 1000, 2000,
-] as readonly number[];
-
-const peakCurrentLimitValues = [
-    66, 91, 117, 142, 167, 192, 217, 291,
-] as readonly number[];
-
-const softStartPeakCurrentLimitValues = [
-    66, 91, 117, 142, 167, 192, 217, 291,
-] as readonly number[];
-
-const vOutComparatorBiasCurrentLPModeValues = [
-    0.8, 1.4, 2.5, 3.0,
-] as readonly number[];
-
-const vOutComparatorBiasCurrentULPModeValues = [
-    28, 35, 50, 95,
-] as readonly number[];
-
 export default class Module implements BuckModule {
     readonly index: number;
+    private _callbacks: (() => void)[];
     private _get: BuckGet;
     private _set: BuckSet;
-    private _callbacks: (() => void)[];
+
     constructor({
-        index,
-        sendCommand,
-        eventEmitter,
-        offlineMode,
-        shellParser,
         dialogHandler,
+        eventEmitter,
+        index,
+        offlineMode,
+        sendCommand,
+        shellParser,
     }: ModuleParams) {
         this.index = index;
+        this._callbacks = buckCallbacks(eventEmitter, shellParser, index);
         this._get = new BuckGet(sendCommand);
         this._set = new BuckSet(
             dialogHandler,
             eventEmitter,
-            sendCommand,
             offlineMode,
+            sendCommand,
             index,
         );
-        this._callbacks = buckCallbacks(shellParser, eventEmitter, index);
     }
+
+    get callbacks() {
+        return this._callbacks;
+    }
+
+    get defaults(): Buck {
+        return {
+            activeDischargeResistance: 'OFF',
+            alternateVOut: vOutRange.min,
+            alternateVOutControl: 'OFF',
+            automaticPassthrough: false,
+            cardLabel: 'BUCK',
+            enabled: true,
+            enabledWhenProfiling: true, // in the default EK configuration VDDIO is connected to the buck output
+            mode: 'vSet',
+            modeControl: 'LP',
+            onOffControl: 'VSET',
+            onOffSoftwareControlEnabled: true,
+            peakCurrentLimit: '66mA',
+            quickVOutDischarge: false,
+            shortCircuitProtection: false,
+            softStartPeakCurrentLimit: '66mA',
+            vOutComparatorBiasCurrentLPMode: '0.8uA',
+            vOutComparatorBiasCurrentULPMode: '28nA',
+            vOutNormal: vOutRange.min,
+            vOutRippleControl: 'NOMINAL',
+            vOutSubscriptLabel: 'OUT',
+            vSetSubscriptLabel: 'SET',
+        };
+    }
+
     get get() {
         return this._get;
     }
@@ -132,105 +114,67 @@ export default class Module implements BuckModule {
         return this._set;
     }
 
-    get callbacks() {
-        return this._callbacks;
-    }
-
     get ranges(): BuckModule['ranges'] {
         return {
-            voltage: buckVoltageRange(),
-            alternateVOut: buckVoltageRange(),
+            voltage: vOutRange,
+            alternateVOut: vOutRange,
         };
     }
 
     get values(): BuckModule['values'] {
         const onOffControlValues = (mode: BuckMode) => {
-            let values = [];
-            switch (mode) {
-                case 'software': {
-                    values = BuckOnOffControlValues1012.filter(
-                        value => value !== 'VSET',
-                    );
-                    break;
-                }
-                case 'vSet': {
-                    values = BuckOnOffControlValues1012.filter(
-                        value => value !== 'Software',
-                    );
-                    break;
-                }
-            }
-
-            return values.map(val => ({
-                label: `${val}`,
-                value: val,
+            const items = onOffControlKV.map(([key, val]) => ({
+                label: val,
+                value: key,
             }));
-        };
-
-        const vOutComparatorBiasCurrentValues = (mode: BuckModeControl) => {
-            const lpModeValues = vOutComparatorBiasCurrentLPModeValues.map(
-                val => ({
-                    label: `${val} uA`,
-                    value: val,
-                }),
-            );
-            const ulpModeValues = vOutComparatorBiasCurrentULPModeValues.map(
-                val => ({
-                    label: `${val} nA`,
-                    value: val,
-                }),
-            );
-
             switch (mode) {
-                case 'LP': {
-                    return lpModeValues;
-                }
-                case 'ULP': {
-                    return ulpModeValues;
-                }
-                default: {
-                    return [{ label: 'N/A', value: 0 }];
-                }
+                case 'software':
+                    return items.filter(item => item.value !== 'VSET');
+                case 'vSet':
+                    return items.filter(item => item.value !== 'SOFTWARE');
+                default:
+                    return [];
             }
         };
 
         return {
-            activeDischargeResistance: activeDischargeResistanceValues.map(
-                val => ({
-                    label: val === 0 ? 'Off' : `${val} Ohm`,
-                    value: val,
-                }),
-            ),
-            alternateVOutControl: BuckAlternateVOutControlValues1012.map(
-                val => ({
-                    label: val,
-                    value: val,
-                }),
-            ),
-            modeControl: BuckModeControlValues1012.map(val => ({
-                label: `${val}`,
-                value: val,
+            activeDischargeResistance: pullDownResKV.map(([key, val]) => ({
+                label: val,
+                value: key,
+            })),
+            alternateVOutControl: alternateVOutControlKV.map(([key, val]) => ({
+                label: val,
+                value: key,
+            })),
+            modeControl: modeControlKV.map(([key, val]) => ({
+                label: val,
+                value: key,
             })),
             onOffControl: onOffControlValues,
-            peakCurrentLimit: peakCurrentLimitValues.map(val => ({
-                label: `${val} mA`,
-                value: val,
+            peakCurrentLimit: iLimLvlKV.map(([key, val]) => ({
+                label: val,
+                value: key,
             })),
-            softStartPeakCurrentLimit: softStartPeakCurrentLimitValues.map(
-                val => ({
-                    label: `${val} mA`,
-                    value: val,
+            softStartPeakCurrentLimit: iLimStartLvlKV.map(([key, val]) => ({
+                label: val,
+                value: key,
+            })),
+            vOutComparatorBiasCurrentLPMode: vOutCompBiasLPModeKV.map(
+                ([key, val]) => ({
+                    label: val,
+                    value: key,
                 }),
             ),
-            vOutComparatorBiasCurrent: vOutComparatorBiasCurrentValues,
-            vOutRippleControl: BuckVOutRippleControlValues1012.map(val => ({
+            vOutComparatorBiasCurrentULPMode: vOutCompBiasULPModeKV.map(
+                ([key, val]) => ({
+                    label: val,
+                    value: key,
+                }),
+            ),
+            vOutRippleControl: vOutRippleControlKV.map(([key, val]) => ({
                 label: val,
-                value: val,
+                value: key,
             })),
         };
-    }
-
-    get defaults(): Buck {
-        return buckDefaults();
     }
 }
