@@ -16,10 +16,15 @@ import { z } from 'zod';
 import { type RangeOrNumberArray } from '../../../utils/helpers';
 import type BaseNpmDevice from './basePmicDevice';
 import type {
-    BuckAlternateVOutControl1012,
-    BuckModeControl1012,
-    BuckOnOffControl1012,
-    BuckVOutRippleControl1012,
+    AlternateVOutControl as BuckAlternateVOutControl1012,
+    ILimLvl as BuckPeakCurrentLimit1012,
+    ILimStartStartLvl as BuckSoftStartPeakCurrentLimit1012,
+    ModeControl as BuckModeControl1012,
+    OnOffControl as BuckOnOffControl1012,
+    PullDownRes as BuckActiveDischargeResistance1012,
+    VOutCompBiasLPMode as BuckVOutComparatorBiasCurrentLPMode1012,
+    VOutCompBiasULPMode as BuckVOutComparatorBiasCurrentULPMode1012,
+    VOutRippleControl as BuckVOutRippleControl1012,
 } from './npm1012/buck/types';
 import {
     type ITermLvl as ChargerITerm1012,
@@ -135,7 +140,7 @@ export const BoostPinSelectionValues = [
 export const VSETValues = ['VSET1', 'VSET2'] as const;
 
 export const BuckModeControlValues = ['Auto', 'PWM', 'PFM'] as const;
-export const BuckOnOffControlValues = ['Off'] as const;
+export const BuckOnOffControlValues = ['Off', 'Software'] as const;
 export const BuckRetentionControlValues = ['Off'] as const;
 
 type GPIONames = (typeof GPIOValues)[number];
@@ -182,6 +187,13 @@ export type BuckRetentionControl =
     | GPIONames;
 export type BuckAlternateVOutControl = BuckAlternateVOutControl1012;
 export type BuckVOutRippleControl = BuckVOutRippleControl1012;
+export type BuckPeakCurrentLimit = BuckPeakCurrentLimit1012;
+export type BuckSoftStartPeakCurrentLimit = BuckSoftStartPeakCurrentLimit1012;
+export type BuckActiveDischargeResistance = BuckActiveDischargeResistance1012;
+export type BuckVOutComparatorBiasLPCurrent =
+    BuckVOutComparatorBiasCurrentLPMode1012;
+export type BuckVOutComparatorBiasULPCurrent =
+    BuckVOutComparatorBiasCurrentULPMode1012;
 
 export type ChargerIBatLim = number;
 export type ChargerITerm =
@@ -327,21 +339,22 @@ export type Buck = {
     onOffSoftwareControlEnabled: boolean;
     enabled: boolean;
     cardLabel: string;
-    vSetLabel: string;
+    vOutSubscriptLabel: string;
+    vSetSubscriptLabel: string;
 
     activeDischarge?: boolean;
-    activeDischargeResistance?: number;
+    activeDischargeResistance?: BuckActiveDischargeResistance;
     alternateVOut?: number;
     alternateVOutControl?: BuckAlternateVOutControl;
     automaticPassthrough?: boolean;
     enabledWhenProfiling?: boolean;
-    peakCurrentLimit?: number;
+    peakCurrentLimit?: BuckPeakCurrentLimit;
     quickVOutDischarge?: boolean;
     retentionControl?: BuckRetentionControl;
     shortCircuitProtection?: boolean;
-    softStartPeakCurrentLimit?: number;
-    vOutComparatorBiasCurrentLPMode?: number;
-    vOutComparatorBiasCurrentULPMode?: number;
+    softStartPeakCurrentLimit?: BuckSoftStartPeakCurrentLimit;
+    vOutComparatorBiasCurrentLPMode?: BuckVOutComparatorBiasLPCurrent;
+    vOutComparatorBiasCurrentULPMode?: BuckVOutComparatorBiasULPCurrent;
     vOutRetention?: number;
     vOutRippleControl?: BuckVOutRippleControl;
 };
@@ -1148,7 +1161,8 @@ export interface BuckModule {
         shortCircuitProtection?: () => void;
         softStartPeakCurrentLimit?: () => void;
         alternateVOut?: () => void;
-        vOutComparatorBiasCurrent?: (mode: BuckModeControl) => void;
+        vOutComparatorBiasCurrentLPMode?: () => void;
+        vOutComparatorBiasCurrentULPMode?: () => void;
         vOutRetention?: () => void;
         vOutRippleControl?: () => void;
     };
@@ -1161,22 +1175,28 @@ export interface BuckModule {
         enabled: (enabled: boolean) => Promise<void>;
 
         activeDischarge?: (activeDischarge: boolean) => Promise<void>;
-        activeDischargeResistance?: (value: number) => Promise<void>;
+        activeDischargeResistance?: (
+            value: BuckActiveDischargeResistance,
+        ) => Promise<void>;
         alternateVOut?: (value: number) => Promise<void>;
         alternateVOutControl?: (
             value: BuckAlternateVOutControl,
         ) => Promise<void>;
         automaticPassthrough?: (value: boolean) => Promise<void>;
-        peakCurrentLimit?: (value: number) => Promise<void>;
+        peakCurrentLimit?: (value: BuckPeakCurrentLimit) => Promise<void>;
         quickVOutDischarge?: (value: boolean) => Promise<void>;
         shortCircuitProtection?: (value: boolean) => Promise<void>;
-        softStartPeakCurrentLimit?: (value: number) => Promise<void>;
+        softStartPeakCurrentLimit?: (
+            value: BuckSoftStartPeakCurrentLimit,
+        ) => Promise<void>;
         retentionControl?: (
             retentionControl: BuckRetentionControl,
         ) => Promise<void>;
-        vOutComparatorBiasCurrent?: (
-            mode: BuckModeControl,
-            value: number,
+        vOutComparatorBiasCurrentLPMode?: (
+            value: BuckVOutComparatorBiasLPCurrent,
+        ) => Promise<void>;
+        vOutComparatorBiasCurrentULPMode?: (
+            value: BuckVOutComparatorBiasULPCurrent,
         ) => Promise<void>;
         vOutRetention?: (value: number) => Promise<void>;
         vOutRippleControl?: (value: BuckVOutRippleControl) => Promise<void>;
@@ -1189,7 +1209,10 @@ export interface BuckModule {
         retVOut?: Range;
     };
     values: {
-        activeDischargeResistance?: { label: string; value: number }[];
+        activeDischargeResistance?: {
+            label: string;
+            value: BuckActiveDischargeResistance;
+        }[];
         alternateVOutControl?: {
             label: string;
             value: BuckAlternateVOutControl;
@@ -1198,12 +1221,20 @@ export interface BuckModule {
         onOffControl: (
             mode: BuckMode,
         ) => { label: string; value: BuckOnOffControl }[];
-        peakCurrentLimit?: { label: string; value: number }[];
+        peakCurrentLimit?: { label: string; value: BuckPeakCurrentLimit }[];
         retentionControl?: { label: string; value: BuckRetentionControl }[];
-        softStartPeakCurrentLimit?: { label: string; value: number }[];
-        vOutComparatorBiasCurrent?: (
-            mode: BuckModeControl,
-        ) => { label: string; value: number }[];
+        softStartPeakCurrentLimit?: {
+            label: string;
+            value: BuckSoftStartPeakCurrentLimit;
+        }[];
+        vOutComparatorBiasCurrentLPMode?: {
+            label: string;
+            value: BuckVOutComparatorBiasLPCurrent;
+        }[];
+        vOutComparatorBiasCurrentULPMode?: {
+            label: string;
+            value: BuckVOutComparatorBiasULPCurrent;
+        }[];
         vOutRippleControl?: { label: string; value: BuckVOutRippleControl }[];
     };
     defaults: Buck;
@@ -1668,7 +1699,10 @@ export type BoostExport = Omit<Boost, 'pinModeEnabled' | 'vOutVSet'>;
 export type LdoExport = Omit<Ldo, 'cardLabel' | 'onOffSoftwareControlEnabled'>;
 export type BuckExport = Omit<
     Buck,
-    'onOffSoftwareControlEnabled' | 'cardLabel' | 'vSetLabel'
+    | 'onOffSoftwareControlEnabled'
+    | 'cardLabel'
+    | 'vSetSubscriptLabel'
+    | 'vOutSubscriptLabel'
 >;
 export type GPIOExport = Omit<
     GPIO,
