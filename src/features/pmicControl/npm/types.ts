@@ -22,9 +22,10 @@ import type {
     BuckVOutRippleControl1012,
 } from './npm1012/buck/types';
 import {
-    type ITerm1012,
-    type ITrickle1012,
-    type VTrickleFast1012,
+    type ITermLvl as ChargerITerm1012,
+    type ITrickleLvl as ChargerITrickle1012,
+    type VBatLowLvl as ChargerVBatLow1012,
+    type VTrickleLvl as ChargerVTrickleFast1012,
 } from './npm1012/charger/types';
 import type {
     GPIODrive as GPIOLEDDrvGPIODrive1012,
@@ -67,8 +68,8 @@ import type {
     ConfigSysFeatVBusILimLvl as npm1012UserOtpConfigSysFeatVBusILimLvl,
 } from './npm1012/userOtp/types';
 import {
-    type ITermNpm1300,
-    type VTrickleFast1300,
+    type ITermNpm1300 as ChargerITermNpm1300,
+    type VTrickleFast1300 as ChargerVTrickleFast1300,
 } from './npm1300/charger/types';
 import type {
     GPIODrive1300,
@@ -80,7 +81,7 @@ import type { Mode as LEDMode1300 } from './npm1300/led/types';
 import type { TimeToActive as TimeToActive1300 } from './npm1300/lowPower/types';
 import type { LongPressResetPinSel as LongPressResetPinSel1300 } from './npm1300/reset/types';
 import { type npm1300TimerMode } from './npm1300/timerConfig/types';
-import { type ITermNpm1304 } from './npm1304/charger/types';
+import { type ITermNpm1304 as ChargerITermNpm1304 } from './npm1304/charger/types';
 import type { PowerID2100 } from './npm2100/battery';
 import type {
     GPIODrive2100,
@@ -182,11 +183,18 @@ export type BuckRetentionControl =
 export type BuckAlternateVOutControl = BuckAlternateVOutControl1012;
 export type BuckVOutRippleControl = BuckVOutRippleControl1012;
 
-export type ITerm = ITerm1012 | ITermNpm1300 | ITermNpm1304;
-export type ITrickle = ITrickle1012;
+export type ChargerIBatLim = number;
+export type ChargerITerm =
+    | ChargerITerm1012
+    | ChargerITermNpm1300
+    | ChargerITermNpm1304;
+export type ChargerITrickle = ChargerITrickle1012;
+export type ChargerVTrickleFast =
+    | ChargerVTrickleFast1012
+    | ChargerVTrickleFast1300;
+export type ChargerVBatLow = ChargerVBatLow1012;
 
 export const NTCValues = ['Ignore NTC', '10 kΩ', '47 kΩ', '100 kΩ'] as const;
-export type VTrickleFast = VTrickleFast1012 | VTrickleFast1300;
 export type NTCThermistor = (typeof NTCValues)[number];
 
 export type ModuleSettings = {
@@ -250,12 +258,12 @@ export type FuelGauge = {
 
 export type Charger = {
     vTerm: number;
-    vTrickleFast: VTrickleFast;
+    vTrickleFast: ChargerVTrickleFast;
     iChg: number;
     enabled: boolean;
     enableRecharging: boolean;
     enableVBatLow: boolean;
-    iTerm: ITerm;
+    iTerm: ChargerITerm;
     jeitaILabelCold: ChargerJeitaILabel;
     jeitaILabelCool: ChargerJeitaILabel;
     jeitaILabelNominal: ChargerJeitaILabel;
@@ -277,18 +285,18 @@ export type Charger = {
     enableChargeCurrentThrottling?: boolean;
     enableNtcMonitoring?: boolean;
     enableWeakBatteryCharging?: boolean;
-    iBatLim?: number;
+    iBatLim?: ChargerIBatLim;
     iChgCool?: number;
     iChgWarm?: number;
     iThrottle?: number;
-    iTrickle?: ITrickle;
+    iTrickle?: ChargerITrickle;
     ntcBeta?: number;
     ntcThermistor?: NTCThermistor;
     tChgReduce?: number;
     tChgStop?: number;
     tOutCharge?: number;
     tOutTrickle?: number;
-    vBatLow?: number;
+    vBatLow?: ChargerVBatLow;
     vTermCool?: number;
     vTermR?: number;
     vTermWarm?: number;
@@ -965,8 +973,8 @@ export abstract class ChargerModuleSetBase {
     abstract vTerm(value: number): Promise<void>;
     abstract iChg(value: number): Promise<void>;
     abstract enabled(value: boolean): Promise<void>;
-    abstract vTrickleFast(value: VTrickleFast): Promise<void>;
-    abstract iTerm(iTerm: ITerm): Promise<void>;
+    abstract vTrickleFast(value: ChargerVTrickleFast): Promise<void>;
+    abstract iTerm(iTerm: ChargerITerm): Promise<void>;
     abstract enabledRecharging(value: boolean): Promise<void>;
     abstract enabledVBatLow(value: boolean): Promise<void>;
     abstract tChgResume(value: number): Promise<void>;
@@ -975,25 +983,23 @@ export abstract class ChargerModuleSetBase {
     abstract tWarm(value: number): Promise<void>;
     abstract tHot(value: number): Promise<void>;
 
-    batLim?(value: number): Promise<void>;
     enableAdvancedChargingProfile?(value: boolean): Promise<void>;
     enableBatteryDischargeCurrentLimit?(value: boolean): Promise<void>;
     enableChargeCurrentThrottling?(value: boolean): Promise<void>;
     enableNtcMonitoring?(value: boolean): Promise<void>;
     enabledWeakBatteryCharging?(value: boolean): Promise<void>;
-    enabledWeakBatteryCharging?(value: boolean): Promise<void>;
     iChgCool?(value: number): Promise<void>;
     iChgWarm?(value: number): Promise<void>;
+    iBatLim?(value: ChargerIBatLim): Promise<void>;
     iThrottle?(value: number): Promise<void>;
-    iTrickle?(value: ITrickle): Promise<void>;
-    iTrickle?(value: ITrickle): Promise<void>;
+    iTrickle?(value: ChargerITrickle): Promise<void>;
     nTCBeta?(value: number): Promise<void>;
     nTCThermistor?(mode: NTCThermistor, autoSetBeta?: boolean): Promise<void>;
     tChgReduce?(value: number): Promise<void>;
     tChgStop?(value: number): Promise<void>;
     tOutCharge?(value: number): Promise<void>;
     tOutTrickle?(value: number): Promise<void>;
-    vBatLow?(value: number): Promise<void>;
+    vBatLow?(value: ChargerVBatLow): Promise<void>;
     vTermCool?(value: number): Promise<void>;
     vTermR?(value: number): Promise<void>;
     vTermWarm?(value: number): Promise<void>;
@@ -1033,13 +1039,12 @@ export abstract class ChargerModuleGetBase {
     abstract tWarm(): void;
     abstract tHot(): void;
 
-    batLim?(): void;
     enabledAdvancedChargingProfile?(): void;
     enabledBatteryDischargeCurrentLimit?(): void;
     enabledChargeCurrentThrottling?(): void;
     enabledNtcMonitoring?(): void;
     enabledWeakBatteryCharging?(): void;
-    enabledWeakBatteryCharging?(): void;
+    iBatLim?(): void;
     iChgCool?(): void;
     iChgWarm?(): void;
     iThrottle?(): void;
@@ -1064,24 +1069,25 @@ export type ChargerModuleRanges = {
     jeita: Range;
     chipThermal: Range;
     current: RangeOrNumberArray;
-    nTCBeta: Range;
     vLowerCutOff: Range;
     batterySize: Range;
 
     iBatLim?: FixedListRange;
+    nTCBeta?: Range;
     vTermR?: number[];
     vWeak?: Range;
 };
 
 export type ChargerModuleValues = {
-    iTerm: { label: string; value: ITerm }[];
-    vTrickleFast: { label: string; value: VTrickleFast }[];
+    iTerm: { label: string; value: ChargerITerm }[];
+    vTrickleFast: { label: string; value: ChargerVTrickleFast }[];
 
+    iBatLim?: { label: string; value: ChargerIBatLim }[];
     iThrottle?: { label: string; value: number }[];
-    iTrickle?: { label: string; value: ITrickle }[];
+    iTrickle?: { label: string; value: ChargerITrickle }[];
     tOutCharge?: { label: string; value: number }[];
     tOutTrickle?: { label: string; value: number }[];
-    vBatLow?: { label: string; value: number }[];
+    vBatLow?: { label: string; value: ChargerVBatLow }[];
     vThrottle?: { label: string; value: number }[];
 };
 
@@ -1767,7 +1773,7 @@ export interface Profile {
     baseDirectory: string;
     restingProfiles: RestingCCProfile[];
     profilingProfiles: CCProfile[];
-    iTerm: ITerm;
+    iTerm: ChargerITerm;
 }
 
 export type BatteryProfiler = {
