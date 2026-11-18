@@ -309,15 +309,23 @@ export default ({
                                     <span>BUCK Peak Current Limit</span>
                                 </DocumentationTooltip>
                             }
-                            items={buckModule.values.peakCurrentLimit}
+                            items={buckModule.values.peakCurrentLimit(
+                                buck.peakCurrentLimitFicr,
+                            )}
                             onSelect={item =>
                                 buckModule.set.peakCurrentLimit?.(item.value)
                             }
                             selectedItem={
-                                buckModule.values.peakCurrentLimit.find(
-                                    item =>
-                                        item.value === buck.peakCurrentLimit,
-                                ) ?? buckModule.values.peakCurrentLimit[0]
+                                buckModule.values
+                                    .peakCurrentLimit(buck.peakCurrentLimitFicr)
+                                    .find(
+                                        item =>
+                                            item.value ===
+                                            buck.peakCurrentLimit,
+                                    ) ??
+                                buckModule.values.peakCurrentLimit(
+                                    buck.peakCurrentLimitFicr,
+                                )[0]
                             }
                             disabled={disabled}
                         />
@@ -332,19 +340,27 @@ export default ({
                                     <span>Soft Start Peak Current Limit</span>
                                 </DocumentationTooltip>
                             }
-                            items={buckModule.values.softStartPeakCurrentLimit}
+                            items={buckModule.values.softStartPeakCurrentLimit(
+                                buck.softStartPeakCurrentLimitFicr,
+                            )}
                             onSelect={item =>
                                 buckModule.set.softStartPeakCurrentLimit?.(
                                     item.value,
                                 )
                             }
                             selectedItem={
-                                buckModule.values.softStartPeakCurrentLimit.find(
-                                    item =>
-                                        item.value ===
-                                        buck.softStartPeakCurrentLimit,
-                                ) ??
-                                buckModule.values.softStartPeakCurrentLimit[0]
+                                buckModule.values
+                                    .softStartPeakCurrentLimit(
+                                        buck.softStartPeakCurrentLimitFicr,
+                                    )
+                                    .find(
+                                        item =>
+                                            item.value ===
+                                            buck.softStartPeakCurrentLimit,
+                                    ) ??
+                                buckModule.values.softStartPeakCurrentLimit(
+                                    buck.softStartPeakCurrentLimitFicr,
+                                )[0]
                             }
                             disabled={disabled}
                         />
@@ -446,23 +462,27 @@ export default ({
                                     </span>
                                 </DocumentationTooltip>
                             }
-                            items={
-                                buckModule.values
-                                    .vOutComparatorBiasCurrentLPMode
-                            }
+                            items={buckModule.values.vOutComparatorBiasCurrentLPMode(
+                                buck.vOutComparatorBiasCurrentLPModeFicr,
+                            )}
                             onSelect={item =>
                                 buckModule.set.vOutComparatorBiasCurrentLPMode?.(
                                     item.value,
                                 )
                             }
                             selectedItem={
-                                buckModule.values.vOutComparatorBiasCurrentLPMode.find(
-                                    item =>
-                                        item.value ===
-                                        buck.vOutComparatorBiasCurrentLPMode,
-                                ) ??
                                 buckModule.values
-                                    .vOutComparatorBiasCurrentLPMode[0]
+                                    .vOutComparatorBiasCurrentLPMode(
+                                        buck.vOutComparatorBiasCurrentLPModeFicr,
+                                    )
+                                    .find(
+                                        item =>
+                                            item.value ===
+                                            buck.vOutComparatorBiasCurrentLPMode,
+                                    ) ??
+                                buckModule.values.vOutComparatorBiasCurrentLPMode(
+                                    buck.vOutComparatorBiasCurrentLPModeFicr,
+                                )[0]
                             }
                             disabled={disabled}
                         />
@@ -481,23 +501,27 @@ export default ({
                                     </span>
                                 </DocumentationTooltip>
                             }
-                            items={
-                                buckModule.values
-                                    .vOutComparatorBiasCurrentULPMode
-                            }
+                            items={buckModule.values.vOutComparatorBiasCurrentULPMode(
+                                buck.vOutComparatorBiasCurrentULPModeFicr,
+                            )}
                             onSelect={item =>
                                 buckModule.set.vOutComparatorBiasCurrentULPMode?.(
                                     item.value,
                                 )
                             }
                             selectedItem={
-                                buckModule.values.vOutComparatorBiasCurrentULPMode.find(
-                                    item =>
-                                        item.value ===
-                                        buck.vOutComparatorBiasCurrentULPMode,
-                                ) ??
                                 buckModule.values
-                                    .vOutComparatorBiasCurrentULPMode[0]
+                                    .vOutComparatorBiasCurrentULPMode(
+                                        buck.vOutComparatorBiasCurrentULPModeFicr,
+                                    )
+                                    .find(
+                                        item =>
+                                            item.value ===
+                                            buck.vOutComparatorBiasCurrentULPMode,
+                                    ) ??
+                                buckModule.values.vOutComparatorBiasCurrentULPMode(
+                                    buck.vOutComparatorBiasCurrentULPModeFicr,
+                                )[0]
                             }
                             disabled={disabled}
                         />
