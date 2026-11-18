@@ -84,86 +84,6 @@ export default (
 
     cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            'npm1012 charger voltage termination (get|set)',
-            msg => {
-                const vTerm = parseFloatFromCmdReply(msg);
-                if (vTerm === undefined) {
-                    return;
-                }
-                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    vTerm,
-                });
-            },
-            () => {},
-        ),
-    );
-
-    cleanupCallbacks.push(
-        shellParser.registerCommandCallback(
-            'npm1012 charger current charge (get|set)',
-            msg => {
-                const iChg = parseFloatFromCmdReply(msg);
-                if (iChg === undefined) {
-                    return;
-                }
-                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    iChg,
-                });
-            },
-            () => {},
-        ),
-    );
-
-    cleanupCallbacks.push(
-        shellParser.registerCommandCallback(
-            'npm1012 charger recharge (get|set)',
-            msg => {
-                const enableRecharging = parseOnOffFromCmdReply(msg);
-                if (enableRecharging === undefined) {
-                    return;
-                }
-                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    enableRecharging,
-                });
-            },
-            () => {},
-        ),
-    );
-
-    cleanupCallbacks.push(
-        shellParser.registerCommandCallback(
-            'npm1012 charger lowbat_charging (get|set)',
-            msg => {
-                const enableVBatLow = parseOnOffFromCmdReply(msg);
-                if (enableVBatLow === undefined) {
-                    return;
-                }
-                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    enableVBatLow,
-                });
-            },
-            () => {},
-        ),
-    );
-
-    cleanupCallbacks.push(
-        shellParser.registerCommandCallback(
-            'npm1012 charger enable (get|set)',
-            msg => {
-                const enabled = parseOnOffFromCmdReply(msg);
-                if (enabled === undefined) {
-                    return;
-                }
-                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    enabled,
-                });
-            },
-            () => {},
-        ),
-    );
-
-    cleanupCallbacks.push(
-        shellParser.registerCommandCallback(
             'npm1012 charger state get',
             res => {
                 const messageParts = parseValueFromCmdReply(res)?.split(',');
@@ -204,179 +124,6 @@ export default (
 
     cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            'npm1012 charger voltage trickle (get|set)',
-            msg => {
-                const res = parseValueFromCmdReply(msg);
-                const vTrickleFast = vTrickleLvlKeys.find(v => v === res);
-                if (vTrickleFast === undefined) {
-                    return;
-                }
-                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    vTrickleFast,
-                });
-            },
-            () => {},
-        ),
-    );
-
-    cleanupCallbacks.push(
-        shellParser.registerCommandCallback(
-            'npm1012 charger current termination (get|set)',
-            msg => {
-                const res = parseValueFromCmdReply(msg)?.toLowerCase();
-                const iTerm = iTermLvlKeys.find(v => v.toLowerCase() === res);
-                if (iTerm === undefined) {
-                    return;
-                }
-                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    iTerm,
-                });
-            },
-            () => {},
-        ),
-    );
-
-    cleanupCallbacks.push(
-        shellParser.registerCommandCallback(
-            'npm1012 charger dietemp reduce (get|set)',
-            msg => {
-                const tChgReduce = parseIntFromCmdReply(msg);
-                if (tChgReduce === undefined) {
-                    return;
-                }
-                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    tChgReduce,
-                });
-            },
-            () => {},
-        ),
-    );
-
-    cleanupCallbacks.push(
-        shellParser.registerCommandCallback(
-            'npm1012 charger dietemp resume (get|set)',
-            msg => {
-                const tChgResume = parseIntFromCmdReply(msg);
-                if (tChgResume === undefined) {
-                    return;
-                }
-                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    tChgResume,
-                });
-            },
-            () => {},
-        ),
-    );
-
-    cleanupCallbacks.push(
-        shellParser.registerCommandCallback(
-            'npm1012 charger dietemp status (get|set)',
-            () => {}, // TODO: Update
-            () => {},
-        ),
-    );
-
-    cleanupCallbacks.push(
-        shellParser.registerCommandCallback(
-            'npm1012 charger ntc cold (get|set)',
-            msg => {
-                const tCold = parseIntFromCmdReply(msg);
-                if (tCold === undefined) {
-                    return;
-                }
-                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    tCold,
-                });
-            },
-            () => {},
-        ),
-    );
-
-    cleanupCallbacks.push(
-        shellParser.registerCommandCallback(
-            'npm1012 charger ntc cool (get|set)',
-            msg => {
-                const tCool = parseIntFromCmdReply(msg);
-                if (tCool === undefined) {
-                    return;
-                }
-                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    tCool,
-                });
-            },
-            () => {},
-        ),
-    );
-
-    cleanupCallbacks.push(
-        shellParser.registerCommandCallback(
-            'npm1012 charger ntc warm (get|set)',
-            msg => {
-                const tWarm = parseIntFromCmdReply(msg);
-                if (tWarm === undefined) {
-                    return;
-                }
-                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    tWarm,
-                });
-            },
-            () => {},
-        ),
-    );
-
-    cleanupCallbacks.push(
-        shellParser.registerCommandCallback(
-            'npm1012 charger ntc hot (get|set)',
-            msg => {
-                const tHot = parseIntFromCmdReply(msg);
-                if (tHot === undefined) {
-                    return;
-                }
-                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    tHot,
-                });
-            },
-            () => {},
-        ),
-    );
-
-    cleanupCallbacks.push(
-        shellParser.registerCommandCallback(
-            'npm1012 charger current trickle (get|set)',
-            msg => {
-                const res = parseValueFromCmdReply(msg)?.toLowerCase();
-                const iTrickle = iTrickleLvlKeys.find(
-                    v => v.toLowerCase() === res,
-                );
-                if (iTrickle === undefined) {
-                    return;
-                }
-                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    iTrickle,
-                });
-            },
-            () => {},
-        ),
-    );
-
-    cleanupCallbacks.push(
-        shellParser.registerCommandCallback(
-            'npm1012 charger voltage weak (get|set)',
-            msg => {
-                const vWeak = parseFloatFromCmdReply(msg);
-                if (vWeak === undefined) {
-                    return;
-                }
-                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    vWeak,
-                });
-            },
-            () => {},
-        ),
-    );
-
-    cleanupCallbacks.push(
-        shellParser.registerCommandCallback(
             'npm1012 charger jeita_charging (get|set)',
             msg => {
                 const enabled = parseOnOffFromCmdReply(msg);
@@ -394,94 +141,22 @@ export default (
 
     cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            'npm1012 charger ntc monitoring (get|set)',
-            msg => {
-                const enableNtcMonitoring = parseOnOffFromCmdReply(msg);
-                if (enableNtcMonitoring === undefined) {
-                    return;
-                }
-                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    enableNtcMonitoring,
-                });
-            },
+            'npm1012 charger dietemp status (get|set)',
+            () => {}, // TODO: Update
             () => {},
         ),
     );
 
     cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            'npm1012 charger weakbat_charging (get|set)',
+            'npm1012 charger enable (get|set)',
             msg => {
-                const enableWeakBatteryCharging = parseOnOffFromCmdReply(msg);
-                if (enableWeakBatteryCharging === undefined) {
+                const enabled = parseOnOffFromCmdReply(msg);
+                if (enabled === undefined) {
                     return;
                 }
                 eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    enableWeakBatteryCharging,
-                });
-            },
-            () => {},
-        ),
-    );
-
-    cleanupCallbacks.push(
-        shellParser.registerCommandCallback(
-            'npm1012 charger current charge_cool (get|set)',
-            msg => {
-                const iChgCool = parseFloatFromCmdReply(msg);
-                if (iChgCool === undefined) {
-                    return;
-                }
-                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    iChgCool,
-                });
-            },
-            () => {},
-        ),
-    );
-
-    cleanupCallbacks.push(
-        shellParser.registerCommandCallback(
-            'npm1012 charger current charge_warm (get|set)',
-            msg => {
-                const iChgWarm = parseFloatFromCmdReply(msg);
-                if (iChgWarm === undefined) {
-                    return;
-                }
-                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    iChgWarm,
-                });
-            },
-            () => {},
-        ),
-    );
-
-    cleanupCallbacks.push(
-        shellParser.registerCommandCallback(
-            'npm1012 charger voltage termination_cool (get|set)',
-            msg => {
-                const vTermCool = parseFloatFromCmdReply(msg);
-                if (vTermCool === undefined) {
-                    return;
-                }
-                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    vTermCool,
-                });
-            },
-            () => {},
-        ),
-    );
-
-    cleanupCallbacks.push(
-        shellParser.registerCommandCallback(
-            'npm1012 charger voltage termination_warm (get|set)',
-            msg => {
-                const vTermWarm = parseFloatFromCmdReply(msg);
-                if (vTermWarm === undefined) {
-                    return;
-                }
-                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    vTermWarm,
+                    enabled,
                 });
             },
             () => {},
@@ -522,6 +197,135 @@ export default (
 
     cleanupCallbacks.push(
         shellParser.registerCommandCallback(
+            'npm1012 charger ntc monitoring (get|set)',
+            msg => {
+                const enableNtcMonitoring = parseOnOffFromCmdReply(msg);
+                if (enableNtcMonitoring === undefined) {
+                    return;
+                }
+                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
+                    enableNtcMonitoring,
+                });
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm1012 charger recharge (get|set)',
+            msg => {
+                const enableRecharging = parseOnOffFromCmdReply(msg);
+                if (enableRecharging === undefined) {
+                    return;
+                }
+                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
+                    enableRecharging,
+                });
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm1012 charger weakbat_charging (get|set)',
+            msg => {
+                const enableWeakBatteryCharging = parseOnOffFromCmdReply(msg);
+                if (enableWeakBatteryCharging === undefined) {
+                    return;
+                }
+                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
+                    enableWeakBatteryCharging,
+                });
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm1012 charger lowbat_charging (get|set)',
+            msg => {
+                const enableVBatLow = parseOnOffFromCmdReply(msg);
+                if (enableVBatLow === undefined) {
+                    return;
+                }
+                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
+                    enableVBatLow,
+                });
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm1012 charger current charge (get|set)',
+            msg => {
+                const iChg = parseFloatFromCmdReply(msg);
+                if (iChg === undefined) {
+                    return;
+                }
+                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
+                    iChg,
+                });
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm1012 charger current charge_cool (get|set)',
+            msg => {
+                const iChgCool = parseFloatFromCmdReply(msg);
+                if (iChgCool === undefined) {
+                    return;
+                }
+                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
+                    iChgCool,
+                });
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm1012 charger current charge_warm (get|set)',
+            msg => {
+                const iChgWarm = parseFloatFromCmdReply(msg);
+                if (iChgWarm === undefined) {
+                    return;
+                }
+                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
+                    iChgWarm,
+                });
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm1012 charger current termination (get|set)',
+            msg => {
+                const res = parseValueFromCmdReply(msg)?.toLowerCase();
+                const iTerm = iTermLvlKeys.find(v => v.toLowerCase() === res);
+                if (iTerm === undefined) {
+                    return;
+                }
+                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
+                    iTerm,
+                });
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
             'npm1012 charger current throttle (get|set)',
             msg => {
                 const iThrottle = parseFloatFromCmdReply(msg);
@@ -530,6 +334,121 @@ export default (
                 }
                 eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
                     iThrottle,
+                });
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm1012 charger current trickle (get|set)',
+            msg => {
+                const res = parseValueFromCmdReply(msg)?.toLowerCase();
+                const iTrickle = iTrickleLvlKeys.find(
+                    v => v.toLowerCase() === res,
+                );
+                if (iTrickle === undefined) {
+                    return;
+                }
+                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
+                    iTrickle,
+                });
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm1012 charger dietemp reduce (get|set)',
+            msg => {
+                const tChgReduce = parseIntFromCmdReply(msg);
+                if (tChgReduce === undefined) {
+                    return;
+                }
+                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
+                    tChgReduce,
+                });
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm1012 charger dietemp resume (get|set)',
+            msg => {
+                const tChgResume = parseIntFromCmdReply(msg);
+                if (tChgResume === undefined) {
+                    return;
+                }
+                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
+                    tChgResume,
+                });
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm1012 charger ntc cold (get|set)',
+            msg => {
+                const tCold = parseIntFromCmdReply(msg);
+                if (tCold === undefined) {
+                    return;
+                }
+                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
+                    tCold,
+                });
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm1012 charger ntc cool (get|set)',
+            msg => {
+                const tCool = parseIntFromCmdReply(msg);
+                if (tCool === undefined) {
+                    return;
+                }
+                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
+                    tCool,
+                });
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm1012 charger ntc hot (get|set)',
+            msg => {
+                const tHot = parseIntFromCmdReply(msg);
+                if (tHot === undefined) {
+                    return;
+                }
+                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
+                    tHot,
+                });
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm1012 charger ntc warm (get|set)',
+            msg => {
+                const tWarm = parseIntFromCmdReply(msg);
+                if (tWarm === undefined) {
+                    return;
+                }
+                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
+                    tWarm,
                 });
             },
             () => {},
@@ -570,6 +489,73 @@ export default (
 
     cleanupCallbacks.push(
         shellParser.registerCommandCallback(
+            'npm1012 charger voltage batlow (get|set)',
+            msg => {
+                const res = parseValueFromCmdReply(msg)?.toLowerCase();
+                const vBatLow = vBatLowLvlKeys.find(
+                    v => v.toLowerCase() === res,
+                );
+                if (vBatLow === undefined) {
+                    return;
+                }
+                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
+                    vBatLow,
+                });
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm1012 charger voltage termination (get|set)',
+            msg => {
+                const vTerm = parseFloatFromCmdReply(msg);
+                if (vTerm === undefined) {
+                    return;
+                }
+                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
+                    vTerm,
+                });
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm1012 charger voltage termination_cool (get|set)',
+            msg => {
+                const vTermCool = parseFloatFromCmdReply(msg);
+                if (vTermCool === undefined) {
+                    return;
+                }
+                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
+                    vTermCool,
+                });
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm1012 charger voltage termination_warm (get|set)',
+            msg => {
+                const vTermWarm = parseFloatFromCmdReply(msg);
+                if (vTermWarm === undefined) {
+                    return;
+                }
+                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
+                    vTermWarm,
+                });
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
             'npm1012 charger voltage throttle (get|set)',
             msg => {
                 const vThrottle = parseIntFromCmdReply(msg);
@@ -586,17 +572,31 @@ export default (
 
     cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            'npm1012 charger voltage batlow (get|set)',
+            'npm1012 charger voltage trickle (get|set)',
             msg => {
-                const res = parseValueFromCmdReply(msg)?.toLowerCase();
-                const vBatLow = vBatLowLvlKeys.find(
-                    v => v.toLowerCase() === res,
-                );
-                if (vBatLow === undefined) {
+                const res = parseValueFromCmdReply(msg);
+                const vTrickleFast = vTrickleLvlKeys.find(v => v === res);
+                if (vTrickleFast === undefined) {
                     return;
                 }
                 eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    vBatLow,
+                    vTrickleFast,
+                });
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm1012 charger voltage weak (get|set)',
+            msg => {
+                const vWeak = parseFloatFromCmdReply(msg);
+                if (vWeak === undefined) {
+                    return;
+                }
+                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
+                    vWeak,
                 });
             },
             () => {},
