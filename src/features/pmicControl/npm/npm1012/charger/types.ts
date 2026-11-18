@@ -7,36 +7,38 @@
 import { getRange } from '../../../../../utils/helpers';
 
 export const batterySizeRange = {
-    min: 4, // mAh
-    max: 3000,
-    step: 1,
     decimals: 0,
+    max: 3000,
+    min: 4, // mAh
+    step: 1,
 } as const;
 
 export const iChgRangeMax128mA = {
-    min: 0.5,
-    max: 128,
-    step: 0.5,
     decimals: 1,
+    max: 128,
+    min: 0.5,
+    step: 0.5,
 } as const;
 export const iChgRangeMax256mA = {
-    min: 1,
-    max: 256,
-    step: 1,
     decimals: 0,
+    max: 256,
+    min: 1,
+    step: 1,
 } as const;
+export const iChgValuesMax128mA = getRange([iChgRangeMax128mA]);
+export const iChgValuesMax256mA = getRange([iChgRangeMax256mA]);
 export const iChgValuesAll = getRange([
     {
-        min: 0.5,
-        max: 128,
-        step: 0.5,
         decimals: 1,
+        max: 128,
+        min: 0.5,
+        step: 0.5,
     },
     {
-        min: 129,
-        max: 256,
-        step: 1,
         decimals: 0,
+        max: 256,
+        min: 129,
+        step: 1,
     },
 ]);
 
@@ -55,10 +57,10 @@ export const iTermLvlValues = iTermLvlKV.map(kv => kv[1]);
 export type ITermLvl = (typeof iTermLvlKeys)[number];
 
 export const iThrottleLvlRange = {
-    min: 12.5, // % of IChg
-    max: 87.5,
-    step: 12.5,
     decimals: 1,
+    max: 87.5,
+    min: 12.5, // % of IChg
+    step: 12.5,
 } as const;
 export const iThrottleLvlValues = getRange([iThrottleLvlRange]);
 
@@ -68,33 +70,33 @@ export const iTrickleLvlValues = iTermLvlValues;
 export type ITrickleLvl = (typeof iTrickleLvlKeys)[number];
 
 export const jeitaRange = {
-    min: -20, // celcius
-    max: 60,
-    step: 1,
     decimals: 0,
+    max: 60,
+    min: -20, // celcius
+    step: 1,
 } as const;
 
 export const tChgLvlRange = {
-    min: 50, // celcius
-    max: 110,
-    step: 1,
     decimals: 0,
+    max: 110,
+    min: 50, // celcius
+    step: 1,
 } as const;
 export const tChgLvlValues = getRange([tChgLvlRange]);
 
 export const tOutChargeLvlRange = {
-    min: 1, // hours
-    max: 10,
-    step: 1,
     decimals: 0,
+    max: 10,
+    min: 1, // hours
+    step: 1,
 } as const;
 export const tOutChargeLvlValues = getRange([tOutChargeLvlRange]);
 
 export const tOutTrickleLvlRange = {
-    min: 10, // minutes
-    max: 120,
-    step: 10,
     decimals: 0,
+    max: 120,
+    min: 10, // minutes
+    step: 10,
 } as const;
 export const tOutTrickleLvlValues = getRange([tOutTrickleLvlRange]);
 
@@ -107,26 +109,26 @@ export const vBatLowLvlValues = vBatLowLvlKV.map(kv => kv[1]);
 export type VBatLowLvl = (typeof vBatLowLvlKeys)[number];
 
 export const vLowerCutOffLvlRange = {
-    min: 2.7, // V
-    max: 3.6,
-    step: 0.05,
     decimals: 2,
+    max: 3.6,
+    min: 2.7, // V
+    step: 0.05,
 } as const;
 export const vLowerCutOffLvlValues = getRange([vLowerCutOffLvlRange]);
 
 export const vTermLvlRange = {
-    min: 3.5, // V
-    max: 4.65,
-    step: 0.01,
     decimals: 2,
+    max: 4.65,
+    min: 3.5, // V
+    step: 0.01,
 } as const;
 export const vTermLvlValues = getRange([vTermLvlRange]);
 
 export const vThrottleLvlRange = {
-    min: 25, // mV
-    max: 400,
-    step: 25,
     decimals: 0,
+    max: 400,
+    min: 25, // mV
+    step: 25,
 } as const;
 export const vThrottleLvlValues = getRange([vThrottleLvlRange]);
 
@@ -141,16 +143,27 @@ export const vTrickleLvlValues = vTrickleLvlKV.map(kv => kv[1]);
 export type VTrickleLvl = (typeof vTrickleLvlKeys)[number];
 
 export const vWeakLvlRange = {
-    min: 2.5, // V
-    max: 4.0,
-    step: 0.1,
     decimals: 1,
+    max: 4.0,
+    min: 2.5, // V
+    step: 0.1,
 } as const;
 export const vWeakLvlValues = getRange([vWeakLvlRange]);
+
+export const iChgLvlCurrentToInteger = (
+    iChg: number,
+    iChgDouble: boolean,
+): number | undefined => {
+    const index = iChgDouble
+        ? iChgValuesMax256mA.findIndex(v => v === iChg)
+        : iChgValuesMax128mA.findIndex(v => v === iChg);
+    return index >= 0 ? index : undefined;
+};
 
 type DefaultValues = {
     iChg: number;
     iChgCool: number;
+    iChgDouble: boolean;
     iChgWarm: number;
     iTermLvl: ITermLvl;
     iThrottleLvl: number;
@@ -175,6 +188,7 @@ type DefaultValues = {
 export const defaultValues: DefaultValues = {
     iChg: iChgValuesAll[0],
     iChgCool: iChgValuesAll[0],
+    iChgDouble: false,
     iChgWarm: iChgValuesAll[0],
     iTermLvl: '12.5%',
     iThrottleLvl: iThrottleLvlRange.min,

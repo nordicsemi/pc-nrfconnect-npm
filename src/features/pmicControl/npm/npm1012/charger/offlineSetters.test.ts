@@ -22,7 +22,7 @@ describe('PMIC 1012 - Setters Offline tests', () => {
     });
 
     test('Set setChargerIChg', async () => {
-        await pmic.chargerModule?.set.iChg(1.5);
+        await pmic.chargerModule?.set.iChg(1.5, false, true);
 
         expect(mockOnChargerUpdate).toBeCalledTimes(1);
         expect(mockOnChargerUpdate).toBeCalledWith({ iChg: 1.5 });

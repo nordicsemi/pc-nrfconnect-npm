@@ -77,6 +77,7 @@ export default class Module implements ChargerModuleBase {
             enabled: false,
             iChg: defaultValues.iChg,
             iChgCool: defaultValues.iChgCool,
+            iChgDouble: defaultValues.iChgDouble,
             iChgWarm: defaultValues.iChgWarm,
             iTerm: defaultValues.iTermLvl,
             iThrottle: defaultValues.iThrottleLvl,

@@ -13,6 +13,9 @@ import {
     type ChargerVTrickleFast,
 } from '../../types';
 import { advancedChargingProfileOnUpdate } from './helpers';
+import { iChgLvlCurrentToInteger } from './types';
+
+/* eslint-disable class-methods-use-this */
 
 export class ChargerSet extends ChargerModuleSetBase {
     async all(charger: Charger) {
@@ -100,6 +103,47 @@ export class ChargerSet extends ChargerModuleSetBase {
 
         await Promise.allSettled(promises);
     }
+
+    disableChargerIfEnabled = (chargerEnabled?: boolean) =>
+        chargerEnabled === undefined || chargerEnabled === true
+            ? this.enabled(false)
+            : Promise.resolve();
+
+    iChgDoubleNext = (iChgDouble: boolean, iChg: number) => {
+        if (iChgLvlCurrentToInteger(iChg, iChgDouble) !== undefined)
+            return iChgDouble;
+        if (iChgLvlCurrentToInteger(iChg, !iChgDouble) !== undefined)
+            return !iChgDouble;
+        return undefined;
+    };
+
+    iChgRequestUpdateAll = () => {
+        this.get.iChgDouble?.();
+        this.get.iChg?.();
+        this.get.iChgCool?.();
+        this.get.iChgWarm?.();
+    };
+
+    iChgLvlRequestUpdateOnChange = (
+        prevIChgDouble: boolean,
+        nextIChgDouble: boolean | undefined,
+        key: 'iChg' | 'iChgCool' | 'iChgWarm',
+    ) => {
+        if (prevIChgDouble !== nextIChgDouble) {
+            if (key !== 'iChg') this.get.iChg?.();
+            if (key !== 'iChgCool') this.get.iChgCool?.();
+            if (key !== 'iChgWarm') this.get.iChgWarm?.();
+        }
+    };
+
+    setIChgDoubleOnChange = (
+        prevIChgDouble: boolean,
+        nextIChgDouble: boolean | undefined,
+        iChg: number,
+    ) =>
+        prevIChgDouble !== nextIChgDouble
+            ? this.iChgDouble(iChg > 128)
+            : Promise.resolve();
 
     enabled(enabled: boolean) {
         return new Promise<void>((resolve, reject) => {
@@ -262,8 +306,22 @@ export class ChargerSet extends ChargerModuleSetBase {
         });
     }
 
-    iChg(value: number) {
+    iChg(value: number, iChgDouble?: boolean, chargerEnabled?: boolean) {
+        const sendCmd = (iChg: number) =>
+            new Promise<void>((resolve, reject) => {
+                this.sendCommand(
+                    `npm1012 charger current charge set ${iChg}`,
+                    () => resolve(),
+                    () => reject(),
+                );
+            });
+
         return new Promise<void>((resolve, reject) => {
+            if (iChgDouble === undefined) {
+                reject();
+                return;
+            }
+
             this.eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
                 iChg: value,
             });
@@ -273,64 +331,153 @@ export class ChargerSet extends ChargerModuleSetBase {
                 return;
             }
 
-            const onError = () => {
-                this.get.iChg();
-                reject();
-            };
+            const newIChgDouble = this.iChgDoubleNext(iChgDouble, value);
 
-            this.enabled(false)
+            this.disableChargerIfEnabled(chargerEnabled)
                 .then(() =>
-                    this.sendCommand(
-                        `npm1012 charger current charge set ${value}`,
-                        () => resolve(),
-                        onError,
+                    this.setIChgDoubleOnChange(
+                        iChgDouble,
+                        newIChgDouble,
+                        value,
                     ),
                 )
-                .catch(onError);
+                .then(() => sendCmd(value))
+                .then(() => {
+                    resolve();
+                    this.iChgLvlRequestUpdateOnChange(
+                        iChgDouble,
+                        newIChgDouble,
+                        'iChg',
+                    );
+                })
+                .catch(() => {
+                    reject();
+                    this.iChgRequestUpdateAll();
+                });
         });
     }
 
-    iChgCool(value: number) {
+    iChgCool(value: number, iChgDouble?: boolean, chargerEnabled?: boolean) {
+        const sendCmd = (iChg: number) =>
+            new Promise<void>((resolve, reject) => {
+                this.sendCommand(
+                    `npm1012 charger current charge_cool set ${iChg}`,
+                    () => resolve(),
+                    () => reject(),
+                );
+            });
+
+        return new Promise<void>((resolve, reject) => {
+            if (iChgDouble === undefined) {
+                reject();
+                return;
+            }
+
+            this.eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
+                iChgCool: value,
+            });
+
+            if (this.offlineMode) {
+                resolve();
+                return;
+            }
+
+            const newIChgDouble = this.iChgDoubleNext(iChgDouble, value);
+
+            this.disableChargerIfEnabled(chargerEnabled)
+                .then(() =>
+                    this.setIChgDoubleOnChange(
+                        iChgDouble,
+                        newIChgDouble,
+                        value,
+                    ),
+                )
+                .then(() => sendCmd(value))
+                .then(() => {
+                    resolve();
+                    this.iChgLvlRequestUpdateOnChange(
+                        iChgDouble,
+                        newIChgDouble,
+                        'iChgCool',
+                    );
+                })
+                .catch(() => {
+                    reject();
+                    this.iChgRequestUpdateAll();
+                });
+        });
+    }
+
+    iChgDouble(value: boolean) {
         return new Promise<void>((resolve, reject) => {
             if (this.offlineMode) {
                 this.eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    iChgCool: value,
+                    iChgDouble: value,
                 });
                 resolve();
-            } else {
-                this.sendCommand(
-                    `npm1012 charger current charge_cool set ${value}`,
-                    () => resolve(),
-                    () => {
-                        this.get.iChgCool?.();
-                        reject();
-                    },
-                );
+                return;
             }
+
+            this.sendCommand(
+                `npm1012 charger current isetdouble set ${value ? 'on' : 'off'}`,
+                () => resolve(),
+                () => reject(),
+            );
         });
     }
 
-    iChgWarm(value: number) {
+    iChgWarm(value: number, iChgDouble?: boolean, chargerEnabled?: boolean) {
+        const sendCmd = (iChg: number) =>
+            new Promise<void>((resolve, reject) => {
+                this.sendCommand(
+                    `npm1012 charger current charge_warm set ${iChg}`,
+                    () => resolve(),
+                    () => reject(),
+                );
+            });
+
         return new Promise<void>((resolve, reject) => {
-            if (this.offlineMode) {
-                this.eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
-                    iChgWarm: value,
-                });
-                resolve();
-            } else {
-                this.sendCommand(
-                    `npm1012 charger current charge_warm set ${value}`,
-                    () => resolve(),
-                    () => {
-                        this.get.iChgWarm?.();
-                        reject();
-                    },
-                );
+            if (iChgDouble === undefined) {
+                reject();
+                return;
             }
+
+            this.eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
+                iChgWarm: value,
+            });
+
+            if (this.offlineMode) {
+                resolve();
+                return;
+            }
+
+            const newIChgDouble = this.iChgDoubleNext(iChgDouble, value);
+
+            this.disableChargerIfEnabled(chargerEnabled)
+                .then(() =>
+                    this.setIChgDoubleOnChange(
+                        iChgDouble,
+                        newIChgDouble,
+                        value,
+                    ),
+                )
+                .then(() => sendCmd(value))
+                .then(() => {
+                    resolve();
+                    this.iChgLvlRequestUpdateOnChange(
+                        iChgDouble,
+                        newIChgDouble,
+                        'iChgWarm',
+                    );
+                })
+                .catch(() => {
+                    reject();
+                    this.iChgRequestUpdateAll();
+                });
         });
     }
 
-    iTerm(iTerm: ChargerITerm) {
+    iTerm(iTerm: ChargerITerm, chargerEnabled?: boolean) {
         return new Promise<void>((resolve, reject) => {
             if (this.offlineMode) {
                 this.eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
@@ -340,21 +487,20 @@ export class ChargerSet extends ChargerModuleSetBase {
                 return;
             }
 
-            this.enabled(false)
+            const onError = () => {
+                this.get.iTerm();
+                reject();
+            };
+
+            this.disableChargerIfEnabled(chargerEnabled)
                 .then(() => {
                     this.sendCommand(
                         `npm1012 charger current termination set ${iTerm}`,
                         () => resolve(),
-                        () => {
-                            this.get.iTerm();
-                            reject();
-                        },
+                        onError,
                     );
                 })
-                .catch(() => {
-                    this.get.iTerm();
-                    reject();
-                });
+                .catch(onError);
         });
     }
 
@@ -578,7 +724,7 @@ export class ChargerSet extends ChargerModuleSetBase {
         });
     }
 
-    vTerm(value: number) {
+    vTerm(value: number, chargerEnabled?: boolean) {
         return new Promise<void>((resolve, reject) => {
             this.eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
                 vTerm: value,
@@ -594,7 +740,7 @@ export class ChargerSet extends ChargerModuleSetBase {
                 reject();
             };
 
-            this.enabled(false)
+            this.disableChargerIfEnabled(chargerEnabled)
                 .then(() => {
                     this.sendCommand(
                         `npm1012 charger voltage termination set ${value}`,
@@ -666,7 +812,7 @@ export class ChargerSet extends ChargerModuleSetBase {
         });
     }
 
-    vTrickleFast(value: ChargerVTrickleFast) {
+    vTrickleFast(value: ChargerVTrickleFast, chargerEnabled?: boolean) {
         return new Promise<void>((resolve, reject) => {
             if (this.offlineMode) {
                 this.eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
@@ -681,7 +827,7 @@ export class ChargerSet extends ChargerModuleSetBase {
                 reject();
             };
 
-            this.enabled(false)
+            this.disableChargerIfEnabled(chargerEnabled)
                 .then(() => {
                     this.sendCommand(
                         `npm1012 charger voltage trickle set ${value}`,

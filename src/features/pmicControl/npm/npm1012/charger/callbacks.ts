@@ -293,6 +293,20 @@ export default (
 
     cleanupCallbacks.push(
         shellParser.registerCommandCallback(
+            'npm1012 charger current isetdouble (get|set)',
+            res => {
+                const iChgDouble = parseOnOffFromCmdReply(res);
+                if (iChgDouble === undefined) return;
+                eventEmitter.emitPartialEvent<Charger>('onChargerUpdate', {
+                    iChgDouble,
+                });
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
             'npm1012 charger current charge_warm (get|set)',
             msg => {
                 const iChgWarm = parseFloatFromCmdReply(msg);
