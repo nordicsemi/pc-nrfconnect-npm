@@ -203,7 +203,13 @@ export default ({
                 range={chargerModule.ranges.current}
                 value={internalIChg}
                 onChange={setInternalIChg}
-                onChangeComplete={v => chargerModule.set.iChg(v)}
+                onChangeComplete={v =>
+                    chargerModule.set.iChg(
+                        v,
+                        charger.iChgDouble,
+                        charger.enabled,
+                    )
+                }
                 showSlider
             />
             <Dropdown
