@@ -1770,7 +1770,7 @@ export interface NpmExportV2 {
     boosts: BoostExport[];
     charger?: Charger;
     bucks?: BuckExport[];
-    ldos: LdoExport[];
+    ldos?: LdoExport[];
     gpios: GPIOExport[];
     gpioLedDrvs?: GPIOLEDDrvExport[];
     leds?: LedExport[];
