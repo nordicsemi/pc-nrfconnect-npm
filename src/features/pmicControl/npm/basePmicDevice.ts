@@ -1061,15 +1061,17 @@ export default abstract class BaseNpmDevice {
                         );
                     }
 
-                    await Promise.all(
-                        config.ldos.map((ldo, index) =>
-                            (() => {
-                                this.ldoModule[index].set
-                                    .all(ldo)
-                                    .catch(() => {});
-                            })(),
-                        ),
-                    );
+                    if (config.ldos) {
+                        await Promise.all(
+                            config.ldos.map((ldo, index) =>
+                                (() => {
+                                    this.ldoModule[index].set
+                                        .all(ldo)
+                                        .catch(() => {});
+                                })(),
+                            ),
+                        );
+                    }
 
                     await Promise.all(
                         config.gpios.map((gpio, index) =>
