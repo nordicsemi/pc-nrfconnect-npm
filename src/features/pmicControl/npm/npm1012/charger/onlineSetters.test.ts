@@ -43,20 +43,63 @@ describe('PMIC 1012 - Setters Online tests', () => {
             expect(mockOnChargerUpdate).toBeCalledTimes(1);
         });
 
-        test('Set setChargerIChg', async () => {
-            await pmic.chargerModule?.set.iChg(1.5);
+        test('Set setChargerIChg - iChg=1.5, iChgDouble=true', async () => {
+            await pmic.chargerModule?.set.iChg(1.5, true, true);
 
-            expect(mockEnqueueRequest).toBeCalledTimes(2);
+            expect(mockEnqueueRequest).toBeCalledTimes(5);
             expect(mockEnqueueRequest).nthCalledWith(
                 1,
-                `npm1012 charger enable set off`,
+                'npm1012 charger enable set off',
                 expect.anything(),
                 undefined,
                 true,
             );
             expect(mockEnqueueRequest).nthCalledWith(
                 2,
-                `npm1012 charger current charge set 1.5`,
+                'npm1012 charger current isetdouble set off',
+                expect.anything(),
+                undefined,
+                true,
+            );
+            expect(mockEnqueueRequest).nthCalledWith(
+                3,
+                'npm1012 charger current charge set 1.5',
+                expect.anything(),
+                undefined,
+                true,
+            );
+            expect(mockEnqueueRequest).nthCalledWith(
+                4,
+                'npm1012 charger current charge_cool get',
+                expect.anything(),
+                undefined,
+                true,
+            );
+            expect(mockEnqueueRequest).nthCalledWith(
+                5,
+                'npm1012 charger current charge_warm get',
+                expect.anything(),
+                undefined,
+                true,
+            );
+
+            expect(mockOnChargerUpdate).toBeCalledTimes(1);
+        });
+
+        test('Set setChargerIChg - iChg=1.5, iChgDouble=false', async () => {
+            await pmic.chargerModule?.set.iChg(1.5, false, true);
+
+            expect(mockEnqueueRequest).toBeCalledTimes(2);
+            expect(mockEnqueueRequest).nthCalledWith(
+                1,
+                'npm1012 charger enable set off',
+                expect.anything(),
+                undefined,
+                true,
+            );
+            expect(mockEnqueueRequest).nthCalledWith(
+                2,
+                'npm1012 charger current charge set 1.5',
                 expect.anything(),
                 undefined,
                 true,
@@ -339,28 +382,48 @@ describe('PMIC 1012 - Setters Online tests', () => {
 
         test('Set setChargerIChg onError case 1 - Fail immediately', async () => {
             await expect(
-                pmic.chargerModule?.set.iChg(1.5),
+                pmic.chargerModule?.set.iChg(1.5, false, true),
             ).rejects.toBeUndefined();
 
-            expect(mockEnqueueRequest).toBeCalledTimes(3);
+            expect(mockEnqueueRequest).toBeCalledTimes(6);
             expect(mockEnqueueRequest).nthCalledWith(
                 1,
-                `npm1012 charger enable set off`,
+                'npm1012 charger enable set off',
                 expect.anything(),
                 undefined,
                 true,
             );
-
             expect(mockEnqueueRequest).nthCalledWith(
                 2,
-                `npm1012 charger enable get`,
+                'npm1012 charger enable get',
                 expect.anything(),
                 undefined,
                 true,
             );
             expect(mockEnqueueRequest).nthCalledWith(
                 3,
-                `npm1012 charger current charge get`,
+                'npm1012 charger current isetdouble get',
+                expect.anything(),
+                undefined,
+                true,
+            );
+            expect(mockEnqueueRequest).nthCalledWith(
+                4,
+                'npm1012 charger current charge get',
+                expect.anything(),
+                undefined,
+                true,
+            );
+            expect(mockEnqueueRequest).nthCalledWith(
+                5,
+                'npm1012 charger current charge_cool get',
+                expect.anything(),
+                undefined,
+                true,
+            );
+            expect(mockEnqueueRequest).nthCalledWith(
+                6,
+                'npm1012 charger current charge_warm get',
                 expect.anything(),
                 undefined,
                 true,
@@ -375,28 +438,48 @@ describe('PMIC 1012 - Setters Online tests', () => {
             );
 
             await expect(
-                pmic.chargerModule?.set.iChg(1.5),
+                pmic.chargerModule?.set.iChg(1.5, false, true),
             ).rejects.toBeUndefined();
 
-            expect(mockEnqueueRequest).toBeCalledTimes(3);
+            expect(mockEnqueueRequest).toBeCalledTimes(6);
             expect(mockEnqueueRequest).nthCalledWith(
                 1,
-                `npm1012 charger enable set off`,
+                'npm1012 charger enable set off',
                 expect.anything(),
                 undefined,
                 true,
             );
             expect(mockEnqueueRequest).nthCalledWith(
                 2,
-                `npm1012 charger current charge set 1.5`,
+                'npm1012 charger current charge set 1.5',
                 expect.anything(),
                 undefined,
                 true,
             );
-
             expect(mockEnqueueRequest).nthCalledWith(
                 3,
-                `npm1012 charger current charge get`,
+                'npm1012 charger current isetdouble get',
+                expect.anything(),
+                undefined,
+                true,
+            );
+            expect(mockEnqueueRequest).nthCalledWith(
+                4,
+                'npm1012 charger current charge get',
+                expect.anything(),
+                undefined,
+                true,
+            );
+            expect(mockEnqueueRequest).nthCalledWith(
+                5,
+                'npm1012 charger current charge_cool get',
+                expect.anything(),
+                undefined,
+                true,
+            );
+            expect(mockEnqueueRequest).nthCalledWith(
+                6,
+                'npm1012 charger current charge_warm get',
                 expect.anything(),
                 undefined,
                 true,
