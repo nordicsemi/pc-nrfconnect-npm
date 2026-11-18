@@ -72,6 +72,21 @@ import type {
     ConfigSysFeatTwiSlaveAddress as npm1012UserOtpConfigSysFeatTwiSlaveAddress,
     ConfigSysFeatVBusILimLvl as npm1012UserOtpConfigSysFeatVBusILimLvl,
 } from './npm1012/userOtp/types';
+import type {
+    AlternateVOutControl as BuckAlternateVOutControl1210,
+    ILimFicrLvl as BuckPeakCurrentLimitFicr1210,
+    ILimLvl as BuckPeakCurrentLimit1210,
+    ILimStartFicrLvl as BuckSoftStartPeakCurrentLimitFicr1210,
+    ILimStartLvl as BuckSoftStartPeakCurrentLimit1210,
+    ModeControl as BuckModeControl1210,
+    OnOffControl as BuckOnOffControl1210,
+    PullDownRes as BuckActiveDischargeResistance1210,
+    VOutCompBiasLPMode as BuckVOutComparatorBiasCurrentLPMode1210,
+    VOutCompBiasLPModeFicr as BuckVOutComparatorBiasCurrentLPModeFicr1210,
+    VOutCompBiasULPMode as BuckVOutComparatorBiasCurrentULPMode1210,
+    VOutCompBiasULPModeFicr as BuckVOutComparatorBiasCurrentULPModeFicr1210,
+    VOutRippleControl as BuckVOutRippleControl1210,
+} from './npm1210/buck/types';
 import {
     type ITermNpm1300 as ChargerITermNpm1300,
     type VTrickleFast1300 as ChargerVTrickleFast1300,
@@ -176,24 +191,45 @@ export type BuckMode = 'vSet' | 'software';
 export type BuckModeControl =
     | (typeof BuckModeControlValues)[number]
     | GPIONames
-    | BuckModeControl1012;
+    | BuckModeControl1012
+    | BuckModeControl1210;
 export type BuckOnOffControl =
     | (typeof BuckOnOffControlValues)[number]
     | GPIONames
     | (typeof VSETValues)[number]
-    | BuckOnOffControl1012;
+    | BuckOnOffControl1012
+    | BuckOnOffControl1210;
 export type BuckRetentionControl =
     | (typeof BuckRetentionControlValues)[number]
     | GPIONames;
-export type BuckAlternateVOutControl = BuckAlternateVOutControl1012;
-export type BuckVOutRippleControl = BuckVOutRippleControl1012;
-export type BuckPeakCurrentLimit = BuckPeakCurrentLimit1012;
-export type BuckSoftStartPeakCurrentLimit = BuckSoftStartPeakCurrentLimit1012;
-export type BuckActiveDischargeResistance = BuckActiveDischargeResistance1012;
+export type BuckAlternateVOutControl =
+    | BuckAlternateVOutControl1012
+    | BuckAlternateVOutControl1210;
+export type BuckVOutRippleControl =
+    | BuckVOutRippleControl1012
+    | BuckVOutRippleControl1210;
+export type BuckPeakCurrentLimit =
+    | BuckPeakCurrentLimit1012
+    | BuckPeakCurrentLimit1210;
+export type BuckPeakCurrentLimitFicr = BuckPeakCurrentLimitFicr1210;
+export type BuckSoftStartPeakCurrentLimit =
+    | BuckSoftStartPeakCurrentLimit1012
+    | BuckSoftStartPeakCurrentLimit1210;
+export type BuckSoftStartPeakCurrentLimitFicr =
+    BuckSoftStartPeakCurrentLimitFicr1210;
+export type BuckActiveDischargeResistance =
+    | BuckActiveDischargeResistance1012
+    | BuckActiveDischargeResistance1210;
 export type BuckVOutComparatorBiasLPCurrent =
-    BuckVOutComparatorBiasCurrentLPMode1012;
+    | BuckVOutComparatorBiasCurrentLPMode1012
+    | BuckVOutComparatorBiasCurrentLPMode1210;
+export type BuckVOutComparatorBiasLPCurrentFicr =
+    BuckVOutComparatorBiasCurrentLPModeFicr1210;
 export type BuckVOutComparatorBiasULPCurrent =
-    BuckVOutComparatorBiasCurrentULPMode1012;
+    | BuckVOutComparatorBiasCurrentULPMode1012
+    | BuckVOutComparatorBiasCurrentULPMode1210;
+export type BuckVOutComparatorBiasULPCurrentFicr =
+    BuckVOutComparatorBiasCurrentULPModeFicr1210;
 
 export type ChargerIBatLim = number;
 export type ChargerITerm =
@@ -350,12 +386,16 @@ export type Buck = {
     automaticPassthrough?: boolean;
     enabledWhenProfiling?: boolean;
     peakCurrentLimit?: BuckPeakCurrentLimit;
+    peakCurrentLimitFicr?: BuckPeakCurrentLimitFicr;
     quickVOutDischarge?: boolean;
     retentionControl?: BuckRetentionControl;
     shortCircuitProtection?: boolean;
     softStartPeakCurrentLimit?: BuckSoftStartPeakCurrentLimit;
+    softStartPeakCurrentLimitFicr?: BuckSoftStartPeakCurrentLimitFicr;
     vOutComparatorBiasCurrentLPMode?: BuckVOutComparatorBiasLPCurrent;
+    vOutComparatorBiasCurrentLPModeFicr?: BuckVOutComparatorBiasLPCurrentFicr;
     vOutComparatorBiasCurrentULPMode?: BuckVOutComparatorBiasULPCurrent;
+    vOutComparatorBiasCurrentULPModeFicr?: BuckVOutComparatorBiasULPCurrentFicr;
     vOutRetention?: number;
     vOutRippleControl?: BuckVOutRippleControl;
 };
@@ -1241,20 +1281,22 @@ export interface BuckModule {
         onOffControl: (
             mode: BuckMode,
         ) => { label: string; value: BuckOnOffControl }[];
-        peakCurrentLimit?: { label: string; value: BuckPeakCurrentLimit }[];
+        peakCurrentLimit?: (
+            iLimFicr?: BuckPeakCurrentLimitFicr,
+        ) => { label: string; value: BuckPeakCurrentLimit }[];
         retentionControl?: { label: string; value: BuckRetentionControl }[];
-        softStartPeakCurrentLimit?: {
+        softStartPeakCurrentLimit?: (
+            iLimFicr?: BuckSoftStartPeakCurrentLimitFicr,
+        ) => {
             label: string;
             value: BuckSoftStartPeakCurrentLimit;
         }[];
-        vOutComparatorBiasCurrentLPMode?: {
-            label: string;
-            value: BuckVOutComparatorBiasLPCurrent;
-        }[];
-        vOutComparatorBiasCurrentULPMode?: {
-            label: string;
-            value: BuckVOutComparatorBiasULPCurrent;
-        }[];
+        vOutComparatorBiasCurrentLPMode?: (
+            ficrVal?: BuckVOutComparatorBiasLPCurrentFicr,
+        ) => { label: string; value: BuckVOutComparatorBiasLPCurrent }[];
+        vOutComparatorBiasCurrentULPMode?: (
+            ficrVal?: BuckVOutComparatorBiasULPCurrentFicr,
+        ) => { label: string; value: BuckVOutComparatorBiasULPCurrent }[];
         vOutRippleControl?: { label: string; value: BuckVOutRippleControl }[];
     };
     defaults: Buck;
