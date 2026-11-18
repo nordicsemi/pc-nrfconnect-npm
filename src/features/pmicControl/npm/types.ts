@@ -88,6 +88,16 @@ import type {
     VOutRippleControl as BuckVOutRippleControl1210,
 } from './npm1210/buck/types';
 import {
+    type DropoutRecovery as ChargerDropoutRecovery1210,
+    type IBatLimLvl as ChargerIBatLim1210,
+    type ITermLvl as ChargerITerm1210,
+    type ITrickleLvl as ChargerITrickle1210,
+    type SoftstartCurrent as ChargerSoftstartCurrent1210,
+    type StartupMode as ChargerStartupMode1210,
+    type VBatLowLvl as ChargerVBatLow1210,
+    type VTrickleLvl as ChargerVTrickleFast1210,
+} from './npm1210/charger/types';
+import {
     type ITermNpm1300 as ChargerITermNpm1300,
     type VTrickleFast1300 as ChargerVTrickleFast1300,
 } from './npm1300/charger/types';
@@ -231,16 +241,21 @@ export type BuckVOutComparatorBiasULPCurrent =
 export type BuckVOutComparatorBiasULPCurrentFicr =
     BuckVOutComparatorBiasCurrentULPModeFicr1210;
 
-export type ChargerIBatLim = number;
+export type ChargerDropoutRecovery = ChargerDropoutRecovery1210;
+export type ChargerIBatLim = number | ChargerIBatLim1210;
 export type ChargerITerm =
     | ChargerITerm1012
+    | ChargerITerm1210
     | ChargerITermNpm1300
     | ChargerITermNpm1304;
-export type ChargerITrickle = ChargerITrickle1012;
+export type ChargerITrickle = ChargerITrickle1012 | ChargerITrickle1210;
+export type ChargerSoftstartCurrent = ChargerSoftstartCurrent1210;
+export type ChargerStartupMode = ChargerStartupMode1210;
 export type ChargerVTrickleFast =
     | ChargerVTrickleFast1012
+    | ChargerVTrickleFast1210
     | ChargerVTrickleFast1300;
-export type ChargerVBatLow = ChargerVBatLow1012;
+export type ChargerVBatLow = ChargerVBatLow1012 | ChargerVBatLow1210;
 
 export const NTCValues = ['Ignore NTC', '10 kΩ', '47 kΩ', '100 kΩ'] as const;
 export type NTCThermistor = (typeof NTCValues)[number];
@@ -328,10 +343,14 @@ export type Charger = {
     tWarm: number;
     tHot: number;
 
+    dropoutRecovery?: ChargerDropoutRecovery;
     enableAdvancedChargingProfile?: boolean;
     enableBatteryDischargeCurrentLimit?: boolean;
     enableChargeCurrentThrottling?: boolean;
+    enableChgEnPinControl?: boolean;
+    enableChgEnPinPullDown?: boolean;
     enableNtcMonitoring?: boolean;
+    enableSafetyTimersResetByChgEnPin?: boolean;
     enableWeakBatteryCharging?: boolean;
     iBatLim?: ChargerIBatLim;
     iChgCool?: number;
@@ -1047,10 +1066,14 @@ export abstract class ChargerModuleSetBase {
     abstract tWarm(value: number): Promise<void>;
     abstract tHot(value: number): Promise<void>;
 
+    dropoutRecovery?(value: ChargerDropoutRecovery): Promise<void>;
     enableAdvancedChargingProfile?(value: boolean): Promise<void>;
     enableBatteryDischargeCurrentLimit?(value: boolean): Promise<void>;
     enableChargeCurrentThrottling?(value: boolean): Promise<void>;
+    enableChgEnPinControl?(value: boolean): Promise<void>;
+    enableChgEnPinPullDown?(value: boolean): Promise<void>;
     enableNtcMonitoring?(value: boolean): Promise<void>;
+    enableSafetyTimersResetByChgEnPin?(value: boolean): Promise<void>;
     enabledWeakBatteryCharging?(value: boolean): Promise<void>;
     iBatLim?(value: ChargerIBatLim): Promise<void>;
     iChgCool?(
@@ -1067,6 +1090,8 @@ export abstract class ChargerModuleSetBase {
     iTrickle?(value: ChargerITrickle): Promise<void>;
     nTCBeta?(value: number): Promise<void>;
     nTCThermistor?(mode: NTCThermistor, autoSetBeta?: boolean): Promise<void>;
+    softstartCurrent?(value: ChargerSoftstartCurrent): Promise<void>;
+    startupMode?(value: ChargerStartupMode): Promise<void>;
     tChgReduce?(value: number): Promise<void>;
     tChgStop?(value: number): Promise<void>;
     tOutCharge?(value: number): Promise<void>;
@@ -1111,10 +1136,14 @@ export abstract class ChargerModuleGetBase {
     abstract tWarm(): void;
     abstract tHot(): void;
 
+    dropoutRecovery?(): void;
     enabledAdvancedChargingProfile?(): void;
     enabledBatteryDischargeCurrentLimit?(): void;
     enabledChargeCurrentThrottling?(): void;
+    enableChgEnPinControl?(): void;
+    enableChgEnPinPullDown?(): void;
     enabledNtcMonitoring?(): void;
+    enableSafetyTimersResetByChgEnPin?(): void;
     enabledWeakBatteryCharging?(): void;
     iBatLim?(): void;
     iChgCool?(): void;
@@ -1125,6 +1154,8 @@ export abstract class ChargerModuleGetBase {
     iTrickle?(): void;
     nTCBeta?(): void;
     nTCThermistor?(): void;
+    softstartCurrent?(): void;
+    startupMode?(): void;
     tChgReduce?(): void;
     tChgStop?(): void;
     tOutCharge?(): void;
@@ -1155,9 +1186,12 @@ export type ChargerModuleValues = {
     iTerm: { label: string; value: ChargerITerm }[];
     vTrickleFast: { label: string; value: ChargerVTrickleFast }[];
 
+    dropoutRecovery?: { label: string; value: ChargerDropoutRecovery }[];
     iBatLim?: { label: string; value: ChargerIBatLim }[];
     iThrottle?: { label: string; value: number }[];
     iTrickle?: { label: string; value: ChargerITrickle }[];
+    softstartCurrent?: { label: string; value: ChargerSoftstartCurrent }[];
+    startupMode?: { label: string; value: ChargerStartupMode }[];
     tOutCharge?: { label: string; value: number }[];
     tOutTrickle?: { label: string; value: number }[];
     vBatLow?: { label: string; value: ChargerVBatLow }[];
