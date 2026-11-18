@@ -299,6 +299,7 @@ export type Charger = {
     enableWeakBatteryCharging?: boolean;
     iBatLim?: ChargerIBatLim;
     iChgCool?: number;
+    iChgDouble?: boolean;
     iChgWarm?: number;
     iThrottle?: number;
     iTrickle?: ChargerITrickle;
@@ -984,7 +985,11 @@ export abstract class ChargerModuleSetBase {
 
     abstract all(charger: Charger): Promise<void>;
     abstract vTerm(value: number): Promise<void>;
-    abstract iChg(value: number): Promise<void>;
+    abstract iChg(
+        value: number,
+        iChgDouble?: boolean,
+        chargerEnabled?: boolean,
+    ): Promise<void>;
     abstract enabled(value: boolean): Promise<void>;
     abstract vTrickleFast(value: ChargerVTrickleFast): Promise<void>;
     abstract iTerm(iTerm: ChargerITerm): Promise<void>;
@@ -1001,9 +1006,17 @@ export abstract class ChargerModuleSetBase {
     enableChargeCurrentThrottling?(value: boolean): Promise<void>;
     enableNtcMonitoring?(value: boolean): Promise<void>;
     enabledWeakBatteryCharging?(value: boolean): Promise<void>;
-    iChgCool?(value: number): Promise<void>;
-    iChgWarm?(value: number): Promise<void>;
     iBatLim?(value: ChargerIBatLim): Promise<void>;
+    iChgCool?(
+        value: number,
+        iChgDouble?: boolean,
+        chargerEnabled?: boolean,
+    ): Promise<void>;
+    iChgWarm?(
+        value: number,
+        iChgDouble?: boolean,
+        chargerEnabled?: boolean,
+    ): Promise<void>;
     iThrottle?(value: number): Promise<void>;
     iTrickle?(value: ChargerITrickle): Promise<void>;
     nTCBeta?(value: number): Promise<void>;
@@ -1059,6 +1072,7 @@ export abstract class ChargerModuleGetBase {
     enabledWeakBatteryCharging?(): void;
     iBatLim?(): void;
     iChgCool?(): void;
+    iChgDouble?(): void;
     iChgWarm?(): void;
     iThrottle?(): void;
     iTrickle?(): void;
