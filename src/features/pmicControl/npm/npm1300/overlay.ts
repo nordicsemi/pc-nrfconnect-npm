@@ -292,15 +292,19 @@ export default (npmConfig: NpmExportLatest, npmDevice: Npm1300 | Npm1304) => `/*
                     )
                     .join('\n\n')
             }
-			${npmConfig.ldos
-                .map((ldos, index) =>
-                    generateLDO(
-                        ldos,
-                        npmDevice.ldoModule[index],
-                        npmDevice.deviceType,
-                    ),
-                )
-                .join('\n\n')}
+			${
+                npmConfig.ldos
+                    ? npmConfig.ldos
+                          .map((ldos, index) =>
+                              generateLDO(
+                                  ldos,
+                                  npmDevice.ldoModule[index],
+                                  npmDevice.deviceType,
+                              ),
+                          )
+                          .join('\n\n')
+                    : ''
+            }
 	   };
 
 		${generateCharger(
