@@ -186,7 +186,9 @@ export default ({
                 range={chargerModule.ranges.voltage}
                 value={internalVTerm}
                 onChange={setInternalVTerm}
-                onChangeComplete={v => chargerModule.set.vTerm(v)}
+                onChangeComplete={v =>
+                    chargerModule.set.vTerm(v, charger.enabled)
+                }
                 showSlider
             />
             <NumberInput
@@ -222,7 +224,9 @@ export default ({
                     </DocumentationTooltip>
                 }
                 items={chargerModule.values.iTerm}
-                onSelect={item => chargerModule.set.iTerm(item.value)}
+                onSelect={item =>
+                    chargerModule.set.iTerm(item.value, charger.enabled)
+                }
                 selectedItem={
                     chargerModule.values.iTerm.find(
                         item => item.value === charger.iTerm,
@@ -269,7 +273,10 @@ export default ({
                         }
                         items={chargerModule.values.vTrickleFast}
                         onSelect={item =>
-                            chargerModule.set.vTrickleFast(item.value)
+                            chargerModule.set.vTrickleFast(
+                                item.value,
+                                charger.enabled,
+                            )
                         }
                         selectedItem={
                             chargerModule.values.vTrickleFast.find(
