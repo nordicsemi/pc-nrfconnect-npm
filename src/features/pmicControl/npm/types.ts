@@ -984,15 +984,21 @@ export abstract class ChargerModuleSetBase {
     ) {}
 
     abstract all(charger: Charger): Promise<void>;
-    abstract vTerm(value: number): Promise<void>;
+    abstract vTerm(value: number, chargerEnabled?: boolean): Promise<void>;
     abstract iChg(
         value: number,
         iChgDouble?: boolean,
         chargerEnabled?: boolean,
     ): Promise<void>;
     abstract enabled(value: boolean): Promise<void>;
-    abstract vTrickleFast(value: ChargerVTrickleFast): Promise<void>;
-    abstract iTerm(iTerm: ChargerITerm): Promise<void>;
+    abstract vTrickleFast(
+        value: ChargerVTrickleFast,
+        chargerEnabled?: boolean,
+    ): Promise<void>;
+    abstract iTerm(
+        iTerm: ChargerITerm,
+        chargerEnabled?: boolean,
+    ): Promise<void>;
     abstract enabledRecharging(value: boolean): Promise<void>;
     abstract enabledVBatLow(value: boolean): Promise<void>;
     abstract tChgResume(value: number): Promise<void>;
