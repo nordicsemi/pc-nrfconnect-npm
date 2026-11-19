@@ -18,6 +18,8 @@ import DeviceSelector from './components/DeviceSelector';
 import FuelGauge from './components/FuelGauge/FuelGauge';
 import SlotSelectionDownloadDialog from './components/FuelGauge/SlotSelectionDownloadDialog';
 import GPIOs from './components/GPIOs/GPIOs';
+import GPIOsAndLEDs from './components/GPIOs/GPIOsAndLEDs';
+import LEDs from './components/GPIOs/LEDs';
 import Graph from './components/Graph/Graph';
 import ProfilingWizard from './components/Profiling/Dialog/ProfilingWizard';
 import Profiles from './components/Profiling/ProfilingProjects/Profiles';
@@ -64,7 +66,15 @@ render(
             },
             {
                 name: 'GPIOs & LEDs',
+                Main: GPIOsAndLEDs,
+            },
+            {
+                name: 'GPIOs',
                 Main: GPIOs,
+            },
+            {
+                name: 'LEDs',
+                Main: LEDs,
             },
             {
                 name: 'System Features',
