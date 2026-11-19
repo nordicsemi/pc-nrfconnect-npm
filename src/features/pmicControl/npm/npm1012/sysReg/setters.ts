@@ -5,7 +5,11 @@
  */
 
 import { type NpmEventEmitter } from '../../pmicHelpers';
-import { type SysReg, type VBusDpm, type VBusILim } from '../../types';
+import {
+    type SysReg,
+    type SysRegVBusDpm,
+    type SysRegVBusILim,
+} from '../../types';
 import { SysRegGet } from './getters';
 
 export class SysRegSet {
@@ -32,7 +36,7 @@ export class SysRegSet {
         await Promise.allSettled(promises);
     }
 
-    vBusDpm(value: VBusDpm) {
+    vBusDpm(value: SysRegVBusDpm) {
         return new Promise<void>((resolve, reject) => {
             if (this.offlineMode) {
                 this.eventEmitter.emitPartialEvent<SysReg>('onSysRegUpdate', {
@@ -52,7 +56,7 @@ export class SysRegSet {
         });
     }
 
-    vBusILim(value: VBusILim) {
+    vBusILim(value: SysRegVBusILim) {
         return new Promise<void>((resolve, reject) => {
             if (this.offlineMode) {
                 this.eventEmitter.emitPartialEvent<SysReg>('onSysRegUpdate', {
