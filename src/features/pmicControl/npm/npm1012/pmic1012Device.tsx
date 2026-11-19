@@ -38,7 +38,7 @@ import SysRegModule from './sysReg';
 import TimerConfigModule from './timerConfig';
 import UserOtpModule from './userOtp';
 
-export const npm1012FWVersion = '0.3.3+0';
+export const npm1012FWVersion = '0.4.3+0';
 
 export default class Npm1012 extends BaseNpmDevice {
     constructor(
