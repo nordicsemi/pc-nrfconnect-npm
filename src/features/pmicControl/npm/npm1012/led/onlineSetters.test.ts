@@ -100,7 +100,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
         test.each(PMIC_1012_LEDS)(
             'Set ledPwmFrequency index: %p',
             async index => {
-                await pmic.ledModule[index].set.pwmFrequency?.(488);
+                await pmic.ledModule[index].set.pwmFrequency?.('488Hz');
 
                 expect(mockEnqueueRequest).toBeCalledTimes(1);
                 expect(mockEnqueueRequest).toBeCalledWith(
@@ -269,7 +269,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
             'Set ledPwmFrequency - Fail immediately - index: %p',
             async index => {
                 await expect(
-                    pmic.ledModule[index].set.pwmFrequency?.(488),
+                    pmic.ledModule[index].set.pwmFrequency?.('488Hz'),
                 ).rejects.toBeUndefined();
 
                 expect(mockEnqueueRequest).toBeCalledTimes(2);

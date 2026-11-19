@@ -143,7 +143,7 @@ describe('PMIC 1012 - Command callbacks', () => {
 
     test.each(
         PMIC_1012_LEDS.map(index =>
-            [488]
+            ['488Hz']
                 .map(value => [
                     {
                         index,
@@ -163,7 +163,7 @@ describe('PMIC 1012 - Command callbacks', () => {
         const callback =
             eventHandlers.mockRegisterCommandCallbackHandler(command);
 
-        callback?.onSuccess(`Value: ${value}.`, command);
+        callback?.onSuccess(`Value: ${value}`, command);
 
         expect(mockOnLEDUpdate).toBeCalledTimes(1);
         expect(mockOnLEDUpdate).toBeCalledWith({
