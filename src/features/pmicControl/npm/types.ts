@@ -360,6 +360,8 @@ export type Charger = {
     iTrickle?: ChargerITrickle;
     ntcBeta?: number;
     ntcThermistor?: NTCThermistor;
+    softstartCurrent?: ChargerSoftstartCurrent;
+    startupMode?: ChargerStartupMode;
     tChgReduce?: number;
     tChgStop?: number;
     tOutCharge?: number;
