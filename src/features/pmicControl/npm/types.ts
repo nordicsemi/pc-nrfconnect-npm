@@ -128,6 +128,40 @@ import type {
     VBusPGPinSel as SysRegVBusPGPinSel1210,
 } from './npm1210/sysReg/types';
 import {
+    type ConfigChargerDropoutRecovery as npm1210UserOtpConfigChargerDropoutRecovery,
+    type ConfigChargerIBatLimLvl as npm1210UserOtpConfigChargerIBatLimLvl,
+    type ConfigChargerITermLvl as npm1210UserOtpConfigChargerITermLvl,
+    type ConfigChargerITrickleLvl as npm1210UserOtpConfigChargerITrickleLvl,
+    type ConfigChargerSoftstartCurrent as npm1210UserOtpConfigChargerSoftstartCurrent,
+    type ConfigChargerStartupMode as npm1210UserOtpConfigChargerStartupMode,
+    type ConfigChargerVBatLowLvl as npm1210UserOtpConfigChargerVBatLowLvl,
+    type ConfigChargerVTrickleLvl as npm1210UserOtpConfigChargerVTrickleLvl,
+    type ConfigRegulatorsBuckILimLvl as npm1210UserOtpConfigRegulatorsBuckILimLvl,
+    type ConfigRegulatorsBuckPowerModeControl as npm1210UserOtpConfigRegulatorsBuckPowerModeControl,
+    type ConfigRegulatorsBuckStartupILimLvl as npm1210UserOtpConfigRegulatorsBuckStartupILimLvl,
+    type ConfigRegulatorsBuckVOutCompBiasLPMode as npm1210UserOtpConfigRegulatorsBuckVOutComparatorBiasCurrentLPMode,
+    type ConfigRegulatorsBuckVOutCompBiasULPMode as npm1210UserOtpConfigRegulatorsBuckVOutComparatorBiasCurrentULPMode,
+    type ConfigRegulatorsBuckVOutSel as npm1210UserOtpConfigRegulatorsBuckVOutSel,
+    type ConfigSysFeatLongPressResetDebounce as npm1210UserOtpConfigSysFeatLongPressResetDebounce,
+    type ConfigSysFeatLongPressResetPinSel as npm1210UserOtpConfigSysFeatLongPressResetPinSel,
+    type ConfigSysFeatPGPinSel as npm1210UserOtpConfigSysFeatPGPinSel,
+    type ConfigSysFeatPwrWait as npm1210UserOtpConfigSysFeatPwrWait,
+    type ConfigSysFeatShipVBusFilt as npm1210UserOtpConfigSysFeatShipVBusFilt,
+    type ConfigSysFeatShipVBusFiltTime as npm1210UserOtpConfigSysFeatShipVBusFiltTime,
+    type ConfigSysFeatShpHldDebounce as npm1210UserOtpConfigSysFeatShpHldDebounce,
+    type ConfigSysFeatShpHldSlider as npm1210UserOtpConfigSysFeatShpHldSlider,
+    type ConfigSysFeatShpHldSlideSwitchPollTime as npm1210UserOtpConfigSysFeatShpHldSlideSwitchPollTime,
+    type ConfigSysFeatShpHldType as npm1210UserOtpConfigSysFeatShpHldType,
+    type ConfigSysFeatTwiTargetId0Addr as npm1210UserOtpConfigSysFeatTwiTargetId0Addr,
+    type ConfigSysFeatTwiTargetId1Addr as npm1210UserOtpConfigSysFeatTwiTargetId1Addr,
+    type ConfigSysFeatVBusDpmLvl as npm1210UserOtpConfigSysFeatVBusDpmLvl,
+    type ConfigSysFeatVBusILim0And1GndSel as npm1210UserOtpConfigSysFeatVBusILim0And1GndSel,
+    type ConfigSysFeatVBusILim0And1PinMap as npm1210UserOtpConfigSysFeatVBusILim0And1PinMap,
+    type ConfigSysFeatVBusILimControl as npm1210UserOtpConfigSysFeatVBusILimControl,
+    type ConfigSysFeatVBusILimLvl as npm1210UserOtpConfigSysFeatVBusILimLvl,
+    type ConfigSysFeatVBusStandbySel as npm1210UserOtpConfigSysFeatVBusStandbyMode,
+} from './npm1210/userOtp/types';
+import {
     type ITermNpm1300 as ChargerITermNpm1300,
     type VTrickleFast1300 as ChargerVTrickleFast1300,
 } from './npm1300/charger/types';
@@ -792,15 +826,39 @@ export interface BatteryHealthProfileLoadUpdate {
     state: 'downloading' | 'aborted' | 'aborting' | 'applied' | 'failed';
 }
 
-export type UserOtpConfigChargerITermLvl = npm1012UserOtpConfigChargerITermLvl;
+export type UserOtpConfigChargerDropoutRecovery =
+    npm1210UserOtpConfigChargerDropoutRecovery;
+export type UserOtpConfigChargerIBatLimLvl =
+    npm1210UserOtpConfigChargerIBatLimLvl;
+export type UserOtpConfigChargerSoftstartCurrent =
+    npm1210UserOtpConfigChargerSoftstartCurrent;
+export type UserOtpConfigChargerStartupMode =
+    npm1210UserOtpConfigChargerStartupMode;
+export type UserOtpConfigChargerITermLvl =
+    | npm1012UserOtpConfigChargerITermLvl
+    | npm1210UserOtpConfigChargerITermLvl;
 export type UserOtpConfigChargerITrickleLvl =
-    npm1012UserOtpConfigChargerITrickleLvl;
+    | npm1012UserOtpConfigChargerITrickleLvl
+    | npm1210UserOtpConfigChargerITrickleLvl;
 export type UserOtpConfigChargerVBatLowLvl =
-    npm1012UserOtpConfigChargerVBatLowLvl;
+    | npm1012UserOtpConfigChargerVBatLowLvl
+    | npm1210UserOtpConfigChargerVBatLowLvl;
 export type UserOtpConfigChargerVTrickleLvl =
-    npm1012UserOtpConfigChargerVTrickleLvl;
+    | npm1012UserOtpConfigChargerVTrickleLvl
+    | npm1210UserOtpConfigChargerVTrickleLvl;
+export type UserOtpConfigRegulatorsBuckILimLvl =
+    npm1210UserOtpConfigRegulatorsBuckILimLvl;
+export type UserOtpConfigRegulatorsBuckPowerModeControl =
+    npm1210UserOtpConfigRegulatorsBuckPowerModeControl;
+export type UserOtpConfigRegulatorsBuckStartupILimLvl =
+    npm1210UserOtpConfigRegulatorsBuckStartupILimLvl;
+export type UserOtpConfigRegulatorsBuckVOutComparatorBiasCurrentLPMode =
+    npm1210UserOtpConfigRegulatorsBuckVOutComparatorBiasCurrentLPMode;
+export type UserOtpConfigRegulatorsBuckVOutComparatorBiasCurrentULPMode =
+    npm1210UserOtpConfigRegulatorsBuckVOutComparatorBiasCurrentULPMode;
 export type UserOtpConfigRegulatorsBuckVOutSel =
-    npm1012UserOtpConfigRegulatorsBuckVOutSel;
+    | npm1012UserOtpConfigRegulatorsBuckVOutSel
+    | npm1210UserOtpConfigRegulatorsBuckVOutSel;
 export type UserOtpConfigRegulatorsLdoSoftStartILimLvl =
     npm1012UserOtpConfigRegulatorsLdoSoftStartILimLvl;
 export type UserOtpConfigRegulatorsLdoSoftStartTime =
@@ -809,13 +867,46 @@ export type UserOtpConfigRegulatorsLdoVOutSel =
     npm1012UserOtpConfigRegulatorsLdoVOutSel;
 export type UserOtpConfigRegulatorsColdStartSel =
     npm1012UserOtpConfigRegulatorsColdStartSel;
-export type UserOtpConfigSysFeatPwrWait = npm1012UserOtpConfigSysFeatPwrWait;
+export type UserOtpConfigSysFeatLongPressResetDebounce =
+    npm1210UserOtpConfigSysFeatLongPressResetDebounce;
+export type UserOtpConfigSysFeatLongPressResetPinSel =
+    npm1210UserOtpConfigSysFeatLongPressResetPinSel;
+export type UserOtpConfigSysFeatPGPinSel = npm1210UserOtpConfigSysFeatPGPinSel;
+export type UserOtpConfigSysFeatPwrWait =
+    | npm1012UserOtpConfigSysFeatPwrWait
+    | npm1210UserOtpConfigSysFeatPwrWait;
+export type UserOtpConfigSysFeatShipVBusFilt =
+    npm1210UserOtpConfigSysFeatShipVBusFilt;
+export type UserOtpConfigSysFeatShipVBusFiltTime =
+    npm1210UserOtpConfigSysFeatShipVBusFiltTime;
 export type UserOtpConfigSysFeatShpHldDebounce =
-    npm1012UserOtpConfigSysFeatShpHldDebounce;
+    | npm1012UserOtpConfigSysFeatShpHldDebounce
+    | npm1210UserOtpConfigSysFeatShpHldDebounce;
+export type UserOtpConfigSysFeatShpHldSlideSwitchPollTime =
+    npm1210UserOtpConfigSysFeatShpHldSlideSwitchPollTime;
+export type UserOtpConfigSysFeatShpHldSlider =
+    npm1210UserOtpConfigSysFeatShpHldSlider;
+export type UserOtpConfigSysFeatShpHldType =
+    npm1210UserOtpConfigSysFeatShpHldType;
 export type UserOtpConfigSysFeatTwiSlaveAddress =
     npm1012UserOtpConfigSysFeatTwiSlaveAddress;
+export type UserOtpConfigSysFeatTwiTargetId0Addr =
+    npm1210UserOtpConfigSysFeatTwiTargetId0Addr;
+export type UserOtpConfigSysFeatTwiTargetId1Addr =
+    npm1210UserOtpConfigSysFeatTwiTargetId1Addr;
+export type UserOtpConfigSysFeatVBusDpmLvl =
+    npm1210UserOtpConfigSysFeatVBusDpmLvl;
+export type UserOtpConfigSysFeatVBusILim0And1GndSel =
+    npm1210UserOtpConfigSysFeatVBusILim0And1GndSel;
+export type UserOtpConfigSysFeatVBusILim0And1PinMap =
+    npm1210UserOtpConfigSysFeatVBusILim0And1PinMap;
+export type UserOtpConfigSysFeatVBusILimControl =
+    npm1210UserOtpConfigSysFeatVBusILimControl;
 export type UserOtpConfigSysFeatVBusILimLvl =
-    npm1012UserOtpConfigSysFeatVBusILimLvl;
+    | npm1012UserOtpConfigSysFeatVBusILimLvl
+    | npm1210UserOtpConfigSysFeatVBusILimLvl;
+export type UserOtpConfigSysFeatVBusStandbyMode =
+    npm1210UserOtpConfigSysFeatVBusStandbyMode;
 
 export type UserOtpConfig = {
     charger: boolean;
@@ -853,11 +944,40 @@ export type UserOtpConfig = {
     sysFeatShpHldDebounceEnable: boolean;
     sysFeatVBusILimLvl: UserOtpConfigSysFeatVBusILimLvl;
 
+    chargerChgEnPinSafetyTimersResetEnable?: boolean;
+    chargerDropoutRecovery?: UserOtpConfigChargerDropoutRecovery;
+    chargerIBatLimLvl?: UserOtpConfigChargerIBatLimLvl;
+    chargerSoftstartCurrent?: UserOtpConfigChargerSoftstartCurrent;
+    chargerStartupMode?: UserOtpConfigChargerStartupMode;
+    gpio3InputBufferAndPullDownEnable?: boolean;
+    gpio4InputBufferAndPullDownEnable?: boolean;
+    gpio4PinResetEnable?: boolean;
+    regulatorsBuckILimLvl?: UserOtpConfigRegulatorsBuckILimLvl;
+    regulatorsBuckPowerModeControl?: UserOtpConfigRegulatorsBuckPowerModeControl;
+    regulatorsBuckStartupILimLvl?: UserOtpConfigRegulatorsBuckStartupILimLvl;
+    regulatorsBuckVOutComparatorBiasCurrentLPMode?: UserOtpConfigRegulatorsBuckVOutComparatorBiasCurrentLPMode;
+    regulatorsBuckVOutComparatorBiasCurrentULPMode?: UserOtpConfigRegulatorsBuckVOutComparatorBiasCurrentULPMode;
     regulatorsColdStartSel?: UserOtpConfigRegulatorsColdStartSel;
     regulatorsLdoSoftStartILimLvl?: UserOtpConfigRegulatorsLdoSoftStartILimLvl;
     regulatorsLdoSoftStartTime?: UserOtpConfigRegulatorsLdoSoftStartTime;
     regulatorsLdoVOutSel?: UserOtpConfigRegulatorsLdoVOutSel;
+    sysFeatLongPressResetDebounce?: UserOtpConfigSysFeatLongPressResetDebounce;
+    sysFeatLongPressResetPinSel?: UserOtpConfigSysFeatLongPressResetPinSel;
+    sysFeatPGPinSel?: UserOtpConfigSysFeatPGPinSel;
+    sysFeatShipVBusFilt?: UserOtpConfigSysFeatShipVBusFilt;
+    sysFeatShipVBusFiltTime?: UserOtpConfigSysFeatShipVBusFiltTime;
+    sysFeatShpHldSlideSwitchPollTime?: UserOtpConfigSysFeatShpHldSlideSwitchPollTime;
+    sysFeatShpHldSlider?: UserOtpConfigSysFeatShpHldSlider;
+    sysFeatShpHldType?: UserOtpConfigSysFeatShpHldType;
     sysFeatTwiSlaveAddress?: UserOtpConfigSysFeatTwiSlaveAddress;
+    sysFeatTwiTargetId0Addr?: UserOtpConfigSysFeatTwiTargetId0Addr;
+    sysFeatTwiTargetId1Addr?: UserOtpConfigSysFeatTwiTargetId1Addr;
+    sysFeatVBusDpmEnable?: boolean;
+    sysFeatVBusDpmLvl?: UserOtpConfigSysFeatVBusDpmLvl;
+    sysFeatVBusILim0And1GndSel?: UserOtpConfigSysFeatVBusILim0And1GndSel;
+    sysFeatVBusILim0And1PinMap?: UserOtpConfigSysFeatVBusILim0And1PinMap;
+    sysFeatVBusILimControl?: UserOtpConfigSysFeatVBusILimControl;
+    sysFeatVBusStandbyMode?: UserOtpConfigSysFeatVBusStandbyMode;
 };
 
 export type UserOtpConfigKey = keyof UserOtpConfig;
@@ -976,6 +1096,42 @@ export interface UserOtpModule {
             value: UserOtpConfigSysFeatVBusILimLvl;
         }[];
 
+        configChargerDropoutRecovery?: {
+            label: string;
+            value: UserOtpConfigChargerDropoutRecovery;
+        }[];
+        configChargerIBatLimLvl?: {
+            label: string;
+            value: UserOtpConfigChargerIBatLimLvl;
+        }[];
+        configChargerSoftstartCurrent?: {
+            label: string;
+            value: UserOtpConfigChargerSoftstartCurrent;
+        }[];
+        configChargerStartupMode?: {
+            label: string;
+            value: UserOtpConfigChargerStartupMode;
+        }[];
+        configRegulatorsBuckILimLvl?: {
+            label: string;
+            value: UserOtpConfigRegulatorsBuckILimLvl;
+        }[];
+        configRegulatorsBuckPowerModeControl?: {
+            label: string;
+            value: UserOtpConfigRegulatorsBuckPowerModeControl;
+        }[];
+        configRegulatorsBuckStartupILimLvl?: {
+            label: string;
+            value: UserOtpConfigRegulatorsBuckStartupILimLvl;
+        }[];
+        configRegulatorsBuckVOutComparatorBiasCurrentLPMode?: {
+            label: string;
+            value: UserOtpConfigRegulatorsBuckVOutComparatorBiasCurrentLPMode;
+        }[];
+        configRegulatorsBuckVOutComparatorBiasCurrentULPMode?: {
+            label: string;
+            value: UserOtpConfigRegulatorsBuckVOutComparatorBiasCurrentULPMode;
+        }[];
         configRegulatorsColdStartSel?: {
             label: string;
             value: UserOtpConfigRegulatorsColdStartSel;
@@ -992,9 +1148,69 @@ export interface UserOtpModule {
             label: string;
             value: UserOtpConfigRegulatorsLdoSoftStartTime;
         }[];
+        configSysFeatLongPressResetDebounce?: {
+            label: string;
+            value: UserOtpConfigSysFeatLongPressResetDebounce;
+        }[];
+        configSysFeatLongPressResetPinSel?: {
+            label: string;
+            value: UserOtpConfigSysFeatLongPressResetPinSel;
+        }[];
+        configSysFeatPGPinSel?: {
+            label: string;
+            value: UserOtpConfigSysFeatPGPinSel;
+        }[];
+        configSysFeatShipVBusFilt?: {
+            label: string;
+            value: UserOtpConfigSysFeatShipVBusFilt;
+        }[];
+        configSysFeatShipVBusFiltTime?: {
+            label: string;
+            value: UserOtpConfigSysFeatShipVBusFiltTime;
+        }[];
+        configSysFeatShpHldSlideSwitchPollTime?: {
+            label: string;
+            value: UserOtpConfigSysFeatShpHldSlideSwitchPollTime;
+        }[];
+        configSysFeatShpHldSlider?: {
+            label: string;
+            value: UserOtpConfigSysFeatShpHldSlider;
+        }[];
+        configSysFeatShpHldType?: {
+            label: string;
+            value: UserOtpConfigSysFeatShpHldType;
+        }[];
         configSysFeatTwiSlaveAddress?: {
             label: string;
             value: UserOtpConfigSysFeatTwiSlaveAddress;
+        }[];
+        configSysFeatTwiTargetId0Addr?: {
+            label: string;
+            value: UserOtpConfigSysFeatTwiTargetId0Addr;
+        }[];
+        configSysFeatTwiTargetId1Addr?: {
+            label: string;
+            value: UserOtpConfigSysFeatTwiTargetId0Addr;
+        }[];
+        configSysFeatVBusDpmLvl?: {
+            label: string;
+            value: UserOtpConfigSysFeatVBusDpmLvl;
+        }[];
+        configSysFeatVBusILim0And1GndSel?: {
+            label: string;
+            value: UserOtpConfigSysFeatVBusILim0And1GndSel;
+        }[];
+        configSysFeatVBusILim0And1PinMap?: {
+            label: string;
+            value: UserOtpConfigSysFeatVBusILim0And1PinMap;
+        }[];
+        configSysFeatVBusILimControl?: {
+            label: string;
+            value: UserOtpConfigSysFeatVBusILimControl;
+        }[];
+        configSysFeatVBusStandbyMode?: {
+            label: string;
+            value: UserOtpConfigSysFeatVBusStandbyMode;
         }[];
     };
 }
