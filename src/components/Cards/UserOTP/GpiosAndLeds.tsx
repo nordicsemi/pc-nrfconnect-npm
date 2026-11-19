@@ -191,6 +191,157 @@ export default ({
                     }
                 />
             </div>
+
+            {userOtp.settings.gpio3InputBufferAndPullDownEnable?.value !==
+                undefined && (
+                <div className="tw-flex tw-w-full tw-flex-row tw-gap-4">
+                    <div className="tw-w-full">
+                        <Toggle
+                            disabled={disabled || userOtp.updateInProgress}
+                            isToggled={
+                                userOtp.settings
+                                    .gpio3InputBufferAndPullDownEnable.value
+                            }
+                            label="GPIO3 Enable Input Buffer & Pull-Down"
+                            onToggle={value => {
+                                const settingLocked =
+                                    userOtp.settings
+                                        .gpio3InputBufferAndPullDownEnable
+                                        ?.lock;
+                                if (settingLocked !== undefined) {
+                                    module.set.configValue(
+                                        {
+                                            key: 'gpio3InputBufferAndPullDownEnable',
+                                            value,
+                                        },
+                                        {
+                                            ...setConfigValueExtraArgs,
+                                            ...{ settingLocked },
+                                        },
+                                    );
+                                }
+                            }}
+                        />
+                    </div>
+                    <Toggle
+                        disabled={
+                            disabled ||
+                            userOtp.updateInProgress ||
+                            userOtp.otpLocked ||
+                            userOtp.settings.gpio3InputBufferAndPullDownEnable
+                                .lock
+                        }
+                        isToggled={
+                            userOtp.settings.gpio3InputBufferAndPullDownEnable
+                                .program
+                        }
+                        onToggle={value =>
+                            module.set.configProgram({
+                                key: 'gpio3InputBufferAndPullDownEnable',
+                                value,
+                            })
+                        }
+                    />
+                </div>
+            )}
+
+            {userOtp.settings.gpio4InputBufferAndPullDownEnable?.value !==
+                undefined && (
+                <div className="tw-flex tw-w-full tw-flex-row tw-gap-4">
+                    <div className="tw-w-full">
+                        <Toggle
+                            disabled={disabled || userOtp.updateInProgress}
+                            isToggled={
+                                userOtp.settings
+                                    .gpio4InputBufferAndPullDownEnable.value
+                            }
+                            label="GPIO4 Enable Input Buffer & Pull-Down"
+                            onToggle={value => {
+                                const settingLocked =
+                                    userOtp.settings
+                                        .gpio4InputBufferAndPullDownEnable
+                                        ?.lock;
+                                if (settingLocked !== undefined) {
+                                    module.set.configValue(
+                                        {
+                                            key: 'gpio4InputBufferAndPullDownEnable',
+                                            value,
+                                        },
+                                        {
+                                            ...setConfigValueExtraArgs,
+                                            ...{ settingLocked },
+                                        },
+                                    );
+                                }
+                            }}
+                        />
+                    </div>
+                    <Toggle
+                        disabled={
+                            disabled ||
+                            userOtp.updateInProgress ||
+                            userOtp.otpLocked ||
+                            userOtp.settings.gpio4InputBufferAndPullDownEnable
+                                .lock
+                        }
+                        isToggled={
+                            userOtp.settings.gpio4InputBufferAndPullDownEnable
+                                .program
+                        }
+                        onToggle={value =>
+                            module.set.configProgram({
+                                key: 'gpio4InputBufferAndPullDownEnable',
+                                value,
+                            })
+                        }
+                    />
+                </div>
+            )}
+
+            {userOtp.settings.gpio4PinResetEnable?.value !== undefined && (
+                <div className="tw-flex tw-w-full tw-flex-row tw-gap-4">
+                    <div className="tw-w-full">
+                        <Toggle
+                            disabled={disabled || userOtp.updateInProgress}
+                            isToggled={
+                                userOtp.settings.gpio4PinResetEnable.value
+                            }
+                            label="GPIO4 Pin Reset Enable"
+                            onToggle={value => {
+                                const settingLocked =
+                                    userOtp.settings.gpio4PinResetEnable?.lock;
+                                if (settingLocked !== undefined) {
+                                    module.set.configValue(
+                                        {
+                                            key: 'gpio4PinResetEnable',
+                                            value,
+                                        },
+                                        {
+                                            ...setConfigValueExtraArgs,
+                                            ...{ settingLocked },
+                                        },
+                                    );
+                                }
+                            }}
+                        />
+                    </div>
+                    <Toggle
+                        disabled={
+                            disabled ||
+                            userOtp.updateInProgress ||
+                            userOtp.otpLocked ||
+                            userOtp.settings.gpio4PinResetEnable.lock
+                        }
+                        isToggled={userOtp.settings.gpio4PinResetEnable.program}
+                        onToggle={value =>
+                            module.set.configProgram({
+                                key: 'gpio4PinResetEnable',
+                                value,
+                            })
+                        }
+                    />
+                </div>
+            )}
         </Card>
     );
 };

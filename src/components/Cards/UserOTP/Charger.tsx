@@ -17,6 +17,8 @@ import {
     type UserOtpModule,
 } from '../../../features/pmicControl/npm/types';
 
+import '../../Charger/charger.scss';
+
 interface UserOtpChargerCardProperties {
     userOtp: UserOtp;
     disabled: boolean;
@@ -811,6 +813,303 @@ export default ({
                     }
                 />
             </div>
+
+            {userOtp.settings.chargerChgEnPinSafetyTimersResetEnable?.value !==
+                undefined && (
+                <div className="tw-flex tw-w-full tw-flex-row tw-gap-4">
+                    <div className="tw-w-full">
+                        <Toggle
+                            disabled={disabled || userOtp.updateInProgress}
+                            isToggled={
+                                userOtp.settings
+                                    .chargerChgEnPinSafetyTimersResetEnable
+                                    .value
+                            }
+                            label={
+                                <div>
+                                    Enable Safety Timers Reset by{' '}
+                                    <span className="overline-text">CHGEN</span>{' '}
+                                    pin
+                                </div>
+                            }
+                            onToggle={value => {
+                                const settingLocked =
+                                    userOtp.settings
+                                        .chargerChgEnPinSafetyTimersResetEnable
+                                        ?.lock;
+                                if (settingLocked !== undefined) {
+                                    module.set.configValue(
+                                        {
+                                            key: 'chargerChgEnPinSafetyTimersResetEnable',
+                                            value,
+                                        },
+                                        {
+                                            ...setConfigValueExtraArgs,
+                                            ...{ settingLocked },
+                                        },
+                                    );
+                                }
+                            }}
+                        />
+                    </div>
+                    <Toggle
+                        disabled={
+                            disabled ||
+                            userOtp.updateInProgress ||
+                            userOtp.otpLocked ||
+                            userOtp.settings
+                                .chargerChgEnPinSafetyTimersResetEnable.lock
+                        }
+                        isToggled={
+                            userOtp.settings
+                                .chargerChgEnPinSafetyTimersResetEnable.program
+                        }
+                        onToggle={value =>
+                            module.set.configProgram({
+                                key: 'chargerChgEnPinSafetyTimersResetEnable',
+                                value,
+                            })
+                        }
+                    />
+                </div>
+            )}
+
+            {module.values.configChargerIBatLimLvl !== undefined &&
+                userOtp.settings.chargerIBatLimLvl?.value !== undefined && (
+                    <div className="tw-flex tw-w-full tw-flex-row tw-gap-4">
+                        <div className="tw-w-full">
+                            <Dropdown
+                                disabled={disabled || userOtp.updateInProgress}
+                                items={module.values.configChargerIBatLimLvl}
+                                label={
+                                    <div>
+                                        IBAT{' '}
+                                        <span className="subscript">LIM</span>
+                                    </div>
+                                }
+                                onSelect={item => {
+                                    const settingLocked =
+                                        userOtp.settings.chargerIBatLimLvl
+                                            ?.lock;
+                                    if (settingLocked !== undefined) {
+                                        module.set.configValue(
+                                            {
+                                                key: 'chargerIBatLimLvl',
+                                                value: item.value,
+                                            },
+                                            {
+                                                ...setConfigValueExtraArgs,
+                                                ...{ settingLocked },
+                                            },
+                                        );
+                                    }
+                                }}
+                                selectedItem={
+                                    module.values.configChargerIBatLimLvl.find(
+                                        item =>
+                                            item.value ===
+                                            userOtp.settings.chargerIBatLimLvl
+                                                ?.value,
+                                    ) ??
+                                    module.values.configChargerIBatLimLvl[0]
+                                }
+                            />
+                        </div>
+                        <Toggle
+                            disabled={
+                                disabled ||
+                                userOtp.updateInProgress ||
+                                userOtp.otpLocked ||
+                                userOtp.settings.chargerIBatLimLvl.lock
+                            }
+                            isToggled={
+                                userOtp.settings.chargerIBatLimLvl.program
+                            }
+                            onToggle={value =>
+                                module.set.configProgram({
+                                    key: 'chargerIBatLimLvl',
+                                    value,
+                                })
+                            }
+                        />
+                    </div>
+                )}
+
+            {module.values.configChargerStartupMode !== undefined &&
+                userOtp.settings.chargerStartupMode?.value !== undefined && (
+                    <div className="tw-flex tw-w-full tw-flex-row tw-gap-4">
+                        <div className="tw-w-full">
+                            <Dropdown
+                                disabled={disabled || userOtp.updateInProgress}
+                                items={module.values.configChargerStartupMode}
+                                label="Startup Mode"
+                                onSelect={item => {
+                                    const settingLocked =
+                                        userOtp.settings.chargerStartupMode
+                                            ?.lock;
+                                    if (settingLocked !== undefined) {
+                                        module.set.configValue(
+                                            {
+                                                key: 'chargerStartupMode',
+                                                value: item.value,
+                                            },
+                                            {
+                                                ...setConfigValueExtraArgs,
+                                                ...{ settingLocked },
+                                            },
+                                        );
+                                    }
+                                }}
+                                selectedItem={
+                                    module.values.configChargerStartupMode.find(
+                                        item =>
+                                            item.value ===
+                                            userOtp.settings.chargerStartupMode
+                                                ?.value,
+                                    ) ??
+                                    module.values.configChargerStartupMode[0]
+                                }
+                            />
+                        </div>
+                        <Toggle
+                            disabled={
+                                disabled ||
+                                userOtp.updateInProgress ||
+                                userOtp.otpLocked ||
+                                userOtp.settings.chargerStartupMode.lock
+                            }
+                            isToggled={
+                                userOtp.settings.chargerStartupMode.program
+                            }
+                            onToggle={value =>
+                                module.set.configProgram({
+                                    key: 'chargerStartupMode',
+                                    value,
+                                })
+                            }
+                        />
+                    </div>
+                )}
+
+            {module.values.configChargerDropoutRecovery !== undefined &&
+                userOtp.settings.chargerDropoutRecovery?.value !==
+                    undefined && (
+                    <div className="tw-flex tw-w-full tw-flex-row tw-gap-4">
+                        <div className="tw-w-full">
+                            <Dropdown
+                                disabled={disabled || userOtp.updateInProgress}
+                                items={
+                                    module.values.configChargerDropoutRecovery
+                                }
+                                label="Dropout Recovery"
+                                onSelect={item => {
+                                    const settingLocked =
+                                        userOtp.settings.chargerDropoutRecovery
+                                            ?.lock;
+                                    if (settingLocked !== undefined) {
+                                        module.set.configValue(
+                                            {
+                                                key: 'chargerDropoutRecovery',
+                                                value: item.value,
+                                            },
+                                            {
+                                                ...setConfigValueExtraArgs,
+                                                ...{ settingLocked },
+                                            },
+                                        );
+                                    }
+                                }}
+                                selectedItem={
+                                    module.values.configChargerDropoutRecovery.find(
+                                        item =>
+                                            item.value ===
+                                            userOtp.settings
+                                                .chargerDropoutRecovery?.value,
+                                    ) ??
+                                    module.values
+                                        .configChargerDropoutRecovery[0]
+                                }
+                            />
+                        </div>
+                        <Toggle
+                            disabled={
+                                disabled ||
+                                userOtp.updateInProgress ||
+                                userOtp.otpLocked ||
+                                userOtp.settings.chargerDropoutRecovery.lock
+                            }
+                            isToggled={
+                                userOtp.settings.chargerDropoutRecovery.program
+                            }
+                            onToggle={value =>
+                                module.set.configProgram({
+                                    key: 'chargerDropoutRecovery',
+                                    value,
+                                })
+                            }
+                        />
+                    </div>
+                )}
+
+            {module.values.configChargerSoftstartCurrent !== undefined &&
+                userOtp.settings.chargerSoftstartCurrent?.value !==
+                    undefined && (
+                    <div className="tw-flex tw-w-full tw-flex-row tw-gap-4">
+                        <div className="tw-w-full">
+                            <Dropdown
+                                disabled={disabled || userOtp.updateInProgress}
+                                items={
+                                    module.values.configChargerSoftstartCurrent
+                                }
+                                label="Softstart Current"
+                                onSelect={item => {
+                                    const settingLocked =
+                                        userOtp.settings.chargerSoftstartCurrent
+                                            ?.lock;
+                                    if (settingLocked !== undefined) {
+                                        module.set.configValue(
+                                            {
+                                                key: 'chargerSoftstartCurrent',
+                                                value: item.value,
+                                            },
+                                            {
+                                                ...setConfigValueExtraArgs,
+                                                ...{ settingLocked },
+                                            },
+                                        );
+                                    }
+                                }}
+                                selectedItem={
+                                    module.values.configChargerSoftstartCurrent.find(
+                                        item =>
+                                            item.value ===
+                                            userOtp.settings
+                                                .chargerSoftstartCurrent?.value,
+                                    ) ??
+                                    module.values
+                                        .configChargerSoftstartCurrent[0]
+                                }
+                            />
+                        </div>
+                        <Toggle
+                            disabled={
+                                disabled ||
+                                userOtp.updateInProgress ||
+                                userOtp.otpLocked ||
+                                userOtp.settings.chargerSoftstartCurrent.lock
+                            }
+                            isToggled={
+                                userOtp.settings.chargerSoftstartCurrent.program
+                            }
+                            onToggle={value =>
+                                module.set.configProgram({
+                                    key: 'chargerSoftstartCurrent',
+                                    value,
+                                })
+                            }
+                        />
+                    </div>
+                )}
         </Card>
     );
 };
