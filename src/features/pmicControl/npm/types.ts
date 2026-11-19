@@ -109,6 +109,16 @@ import type {
     Mode as LEDMode1210,
     PwmFreq as LEDPwmFreq1210,
 } from './npm1210/led/types';
+import type {
+    ShipVBusFilt as LowPowerConfigShipVBusFilt1210,
+    ShipVBusFiltTime as LowPowerConfigShipVBusFiltTime1210,
+    ShpHldSlider as LowPowerConfigShpHldSlider1210,
+    ShpHldSlideSwitchDelay as LowPowerConfigShpHldSlideSwitchDelay1210,
+    ShpHldSlideSwitchPollTime as LowPowerConfigShpHldSlideSwitchPollTime1210,
+    ShpHldType as LowPowerConfigShpHldType1210,
+    TimeToActive as TimeToActive1210,
+    VBusStandbyPinSel as LowPowerConfigVBusStandbyPinSel1210,
+} from './npm1210/lowPower/types';
 import {
     type ITermNpm1300 as ChargerITermNpm1300,
     type VTrickleFast1300 as ChargerVTrickleFast1300,
@@ -610,6 +620,7 @@ export enum ChargerJeitaVLabel {
 
 export type TimeToActive =
     | TimeToActive1012
+    | TimeToActive1210
     | TimeToActive1300
     | TimeToActive2100;
 
@@ -621,6 +632,17 @@ export type OperatingMode =
     | 'vbusStandby1'
     | 'vbusStandby2';
 
+export type LowPowerConfigShipVBusFilt = LowPowerConfigShipVBusFilt1210;
+export type LowPowerConfigShipVBusFiltTime = LowPowerConfigShipVBusFiltTime1210;
+export type LowPowerConfigShpHldSlideSwitchDelay =
+    LowPowerConfigShpHldSlideSwitchDelay1210;
+export type LowPowerConfigShpHldSlideSwitchPollTime =
+    LowPowerConfigShpHldSlideSwitchPollTime1210;
+export type LowPowerConfigShpHldSlider = LowPowerConfigShpHldSlider1210;
+export type LowPowerConfigShpHldType = LowPowerConfigShpHldType1210;
+export type LowPowerConfigVBusStandbyPinSel =
+    LowPowerConfigVBusStandbyPinSel1210;
+
 export type LowPowerConfig = {
     timeToActive: TimeToActive;
 
@@ -628,8 +650,16 @@ export type LowPowerConfig = {
     invPolarity?: boolean;
     operatingMode?: OperatingMode;
     powerButtonEnable?: boolean;
+    shipVBusFilt?: LowPowerConfigShipVBusFilt;
+    shipVBusFiltTime?: LowPowerConfigShipVBusFiltTime;
+    shpHldSlideSwitchDelay?: LowPowerConfigShpHldSlideSwitchDelay;
+    shpHldSlideSwitchPollTime?: LowPowerConfigShpHldSlideSwitchPollTime;
+    shpHldSlider?: LowPowerConfigShpHldSlider;
+    shpHldType?: LowPowerConfigShpHldType;
+    suspendPinPullDown?: boolean;
     vbusHibernateWait?: boolean;
     vbusHibernateWaitingForChargeComplete?: boolean;
+    vbusStandbyPinSel?: LowPowerConfigVBusStandbyPinSel;
     vbusStandbyWait?: boolean;
     vbusStandbyWaitingForChargeComplete?: boolean;
 };
@@ -1724,7 +1754,15 @@ export type LowPowerModule = {
         timeToActive: () => void;
 
         hibernateWakeupByButton?: () => void;
+        shipVBusFilt?: () => void;
+        shipVBusFiltTime?: () => void;
+        shpHldSlideSwitchDelay?: () => void;
+        shpHldSlideSwitchPollTime?: () => void;
+        shpHldSlider?: () => void;
+        shpHldType?: () => void;
+        suspendPinPullDown?: () => void;
         vbusHibernateWait?: () => void;
+        vbusStandbyPinSel?: () => void;
         vbusStandbyWait?: () => void;
         vbusStatus?: () => void;
     };
@@ -1734,11 +1772,47 @@ export type LowPowerModule = {
 
         hibernateWakeupByButton?: (value: boolean) => Promise<void>;
         powerButtonEnable?: (powerButtonEnable: boolean) => Promise<void>;
+        shipVBusFilt?: (value: LowPowerConfigShipVBusFilt) => Promise<void>;
+        shipVBusFiltTime?: (
+            value: LowPowerConfigShipVBusFiltTime,
+        ) => Promise<void>;
+        shpHldSlideSwitchDelay?: (
+            value: LowPowerConfigShpHldSlideSwitchDelay,
+        ) => Promise<void>;
+        shpHldSlideSwitchPollTime?: (
+            value: LowPowerConfigShpHldSlideSwitchPollTime,
+        ) => Promise<void>;
+        shpHldSlider?: (value: LowPowerConfigShpHldSlider) => Promise<void>;
+        shpHldType?: (value: LowPowerConfigShpHldType) => Promise<void>;
+        suspendPinPullDown?: (value: boolean) => Promise<void>;
         vbusHibernateWait?: (value: boolean) => Promise<void>;
+        vbusStandbyPinSel?: (
+            value: LowPowerConfigVBusStandbyPinSel,
+        ) => Promise<void>;
         vbusStandbyWait?: (value: boolean) => Promise<void>;
     };
     values: {
         timeToActive: { label: string; value: TimeToActive }[];
+
+        shipVBusFilt?: { label: string; value: LowPowerConfigShipVBusFilt }[];
+        shipVBusFiltTime?: {
+            label: string;
+            value: LowPowerConfigShipVBusFiltTime;
+        }[];
+        shpHldSlideSwitchDelay?: {
+            label: string;
+            value: LowPowerConfigShpHldSlideSwitchDelay;
+        }[];
+        shpHldSlideSwitchPollTime?: {
+            label: string;
+            value: LowPowerConfigShpHldSlideSwitchPollTime;
+        }[];
+        shpHldSlider?: { label: string; value: LowPowerConfigShpHldSlider }[];
+        shpHldType?: { label: string; value: LowPowerConfigShpHldType }[];
+        vbusStandbyPinSel?: {
+            label: string;
+            value: LowPowerConfigVBusStandbyPinSel;
+        }[];
     };
     callbacks: (() => void)[];
     defaults: LowPowerConfig;
