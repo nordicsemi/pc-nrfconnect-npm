@@ -54,8 +54,8 @@ import type {
     PowerDownWait as PowerDownWait1012,
 } from './npm1012/reset/types';
 import type {
-    VBusDpm as VBusDpm1012,
-    VBusILim as VBusILim1012,
+    VBusDpm as SysRegVBusDpm1012,
+    VBusILim as SysRegVBusILim1012,
 } from './npm1012/sysReg/types';
 import type { Mode as TimerMode1012 } from './npm1012/timerConfig/types';
 import type {
@@ -119,6 +119,14 @@ import type {
     TimeToActive as TimeToActive1210,
     VBusStandbyPinSel as LowPowerConfigVBusStandbyPinSel1210,
 } from './npm1210/lowPower/types';
+import type {
+    VBusDpm as SysRegVBusDpm1210,
+    VBusILim as SysRegVBusILim1210,
+    VBusILim0And1PinGndSel as SysRegVBusILim0And1PinGndSel1210,
+    VBusILim0And1PinMap as SysRegVBusILim0And1PinMap1210,
+    VBusILimControl as SysRegVBusILimControl1210,
+    VBusPGPinSel as SysRegVBusPGPinSel1210,
+} from './npm1210/sysReg/types';
 import {
     type ITermNpm1300 as ChargerITermNpm1300,
     type VTrickleFast1300 as ChargerVTrickleFast1300,
@@ -557,8 +565,12 @@ export type POF = {
     warnThreshold?: number;
 };
 
-export type VBusDpm = VBusDpm1012;
-export type VBusILim = VBusILim1012;
+export type SysRegVBusDpm = SysRegVBusDpm1012 | SysRegVBusDpm1210;
+export type SysRegVBusILim = SysRegVBusILim1012 | SysRegVBusILim1210;
+export type SysRegVBusILimControl = SysRegVBusILimControl1210;
+export type SysRegVBusILim0And1PinGndSel = SysRegVBusILim0And1PinGndSel1210;
+export type SysRegVBusILim0And1PinMap = SysRegVBusILim0And1PinMap1210;
+export type SysRegVBusPGPinSel = SysRegVBusPGPinSel1210;
 
 export const vBusStatusValues = [
     'Good',
@@ -569,10 +581,18 @@ export const vBusStatusValues = [
 export type VBusStatus = (typeof vBusStatusValues)[number];
 
 export type SysReg = {
-    vBusDpm: VBusDpm;
+    vBusDpm: SysRegVBusDpm;
     vBusGood: boolean;
-    vBusILim: VBusILim;
+    vBusILim: SysRegVBusILim;
     vBusPresent: boolean;
+
+    vBusILimControl?: SysRegVBusILimControl;
+    vBusILim0And1PinGndSel?: SysRegVBusILim0And1PinGndSel;
+    vBusILim0And1PinMap?: SysRegVBusILim0And1PinMap;
+    vBusILim0PinPullDownEnable?: boolean;
+    vBusILim1PinPullDownEnable?: boolean;
+    vBusILimSoftwareControlDisabled?: boolean;
+    vBusPGPinSel?: SysRegVBusPGPinSel;
 };
 
 export type TimerMode = TimerMode1012 | npm1300TimerMode | npm2100TimerMode;
@@ -1685,12 +1705,34 @@ export interface SysRegModule {
     };
     set: {
         all: (config: SysReg) => Promise<void>;
-        vBusDpm: (value: VBusDpm) => Promise<void>;
-        vBusILim: (value: VBusILim) => Promise<void>;
+        vBusDpm: (value: SysRegVBusDpm) => Promise<void>;
+        vBusILim: (value: SysRegVBusILim) => Promise<void>;
+
+        vBusILim0And1PinGndSel?: (
+            value: SysRegVBusILim0And1PinGndSel,
+        ) => Promise<void>;
+        vBusILim0And1PinMap?: (
+            value: SysRegVBusILim0And1PinMap,
+        ) => Promise<void>;
+        vBusILim0PinPullDownEnable?: (value: boolean) => Promise<void>;
+        vBusILim1PinPullDownEnable?: (value: boolean) => Promise<void>;
+        vBusILimControl?: (value: SysRegVBusILimControl) => Promise<void>;
+        vBusPGPinSel?: (value: SysRegVBusPGPinSel) => Promise<void>;
     };
     values: {
-        vBusDpm: { label: string; value: VBusDpm }[];
-        vBusILim: { label: string; value: VBusILim }[];
+        vBusDpm: { label: string; value: SysRegVBusDpm }[];
+        vBusILim: { label: string; value: SysRegVBusILim }[];
+
+        vBusILim0And1PinGndSel?: {
+            label: string;
+            value: SysRegVBusILim0And1PinGndSel;
+        }[];
+        vBusILim0And1PinMap?: {
+            label: string;
+            value: SysRegVBusILim0And1PinMap;
+        }[];
+        vBusILimControl?: { label: string; value: SysRegVBusILimControl }[];
+        vBusPGPinSel?: { label: string; value: SysRegVBusPGPinSel }[];
     };
 }
 
