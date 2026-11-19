@@ -14,11 +14,10 @@ import { LedActions } from './actions';
 import ledCallbacks from './callbacks';
 import { LedGet } from './getters';
 import { LedSet } from './setters';
+import { pwmFreqKV } from './types';
 
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-underscore-dangle */
-
-const pwmFrequencyValues = [122, 244, 488, 977] as readonly number[];
 
 export const toLedExport = (config: LED): LedExport => ({
     blinkContinuous: config.blinkContinuous,
@@ -66,7 +65,7 @@ export default class Module implements LedModule {
             blinkDouble: false,
             blinkTimeOff: this.ranges.blinkTime.min,
             blinkTimeOn: this.ranges.blinkTime.min,
-            pwmFrequency: pwmFrequencyValues[0],
+            pwmFrequency: '977Hz',
             rgbPhaseShifting: false,
         };
     }
@@ -90,11 +89,11 @@ export default class Module implements LedModule {
         return this._set;
     }
 
-    get values(): LedModule['values'] {
+    get values() {
         return {
-            pwmFrequency: pwmFrequencyValues.map(item => ({
-                label: `${item} Hz`,
-                value: item,
+            pwmFrequency: pwmFreqKV.map(([key, val]) => ({
+                label: val,
+                value: key,
             })),
         };
     }

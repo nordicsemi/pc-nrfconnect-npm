@@ -10,11 +10,13 @@ import {
     noop,
     type NpmEventEmitter,
     onOffRegex,
+    parseColonBasedAnswer,
     parseOnOff,
     parseToNumber,
     toRegex,
 } from '../../pmicHelpers';
 import { type LED } from '../../types';
+import { pwmFreqKeys } from './types';
 
 export default (
     shellParser: ShellParser | undefined,
@@ -104,11 +106,18 @@ export default (
     callbacks.push(
         shellParser.registerCommandCallback(
             toRegex('npm1012 gpio led pwmfreq', true),
-            res => {
+            msg => {
+                const res = parseColonBasedAnswer(msg)?.toLowerCase();
+                const pwmFrequency = pwmFreqKeys.find(
+                    v => v.toLowerCase() === res,
+                );
+                if (pwmFrequency === undefined) {
+                    return;
+                }
                 eventEmitter.emitPartialEvent<LED>(
                     'onLEDUpdate',
                     {
-                        pwmFrequency: parseToNumber(res),
+                        pwmFrequency,
                     },
                     index,
                 );

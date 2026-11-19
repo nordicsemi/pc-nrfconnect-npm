@@ -5,7 +5,7 @@
  */
 
 import { type NpmEventEmitter } from '../../pmicHelpers';
-import { type LED, type LedExport } from '../../types';
+import { type LED, type LedExport, type LEDPwmFreq } from '../../types';
 import { LedGet } from './getters';
 
 export class LedSet {
@@ -143,7 +143,7 @@ export class LedSet {
         });
     }
 
-    pwmFrequency(freq: number) {
+    pwmFrequency(freq: LEDPwmFreq) {
         return new Promise<void>((resolve, reject) => {
             if (this.offlineMode) {
                 this.eventEmitter.emitPartialEvent<LED>(
@@ -156,7 +156,7 @@ export class LedSet {
                 resolve();
             } else {
                 this.sendCommand(
-                    `npm1012 gpio led pwmfreq set ${freq}Hz`,
+                    `npm1012 gpio led pwmfreq set ${freq}`,
                     () => resolve(),
                     () => {
                         this.get.pwmFrequency();
