@@ -4,44 +4,41 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { type ShellParser } from '@nordicsemiconductor/pc-nrfconnect-shared';
-
+import { type GPIOLEDDrv, type ModuleParams } from '../../types';
 import {
-    noop,
-    type NpmEventEmitter,
-    onOffRegex,
-    parseColonBasedAnswer,
-    parseOnOff,
-    parseToNumber,
-    toRegex,
-} from '../../pmicHelpers';
-import { type GPIOLEDDrv } from '../../types';
+    parseIntFromCmdReply,
+    parseOnOffFromCmdReply,
+    parseValueFromCmdReply,
+} from '../helpers';
 import {
-    type GPIODrive,
+    gpioDriveKeys,
     gpioModeInputKeys,
     gpioModeOutputKeys,
-    type GPIOPolarity,
-    type GPIOPull,
-    type LEDDrive,
-    type LEDMode,
+    gpioPolarityKeys,
+    gpioPullKeys,
+    ledDriveKeys,
+    ledModeKeys,
 } from './types';
 
 export default (
-    shellParser: ShellParser | undefined,
-    eventEmitter: NpmEventEmitter,
+    eventEmitter: ModuleParams['eventEmitter'],
+    shellParser: ModuleParams['shellParser'],
     index: number,
 ) => {
     if (shellParser === undefined) {
         return [];
     }
 
-    const callbacks = [];
+    const cleanupCallbacks = [];
 
-    callbacks.push(
+    cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            toRegex('npm1012 gpio led duty', true, index),
-            res => {
-                const value = parseToNumber(res);
+            `npm1012 gpio led duty (get|set) ${index}`,
+            msg => {
+                const value = parseIntFromCmdReply(msg);
+                if (value === undefined) {
+                    return;
+                }
                 eventEmitter.emitPartialEvent<GPIOLEDDrv>(
                     'onGpioLedDrvUpdate',
                     {
@@ -51,48 +48,56 @@ export default (
                     index,
                 );
             },
-            noop,
+            () => {},
         ),
     );
 
-    callbacks.push(
+    cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            toRegex('npm1012 gpio debounce', true, index, onOffRegex),
-            res => {
+            `npm1012 gpio debounce (get|set) ${index}`,
+            msg => {
+                const value = parseOnOffFromCmdReply(msg);
+                if (value === undefined) {
+                    return;
+                }
                 eventEmitter.emitPartialEvent<GPIOLEDDrv>(
                     'onGpioLedDrvUpdate',
                     {
-                        gpioDebounce: parseOnOff(res),
+                        gpioDebounce: value,
                     },
                     index,
                 );
             },
-            noop,
+            () => {},
         ),
     );
 
-    callbacks.push(
+    cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            toRegex('npm1012 gpio drive', true, index, '(\\w+)'),
-            res => {
+            `npm1012 gpio drive (get|set) ${index}`,
+            msg => {
+                const res = parseValueFromCmdReply(msg)?.toLowerCase();
+                const value = gpioDriveKeys.find(v => v.toLowerCase() === res);
+                if (value === undefined) {
+                    return;
+                }
                 eventEmitter.emitPartialEvent<GPIOLEDDrv>(
                     'onGpioLedDrvUpdate',
                     {
-                        gpioDrive: parseColonBasedAnswer(res) as GPIODrive,
+                        gpioDrive: value,
                     },
                     index,
                 );
             },
-            noop,
+            () => {},
         ),
     );
 
-    callbacks.push(
+    cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            toRegex('npm1012 gpio function', true, index, '(\\w+)'),
+            `npm1012 gpio function (get|set) ${index}`,
             res => {
-                const mode = parseColonBasedAnswer(res);
-
+                const mode = parseValueFromCmdReply(res);
                 const gpioModeInput = gpioModeInputKeys.find(
                     item => item === mode,
                 );
@@ -125,91 +130,116 @@ export default (
                     index,
                 );
             },
-            noop,
+            () => {},
         ),
     );
 
-    callbacks.push(
+    cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            toRegex('npm1012 gpio opendrain', true, index, onOffRegex),
-            res => {
+            `npm1012 gpio opendrain (get|set) ${index}`,
+            msg => {
+                const value = parseOnOffFromCmdReply(msg);
+                if (value === undefined) {
+                    return;
+                }
                 eventEmitter.emitPartialEvent<GPIOLEDDrv>(
                     'onGpioLedDrvUpdate',
                     {
-                        gpioOpenDrain: parseOnOff(res),
+                        gpioOpenDrain: value,
                     },
                     index,
                 );
             },
-            noop,
+            () => {},
         ),
     );
 
-    callbacks.push(
+    cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            toRegex('npm1012 gpio polarity', true, index, '(\\w+)'),
-            res => {
+            `npm1012 gpio polarity (get|set) ${index}`,
+            msg => {
+                const res = parseValueFromCmdReply(msg)?.toLowerCase();
+                const value = gpioPolarityKeys.find(
+                    v => v.toLowerCase() === res,
+                );
+                if (value === undefined) {
+                    return;
+                }
                 eventEmitter.emitPartialEvent<GPIOLEDDrv>(
                     'onGpioLedDrvUpdate',
                     {
-                        gpioPolarity: parseColonBasedAnswer(
-                            res,
-                        ) as GPIOPolarity,
+                        gpioPolarity: value,
                     },
                     index,
                 );
             },
-            noop,
+            () => {},
         ),
     );
 
-    callbacks.push(
+    cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            toRegex('npm1012 gpio pull', true, index, '(\\w+)'),
-            res => {
+            `npm1012 gpio pull (get|set) ${index}`,
+            msg => {
+                const res = parseValueFromCmdReply(msg)?.toLowerCase();
+                const value = gpioPullKeys.find(v => v.toLowerCase() === res);
+                if (value === undefined) {
+                    return;
+                }
                 eventEmitter.emitPartialEvent<GPIOLEDDrv>(
                     'onGpioLedDrvUpdate',
                     {
-                        gpioPull: parseColonBasedAnswer(res) as GPIOPull,
+                        gpioPull: value,
                     },
                     index,
                 );
             },
-            noop,
+
+            () => {},
         ),
     );
 
-    callbacks.push(
+    cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            toRegex('npm1012 gpio led drive', true, index, '(\\w+)'),
-            res => {
+            `npm1012 gpio led drive (get|set) ${index}`,
+            msg => {
+                const res = parseValueFromCmdReply(msg)?.toLowerCase();
+                const value = ledDriveKeys.find(v => v.toLowerCase() === res);
+                if (value === undefined) {
+                    return;
+                }
                 eventEmitter.emitPartialEvent<GPIOLEDDrv>(
                     'onGpioLedDrvUpdate',
                     {
-                        ledDrive: parseColonBasedAnswer(res) as LEDDrive,
+                        ledDrive: value,
                     },
                     index,
                 );
             },
-            noop,
+            () => {},
         ),
     );
 
-    callbacks.push(
+    cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            toRegex('npm1012 gpio led mode', true, index, '(\\w+)'),
-            res => {
+            `npm1012 gpio led mode (get|set) ${index}`,
+            msg => {
+                const res = parseValueFromCmdReply(msg)?.toLowerCase();
+                const value = ledModeKeys.find(v => v.toLowerCase() === res);
+                if (value === undefined) {
+                    return;
+                }
                 eventEmitter.emitPartialEvent<GPIOLEDDrv>(
                     'onGpioLedDrvUpdate',
                     {
-                        ledMode: parseColonBasedAnswer(res) as LEDMode,
+                        ledMode: value,
                     },
                     index,
                 );
             },
-            noop,
+            () => {},
         ),
     );
 
-    return callbacks;
+    return cleanupCallbacks;
 };
