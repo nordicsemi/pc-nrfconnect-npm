@@ -46,6 +46,7 @@ import type {
     SoftStartILimLdsw as LdoSoftStartCurrent1012,
     SoftStartTime as LdoSoftStartTime1012,
 } from './npm1012/ldo/types';
+import type { PwmFreq as LEDPwmFreq1012 } from './npm1012/led/types';
 import type { TimeToActive as TimeToActive1012 } from './npm1012/lowPower/types';
 import type {
     LongPressResetDebounce as LongPressResetDebounce1012,
@@ -97,6 +98,11 @@ import {
     type VBatLowLvl as ChargerVBatLow1210,
     type VTrickleLvl as ChargerVTrickleFast1210,
 } from './npm1210/charger/types';
+import type {
+    Drive as LEDDrive1210,
+    Mode as LEDMode1210,
+    PwmFreq as LEDPwmFreq1210,
+} from './npm1210/led/types';
 import {
     type ITermNpm1300 as ChargerITermNpm1300,
     type VTrickleFast1300 as ChargerVTrickleFast1300,
@@ -467,17 +473,23 @@ export type GPIO = {
     debounceEnabled: boolean;
 };
 
-export type LEDMode = LEDMode1300;
+export type LEDMode = LEDMode1210 | LEDMode1300;
+export type LEDDrive = LEDDrive1210;
+export type LEDPwmFreq = LEDPwmFreq1012 | LEDPwmFreq1210;
 
 export type LED = {
     cardLabel: string;
 
+    blinkActionEnabled?: boolean;
     blinkContinuous?: boolean;
     blinkDouble?: boolean;
     blinkTimeOff?: number;
     blinkTimeOn?: number;
+    drive?: LEDDrive;
+    dutyCycle?: number;
+    dutyCycleEnabled?: boolean;
     mode?: LEDMode;
-    pwmFrequency?: number;
+    pwmFrequency?: LEDPwmFreq;
     rgbPhaseShifting?: boolean;
 };
 
@@ -1557,12 +1569,15 @@ export interface LedModule {
         blinkDouble?: () => void;
         blinkTimeOff?: () => void;
         blinkTimeOn?: () => void;
+        drive?: () => void;
+        dutyCycle?: () => void;
         mode?: () => void;
         pwmFrequency?: () => void;
         rgbPhaseShifting?: () => void;
     };
     ranges: {
         blinkTime?: Range;
+        dutyCycle?: Range;
     };
     set: {
         all: (config: LedExport) => Promise<void>;
@@ -1571,13 +1586,16 @@ export interface LedModule {
         blinkDouble?: (value: boolean) => Promise<void>;
         blinkTimeOff?: (value: number) => Promise<void>;
         blinkTimeOn?: (value: number) => Promise<void>;
-        mode?: (mode: LEDMode) => Promise<void>;
-        pwmFrequency?: (freq: number) => Promise<void>;
+        drive?: (value: LEDDrive) => Promise<void>;
+        dutyCycle?: (value: number) => Promise<void>;
+        mode?: (value: LEDMode) => Promise<void>;
+        pwmFrequency?: (value: LEDPwmFreq) => Promise<void>;
         rgbPhaseShifting?: (value: boolean) => Promise<void>;
     };
     values: {
+        drive?: { label: string; value: LEDDrive }[];
         mode?: { label: string; value: LEDMode }[];
-        pwmFrequency?: { label: string; value: number }[];
+        pwmFrequency?: { label: string; value: LEDPwmFreq }[];
     };
 }
 
