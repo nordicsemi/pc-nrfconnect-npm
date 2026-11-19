@@ -17,7 +17,6 @@ import {
     type GPIO,
     type GPIOMode,
     type GpioModule,
-    type GPIOPull,
     type GPIOState,
 } from '../../features/pmicControl/npm/types';
 
@@ -38,12 +37,12 @@ export default ({
         gpioModule.values.mode.find(m => m.value === mode)?.label;
 
     const card = `gpio${gpioModule.index}`;
+
     return (
         <Card
             title={
                 <div className="tw-flex tw-justify-between">
                     <span>{cardLabel}</span>
-
                     <div className="d-flex">
                         {`${
                             toStringMode(gpio.mode)?.startsWith('Input')
@@ -61,7 +60,7 @@ export default ({
                     </DocumentationTooltip>
                 }
                 items={gpioModule.values.mode}
-                onSelect={item => gpioModule.set.mode(item.value as GPIOMode)}
+                onSelect={item => gpioModule.set.mode(item.value)}
                 selectedItem={
                     gpioModule.values.mode.find(
                         item => item.value === gpio.mode,
@@ -93,6 +92,23 @@ export default ({
                         />
                     </div>
                 )}
+            {gpioModule.values.polarity && (
+                <Dropdown
+                    disabled={disabled || !gpio.polarityEnabled}
+                    items={gpioModule.values.polarity}
+                    label={
+                        <DocumentationTooltip card={card} item="Polarity">
+                            <span>Polarity</span>
+                        </DocumentationTooltip>
+                    }
+                    onSelect={item => gpioModule.set.polarity?.(item.value)}
+                    selectedItem={
+                        gpioModule.values.polarity.find(
+                            item => item.value === gpio.polarity,
+                        ) ?? gpioModule.values.polarity[0]
+                    }
+                />
+            )}
             <Dropdown
                 label={
                     <DocumentationTooltip card={card} item="Pull">
@@ -100,7 +116,7 @@ export default ({
                     </DocumentationTooltip>
                 }
                 items={gpioModule.values.pull}
-                onSelect={item => gpioModule.set.pull(item.value as GPIOPull)}
+                onSelect={item => gpioModule.set.pull(item.value)}
                 selectedItem={
                     gpioModule.values.pull.find(
                         item => item.value === gpio.pull,
