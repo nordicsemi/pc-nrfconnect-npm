@@ -99,6 +99,12 @@ import {
     type VTrickleLvl as ChargerVTrickleFast1210,
 } from './npm1210/charger/types';
 import type {
+    Drive as GPIODrive1210,
+    Mode as GPIOMode1210,
+    Polarity as GPIOPolarity1210,
+    Pull as GPIOPull1210,
+} from './npm1210/gpio/types';
+import type {
     Drive as LEDDrive1210,
     Mode as LEDMode1210,
     PwmFreq as LEDPwmFreq1210,
@@ -454,23 +460,27 @@ export type Ldo = {
     weakPullDown?: boolean;
 };
 
+export type GPIODrive = GPIODrive1210 | GPIODrive1300 | GPIODrive2100;
+export type GPIOMode = GPIOMode1210 | GPIOMode1300 | GPIOMode2100;
+export type GPIOPolarity = GPIOPolarity1210;
+export type GPIOPull = GPIOPull1210 | GPIOPull1300 | GPIOPull2100;
 export type GPIOState = GPIOState2100;
-export type GPIOMode = GPIOMode1300 | GPIOMode2100;
-export type GPIOPull = GPIOPull1300 | GPIOPull2100;
-export type GPIODrive = GPIODrive1300 | GPIODrive2100;
 
 export type GPIO = {
-    mode: GPIOMode;
-    state?: GPIOState;
-    stateShown?: boolean;
-    pull: GPIOPull;
-    pullEnabled: boolean;
-    drive: GPIODrive;
-    driveEnabled: boolean;
-    openDrain: boolean;
-    openDrainEnabled: boolean;
     debounce: boolean;
     debounceEnabled: boolean;
+    drive: GPIODrive;
+    driveEnabled: boolean;
+    mode: GPIOMode;
+    openDrain: boolean;
+    openDrainEnabled: boolean;
+    pull: GPIOPull;
+    pullEnabled: boolean;
+
+    polarity?: GPIOPolarity;
+    polarityEnabled?: boolean;
+    state?: GPIOState;
+    stateShown?: boolean;
 };
 
 export type LEDMode = LEDMode1210 | LEDMode1300;
@@ -1528,27 +1538,33 @@ export type GpioModule = {
     index: number;
     get: {
         all: () => void;
-        mode: () => void;
-        state?: () => void;
-        pull: () => void;
-        drive: () => void;
-        openDrain: () => void;
         debounce: () => void;
+        drive: () => void;
+        mode: () => void;
+        openDrain: () => void;
+        pull: () => void;
+
+        polarity?: () => void;
+        state?: () => void;
     };
     set: {
         all: (gpio: GPIOExport) => Promise<void>;
-        mode: (mode: GPIOMode) => Promise<void>;
-        state?: (state: GPIOState) => Promise<void>;
-        pull: (pull: GPIOPull) => Promise<void>;
-        drive: (drive: GPIODrive) => Promise<void>;
-        openDrain: (openDrain: boolean) => Promise<void>;
         debounce: (debounce: boolean) => Promise<void>;
+        drive: (drive: GPIODrive) => Promise<void>;
+        mode: (mode: GPIOMode) => Promise<void>;
+        openDrain: (openDrain: boolean) => Promise<void>;
+        pull: (pull: GPIOPull) => Promise<void>;
+
+        polarity?: (value: GPIOPolarity) => Promise<void>;
+        state?: (state: GPIOState) => Promise<void>;
     };
     values: {
-        mode: { label: string; value: GPIOMode }[];
-        state?: { label: string; value: GPIOState }[];
-        pull: { label: string; value: GPIOPull }[];
         drive: { label: string; value: GPIODrive }[];
+        mode: { label: string; value: GPIOMode }[];
+        pull: { label: string; value: GPIOPull }[];
+
+        polarity?: { label: string; value: GPIOPolarity }[];
+        state?: { label: string; value: GPIOState }[];
     };
     callbacks: (() => void)[];
     defaults: GPIO;
