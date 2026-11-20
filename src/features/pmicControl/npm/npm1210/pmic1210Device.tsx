@@ -34,6 +34,7 @@ import OnBoardLoadModule from './onBoardLoad';
 import PofModule from './pof';
 import ResetModule from './reset';
 import SysRegModule from './sysReg';
+import TimerConfigModule from './timerConfig';
 import UserOtpModule from './userOtp';
 
 export const npm1210FWVersion = '0.4.1+0';
@@ -58,6 +59,7 @@ export default class Npm1210 extends BaseNpmDevice {
                 PofModule,
                 ResetModule,
                 SysRegModule,
+                TimerConfigModule,
                 UserOtpModule,
                 bucks: { Module: BuckModule, count: 1 },
                 gpios: { Module: GpioModule, count: numGPIOs },
