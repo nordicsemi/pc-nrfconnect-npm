@@ -62,10 +62,16 @@ export const timeToActiveKV = [
 export const timeToActiveKeys = timeToActiveKV.map(([key, _]) => key);
 export type TimeToActive = (typeof timeToActiveKeys)[number];
 
-export const vBusStandbyPinSelKV = [
-    ['standby1', 'SUSPEND Pin, Standby 1 Mode'],
-    ['standby2', 'SUSPEND Pin, Standby 2 Mode'],
-    ['register', 'Register'],
+export const vBusStandbyCtrlKV = [
+    ['pin', 'Pin'],
+    ['software', 'Software'],
 ] as const;
-export const vBusStandbyPinSelKeys = vBusStandbyPinSelKV.map(([key, _]) => key);
-export type VBusStandbyPinSel = (typeof vBusStandbyPinSelKeys)[number];
+export const vBusStandbyCtrlKeys = vBusStandbyCtrlKV.map(([key, _]) => key);
+export type VBusStandbyCtrl = (typeof vBusStandbyCtrlKeys)[number];
+
+export const vBusStandbySelKV = [
+    ['standby1', 'Standby 1'],
+    ['standby2', 'Standby 2'],
+] as const;
+export const vBusStandbySelKeys = vBusStandbySelKV.map(([key, _]) => key);
+export type VBusStandbySel = (typeof vBusStandbySelKeys)[number];

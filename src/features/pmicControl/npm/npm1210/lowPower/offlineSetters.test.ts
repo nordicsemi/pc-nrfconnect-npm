@@ -104,12 +104,21 @@ describe('PMIC 1210 - Setters Offline tests', () => {
         } satisfies Partial<LowPowerConfig>);
     });
 
-    test('Set vbusStandbyPinSel', async () => {
-        await pmic.lowPowerModule?.set.vbusStandbyPinSel?.('standby2');
+    test('Set vbusStandbyCtrl', async () => {
+        await pmic.lowPowerModule?.set.vbusStandbyCtrl?.('software');
 
         expect(mockOnLowPowerUpdate).toBeCalledTimes(1);
         expect(mockOnLowPowerUpdate).toBeCalledWith({
-            vbusStandbyPinSel: 'standby2',
+            vbusStandbyCtrl: 'software',
+        } satisfies Partial<LowPowerConfig>);
+    });
+
+    test('Set vbusStandbySel', async () => {
+        await pmic.lowPowerModule?.set.vbusStandbySel?.('standby2');
+
+        expect(mockOnLowPowerUpdate).toBeCalledTimes(1);
+        expect(mockOnLowPowerUpdate).toBeCalledWith({
+            vbusStandbySel: 'standby2',
         } satisfies Partial<LowPowerConfig>);
     });
 

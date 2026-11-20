@@ -20,7 +20,8 @@ export class LowPowerGet {
         this.shpHldType();
         this.suspendPinPullDown();
         this.vbusHibernateWait();
-        this.vbusStandbyPinSel();
+        this.vbusStandbyCtrl();
+        this.vbusStandbySel();
         this.vbusStatus();
     }
 
@@ -37,7 +38,7 @@ export class LowPowerGet {
     }
 
     shpHldSlideSwitchDelay() {
-        this.sendCommand('npm12xx low_power_ctrl shphld delay get');
+        this.sendCommand('npm12xx low_power_ctrl shphld delaysel get');
     }
 
     shpHldSlideSwitchPollTime() {
@@ -53,7 +54,7 @@ export class LowPowerGet {
     }
 
     suspendPinPullDown() {
-        this.sendCommand('npm12xx low_power_ctrl suspend_pin pull_down get');
+        this.sendCommand('npm12xx sysreg suspendpin pull get');
     }
 
     timeToActive() {
@@ -64,8 +65,12 @@ export class LowPowerGet {
         this.sendCommand('npm12xx low_power_ctrl vbus hibernate_wait get');
     }
 
-    vbusStandbyPinSel() {
-        this.sendCommand('npm12xx low_power_ctrl vbus standby_pinsel get');
+    vbusStandbyCtrl() {
+        this.sendCommand('npm12xx low_power_ctrl vbus standbyctrl get');
+    }
+
+    vbusStandbySel() {
+        this.sendCommand('npm12xx low_power_ctrl vbus standbysel get');
     }
 
     vbusStandbyWait() {

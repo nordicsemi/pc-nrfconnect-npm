@@ -54,7 +54,7 @@ describe('PMIC 1210 - Request update commands', () => {
 
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
-            `npm12xx low_power_ctrl shphld delay get`,
+            `npm12xx low_power_ctrl shphld delaysel get`,
             expect.anything(),
             undefined,
             true,
@@ -102,7 +102,7 @@ describe('PMIC 1210 - Request update commands', () => {
 
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
-            `npm12xx low_power_ctrl suspend_pin pull_down get`,
+            `npm12xx sysreg suspendpin pull get`,
             expect.anything(),
             undefined,
             true,
@@ -133,12 +133,24 @@ describe('PMIC 1210 - Request update commands', () => {
         );
     });
 
-    test('Request update vbusStandbyPinSel', () => {
-        pmic.lowPowerModule?.get.vbusStandbyPinSel?.();
+    test('Request update vbusStandbyCtrl', () => {
+        pmic.lowPowerModule?.get.vbusStandbyCtrl?.();
 
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
-            `npm12xx low_power_ctrl vbus standby_pinsel get`,
+            `npm12xx low_power_ctrl vbus standbyctrl get`,
+            expect.anything(),
+            undefined,
+            true,
+        );
+    });
+
+    test('Request update vbusStandbySel', () => {
+        pmic.lowPowerModule?.get.vbusStandbySel?.();
+
+        expect(mockEnqueueRequest).toBeCalledTimes(1);
+        expect(mockEnqueueRequest).toBeCalledWith(
+            `npm12xx low_power_ctrl vbus standbysel get`,
             expect.anything(),
             undefined,
             true,
