@@ -290,25 +290,44 @@ export default ({
                     }
                 />
             )}
-            {lowPowerModule.values.vbusStandbyPinSel !== undefined && (
+            {lowPowerModule.values.vbusStandbyCtrl !== undefined && (
                 <Dropdown
                     disabled={disabled}
-                    items={lowPowerModule.values.vbusStandbyPinSel}
+                    items={lowPowerModule.values.vbusStandbyCtrl}
                     label={
                         <DocumentationTooltip
                             card={card}
-                            item="VbusStandbyPinSel"
+                            item="VbusStandbyCtrl"
                         >
-                            Enter Standy Control
+                            Enter Standby Control
                         </DocumentationTooltip>
                     }
                     onSelect={item =>
-                        lowPowerModule.set.vbusStandbyPinSel?.(item.value)
+                        lowPowerModule.set.vbusStandbyCtrl?.(item.value)
                     }
                     selectedItem={
-                        lowPowerModule.values.vbusStandbyPinSel.find(
-                            item => item.value === lowPower.vbusStandbyPinSel,
-                        ) ?? lowPowerModule.values.vbusStandbyPinSel[0]
+                        lowPowerModule.values.vbusStandbyCtrl.find(
+                            item => item.value === lowPower.vbusStandbyCtrl,
+                        ) ?? lowPowerModule.values.vbusStandbyCtrl[0]
+                    }
+                />
+            )}
+            {lowPowerModule.values.vbusStandbySel !== undefined && (
+                <Dropdown
+                    disabled={disabled}
+                    items={lowPowerModule.values.vbusStandbySel}
+                    label={
+                        <DocumentationTooltip card={card} item="VbusStandbySel">
+                            Enter Standby Selection
+                        </DocumentationTooltip>
+                    }
+                    onSelect={item =>
+                        lowPowerModule.set.vbusStandbySel?.(item.value)
+                    }
+                    selectedItem={
+                        lowPowerModule.values.vbusStandbySel.find(
+                            item => item.value === lowPower.vbusStandbySel,
+                        ) ?? lowPowerModule.values.vbusStandbySel[0]
                     }
                 />
             )}
