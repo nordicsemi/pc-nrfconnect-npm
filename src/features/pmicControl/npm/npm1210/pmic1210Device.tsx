@@ -32,6 +32,7 @@ import LedModule from './led';
 import LowPowerModule from './lowPower';
 import OnBoardLoadModule from './onBoardLoad';
 import PofModule from './pof';
+import ResetModule from './reset';
 import SysRegModule from './sysReg';
 import UserOtpModule from './userOtp';
 
@@ -55,6 +56,7 @@ export default class Npm1210 extends BaseNpmDevice {
                 LowPowerModule,
                 OnBoardLoadModule,
                 PofModule,
+                ResetModule,
                 SysRegModule,
                 UserOtpModule,
                 bucks: { Module: BuckModule, count: 1 },
