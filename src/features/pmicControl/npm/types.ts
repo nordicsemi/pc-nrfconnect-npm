@@ -117,7 +117,8 @@ import type {
     ShpHldSlideSwitchPollTime as LowPowerConfigShpHldSlideSwitchPollTime1210,
     ShpHldType as LowPowerConfigShpHldType1210,
     TimeToActive as TimeToActive1210,
-    VBusStandbyPinSel as LowPowerConfigVBusStandbyPinSel1210,
+    VBusStandbyCtrl as LowPowerConfigVBusStandbyCtrl1210,
+    VBusStandbySel as LowPowerConfigVBusStandbySel1210,
 } from './npm1210/lowPower/types';
 import type {
     LongPressResetDebounce as LongPressResetDebounce1210,
@@ -704,8 +705,8 @@ export type LowPowerConfigShpHldSlideSwitchPollTime =
     LowPowerConfigShpHldSlideSwitchPollTime1210;
 export type LowPowerConfigShpHldSlider = LowPowerConfigShpHldSlider1210;
 export type LowPowerConfigShpHldType = LowPowerConfigShpHldType1210;
-export type LowPowerConfigVBusStandbyPinSel =
-    LowPowerConfigVBusStandbyPinSel1210;
+export type LowPowerConfigVBusStandbyCtrl = LowPowerConfigVBusStandbyCtrl1210;
+export type LowPowerConfigVBusStandbySel = LowPowerConfigVBusStandbySel1210;
 
 export type LowPowerConfig = {
     timeToActive: TimeToActive;
@@ -723,7 +724,8 @@ export type LowPowerConfig = {
     suspendPinPullDown?: boolean;
     vbusHibernateWait?: boolean;
     vbusHibernateWaitingForChargeComplete?: boolean;
-    vbusStandbyPinSel?: LowPowerConfigVBusStandbyPinSel;
+    vbusStandbyCtrl?: LowPowerConfigVBusStandbyCtrl;
+    vbusStandbySel?: LowPowerConfigVBusStandbySel;
     vbusStandbyWait?: boolean;
     vbusStandbyWaitingForChargeComplete?: boolean;
 };
@@ -2032,7 +2034,8 @@ export type LowPowerModule = {
         shpHldType?: () => void;
         suspendPinPullDown?: () => void;
         vbusHibernateWait?: () => void;
-        vbusStandbyPinSel?: () => void;
+        vbusStandbyCtrl?: () => void;
+        vbusStandbySel?: () => void;
         vbusStandbyWait?: () => void;
         vbusStatus?: () => void;
     };
@@ -2056,9 +2059,10 @@ export type LowPowerModule = {
         shpHldType?: (value: LowPowerConfigShpHldType) => Promise<void>;
         suspendPinPullDown?: (value: boolean) => Promise<void>;
         vbusHibernateWait?: (value: boolean) => Promise<void>;
-        vbusStandbyPinSel?: (
-            value: LowPowerConfigVBusStandbyPinSel,
+        vbusStandbyCtrl?: (
+            value: LowPowerConfigVBusStandbyCtrl,
         ) => Promise<void>;
+        vbusStandbySel?: (value: LowPowerConfigVBusStandbySel) => Promise<void>;
         vbusStandbyWait?: (value: boolean) => Promise<void>;
     };
     values: {
@@ -2079,9 +2083,13 @@ export type LowPowerModule = {
         }[];
         shpHldSlider?: { label: string; value: LowPowerConfigShpHldSlider }[];
         shpHldType?: { label: string; value: LowPowerConfigShpHldType }[];
-        vbusStandbyPinSel?: {
+        vbusStandbyCtrl?: {
             label: string;
-            value: LowPowerConfigVBusStandbyPinSel;
+            value: LowPowerConfigVBusStandbyCtrl;
+        }[];
+        vbusStandbySel?: {
+            label: string;
+            value: LowPowerConfigVBusStandbySel;
         }[];
     };
     callbacks: (() => void)[];
