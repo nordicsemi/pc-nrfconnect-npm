@@ -92,7 +92,9 @@ export default ({
             )}
             {lowPowerModule.values.shipVBusFilt !== undefined && (
                 <Dropdown
-                    disabled={disabled}
+                    disabled={
+                        disabled || lowPower.shipVBusFiltDisabled === true
+                    }
                     items={lowPowerModule.values.shipVBusFilt}
                     label={
                         <DocumentationTooltip card={card} item="ShipVBusFilt">
@@ -133,7 +135,9 @@ export default ({
             )}
             {lowPowerModule.values.shpHldSlider !== undefined && (
                 <Dropdown
-                    disabled={disabled}
+                    disabled={
+                        disabled || lowPower.shpHldSliderDisabled === true
+                    }
                     items={lowPowerModule.values.shpHldSlider}
                     label={
                         <DocumentationTooltip card={card} item="ShpHldSlider">
@@ -152,7 +156,10 @@ export default ({
             )}
             {lowPowerModule.values.shpHldSlideSwitchPollTime !== undefined && (
                 <Dropdown
-                    disabled={disabled}
+                    disabled={
+                        disabled ||
+                        lowPower.shpHldSlideSwitchPollTimeDisabled === true
+                    }
                     items={lowPowerModule.values.shpHldSlideSwitchPollTime}
                     label={
                         <DocumentationTooltip
@@ -178,7 +185,10 @@ export default ({
             )}
             {lowPowerModule.values.shpHldSlideSwitchDelay !== undefined && (
                 <Dropdown
-                    disabled={disabled}
+                    disabled={
+                        disabled ||
+                        lowPower.shpHldSlideSwitchDelayDisabled === true
+                    }
                     items={lowPowerModule.values.shpHldSlideSwitchDelay}
                     label={
                         <DocumentationTooltip
