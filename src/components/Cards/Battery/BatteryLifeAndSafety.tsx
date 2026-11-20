@@ -17,6 +17,10 @@ import {
     type ChargerModule,
 } from '../../../features/pmicControl/npm/types';
 
+import '../../Charger/charger.scss';
+
+const card = 'battery';
+
 export default ({
     chargerModule,
     charger,
@@ -29,10 +33,7 @@ export default ({
     <Card
         title={
             <div className="tw-flex tw-justify-between">
-                <DocumentationTooltip
-                    card="battery"
-                    item="BatteryLifeAndSafety"
-                >
+                <DocumentationTooltip card={card} item="BatteryLifeAndSafety">
                     <span>Battery Life and Safety</span>
                 </DocumentationTooltip>
             </div>
@@ -48,7 +49,7 @@ export default ({
                 <Toggle
                     label={
                         <DocumentationTooltip
-                            card="battery"
+                            card={card}
                             item="BatteryDischargeCurrentLimit"
                         >
                             <span>Enable Battery Discharge Current Limit</span>
@@ -63,6 +64,26 @@ export default ({
                     }
                 />
             )}
+            {chargerModule.values.iBatLim && (
+                <Dropdown
+                    disabled={disabled}
+                    items={chargerModule.values.iBatLim}
+                    label={
+                        <DocumentationTooltip card={card} item="IBatLim">
+                            <>
+                                <span>IBAT</span>
+                                <span className="subscript">LIM</span>
+                            </>
+                        </DocumentationTooltip>
+                    }
+                    onSelect={item => chargerModule.set.iBatLim?.(item.value)}
+                    selectedItem={
+                        chargerModule.values.iBatLim.find(
+                            item => item.value === charger.iBatLim,
+                        ) ?? chargerModule.values.iBatLim[0]
+                    }
+                />
+            )}
             <VBatLow
                 chargerModule={chargerModule}
                 charger={charger}
@@ -73,6 +94,28 @@ export default ({
                 charger={charger}
                 disabled={disabled}
             />
+            {charger.enableSafetyTimersResetByChgEnPin !== undefined && (
+                <Toggle
+                    disabled={disabled}
+                    isToggled={charger.enableSafetyTimersResetByChgEnPin}
+                    label={
+                        <DocumentationTooltip
+                            card={card}
+                            item="EnableSafetyTimersResetByChgEnPin"
+                        >
+                            <>
+                                Enable Safety Timers Reset by{' '}
+                                <span className="overline-text">CHGEN</span> pin
+                            </>
+                        </DocumentationTooltip>
+                    }
+                    onToggle={value => {
+                        chargerModule.set.enableSafetyTimersResetByChgEnPin?.(
+                            value,
+                        );
+                    }}
+                />
+            )}
         </>
     </Card>
 );
@@ -110,7 +153,7 @@ const ChargeCurrentThrottling = ({
             <Toggle
                 label={
                     <DocumentationTooltip
-                        card="battery"
+                        card={card}
                         item="ChargeCurrentThrottling"
                     >
                         <span>Enable Charge Current Throttling</span>
@@ -124,7 +167,7 @@ const ChargeCurrentThrottling = ({
             />
             <Dropdown
                 label={
-                    <DocumentationTooltip card="battery" item="VThrottle">
+                    <DocumentationTooltip card={card} item="VThrottle">
                         <>
                             <span>V</span>
                             <span className="subscript">THROTTLE</span>
@@ -142,7 +185,7 @@ const ChargeCurrentThrottling = ({
             />
             <Dropdown
                 label={
-                    <DocumentationTooltip card="battery" item="IThrottle">
+                    <DocumentationTooltip card={card} item="IThrottle">
                         <>
                             <span>I</span>
                             <span className="subscript">THROTTLE</span>
@@ -175,7 +218,7 @@ const VBatLow = ({
         <Toggle
             label={
                 <DocumentationTooltip
-                    card="battery"
+                    card={card}
                     item="ChargeCurrentThrottling"
                 >
                     <>
@@ -202,7 +245,7 @@ const VBatLow = ({
             {enableToggle}
             <Dropdown
                 label={
-                    <DocumentationTooltip card="battery" item="VBatLow">
+                    <DocumentationTooltip card={card} item="VBatLow">
                         <>
                             <span>V</span>
                             <span className="subscript">BATLOW</span>
@@ -244,7 +287,7 @@ const TimeOut = ({
         <>
             <Dropdown
                 label={
-                    <DocumentationTooltip card="battery" item="TOutTrickle">
+                    <DocumentationTooltip card={card} item="TOutTrickle">
                         <>
                             <span>T</span>
                             <span className="subscript">OUTTRICKLE</span>
@@ -262,7 +305,7 @@ const TimeOut = ({
             />
             <Dropdown
                 label={
-                    <DocumentationTooltip card="battery" item="TOutCharge">
+                    <DocumentationTooltip card={card} item="TOutCharge">
                         <>
                             <span>T</span>
                             <span className="subscript">OUTCHARGE</span>

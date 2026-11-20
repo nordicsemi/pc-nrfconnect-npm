@@ -341,15 +341,19 @@ export default (npmConfig: NpmExportLatest, npmDevice: Npm2100) => {
                 )
                 .join('\n\n')}
 
-            ${npmConfig.ldos
-                .map((ldos, index) =>
-                    generateLDOSW(
-                        ldos,
-                        npmDevice.ldoModule[index],
-                        npmConfig.gpios,
-                    ),
-                )
-                .join('\n\n')}
+            ${
+                npmConfig.ldos
+                    ? npmConfig.ldos
+                          .map((ldos, index) =>
+                              generateLDOSW(
+                                  ldos,
+                                  npmDevice.ldoModule[index],
+                                  npmConfig.gpios,
+                              ),
+                          )
+                          .join('\n\n')
+                    : ''
+            }
         };
 
         npm2100_wdt: watchdog {

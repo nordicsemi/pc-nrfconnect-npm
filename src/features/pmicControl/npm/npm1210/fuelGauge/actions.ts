@@ -1,0 +1,201 @@
+/*
+ * Copyright (c) 2026 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
+ */
+
+import {
+    type BatteryHealthProfileLoadUpdate,
+    type ModuleParams,
+    type ProfileDownload,
+} from '../../types';
+import { parseValueFromCmdReply } from '../helpers';
+import type FuelGaugeModule from '.';
+import { FuelGaugeGet } from './getters';
+
+export class FuelGaugeActions {
+    private get: FuelGaugeGet;
+
+    constructor(
+        private eventEmitter: ModuleParams['eventEmitter'],
+        private sendCommand: ModuleParams['sendCommand'],
+        private fuelGaugeModule: FuelGaugeModule,
+    ) {
+        this.get = new FuelGaugeGet(sendCommand);
+    }
+
+    abortLoadBatteryHealthProfile() {
+        return new Promise<void>((resolve, reject) => {
+            const profileDownload: BatteryHealthProfileLoadUpdate = {
+                state: 'aborting',
+            };
+            this.eventEmitter.emit(
+                'onLoadBatteryHealthProfileUpdate',
+                profileDownload,
+            );
+
+            this.fuelGaugeModule.batteryHealthProfileLoadAborting = true;
+            this.sendCommand(
+                `fuel_gauge state download abort`,
+                () => resolve(),
+                () => reject(),
+            );
+        });
+    }
+
+    abortDownloadFuelGaugeProfile() {
+        return new Promise<void>((resolve, reject) => {
+            const profileDownload: ProfileDownload = {
+                state: 'aborting',
+            };
+            this.eventEmitter.emit('onProfileDownloadUpdate', profileDownload);
+
+            this.fuelGaugeModule.profileDownloadAborting = true;
+            this.sendCommand(
+                `fuel_gauge model download abort`,
+                () => {
+                    resolve();
+                },
+                () => {
+                    reject();
+                },
+            );
+        });
+    }
+
+    applyDownloadFuelGaugeProfile(slot = 0) {
+        return new Promise<void>((resolve, reject) => {
+            this.sendCommand(
+                `fuel_gauge model download apply ${slot}`,
+                () => {
+                    resolve();
+                },
+                () => reject(),
+            );
+        });
+    }
+
+    loadBatteryHealthProfile(
+        profile: Buffer,
+        batteryModelName: string,
+        slot = 0,
+    ) {
+        return new Promise<void>((resolve, reject) => {
+            const onDownload = () => {
+                const profileDownload: BatteryHealthProfileLoadUpdate = {
+                    state: 'downloading',
+                };
+                this.eventEmitter.emit(
+                    'onLoadBatteryHealthProfileUpdate',
+                    profileDownload,
+                );
+
+                const dataString = profile.toString().replaceAll('"', '\\"');
+                this.sendCommand(`fuel_gauge state download "${dataString}"`);
+
+                this.sendCommand(
+                    `fuel_gauge state download apply ${slot} ${batteryModelName}`,
+                    () => resolve(),
+                    () => reject(),
+                );
+            };
+
+            this.fuelGaugeModule.batteryHealthProfileLoadAborting = false;
+            this.fuelGaugeModule.batteryHealthProfileLoadInProgress = true;
+            this.sendCommand(
+                'fuel_gauge state download begin',
+                onDownload,
+                () => reject(),
+            );
+        });
+    }
+
+    downloadFuelGaugeProfile(profile: Buffer, slot?: number) {
+        const chunkSize = 256;
+        const chunks = Math.ceil(profile.byteLength / chunkSize);
+
+        return new Promise<void>((resolve, reject) => {
+            const downloadData = (chunk = 0) => {
+                this.sendCommand(
+                    `fuel_gauge model download "${profile
+                        .subarray(chunk * chunkSize, (chunk + 1) * chunkSize)
+                        .toString()
+                        .replaceAll('"', '\\"')}"`,
+                    () => {
+                        const profileDownload: ProfileDownload = {
+                            state: 'downloading',
+                            completeChunks: chunk + 1,
+                            totalChunks: Math.ceil(
+                                profile.byteLength / chunkSize,
+                            ),
+                            slot,
+                        };
+                        this.eventEmitter.emit(
+                            'onProfileDownloadUpdate',
+                            profileDownload,
+                        );
+
+                        if (
+                            this.fuelGaugeModule.profileDownloadInProgress &&
+                            !this.fuelGaugeModule.profileDownloadAborting &&
+                            chunk + 1 !== chunks
+                        ) {
+                            downloadData(chunk + 1);
+                        } else {
+                            resolve();
+                            this.get.storedBatteryModel();
+                            this.get.activeBatteryModel();
+                        }
+                    },
+                    msg => {
+                        if (this.fuelGaugeModule.profileDownloadInProgress) {
+                            this.fuelGaugeModule.profileDownloadInProgress = false;
+                            this.fuelGaugeModule.profileDownloadAborting = false;
+                            const res = parseValueFromCmdReply(msg) ?? '';
+                            const profileDownload: ProfileDownload = {
+                                state: 'failed',
+                                alertMessage: res,
+                                slot,
+                            };
+                            this.eventEmitter.emit(
+                                'onProfileDownloadUpdate',
+                                profileDownload,
+                            );
+                        }
+                        reject(msg);
+                    },
+                );
+            };
+
+            this.fuelGaugeModule.profileDownloadInProgress = true;
+            this.fuelGaugeModule.profileDownloadAborting = false;
+            this.sendCommand(
+                'fuel_gauge model download begin',
+                () => downloadData(),
+                () => reject(),
+            );
+        });
+    }
+
+    reset() {
+        return new Promise<void>((resolve, reject) => {
+            this.sendCommand(
+                `fuel_gauge reset`,
+                () => {
+                    resolve();
+                },
+                () => reject(),
+            );
+        });
+    }
+
+    resetBatteryHealthData() {
+        return new Promise<void>((resolve, reject) => {
+            this.sendCommand(
+                'fuel_gauge health reset',
+                () => resolve(),
+                () => reject(),
+            );
+        });
+    }
+}

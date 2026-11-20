@@ -1,0 +1,102 @@
+/*
+ * Copyright (c) 2026 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
+ */
+
+import { type Range } from '@nordicsemiconductor/pc-nrfconnect-shared';
+
+import {
+    type FuelGauge,
+    type FuelGaugeModule as FuelGaugeModuleBase,
+    type ModuleParams,
+} from '../../types';
+import { FuelGaugeActions } from './actions';
+import fuelGaugeCallbacks from './callbacks';
+import { FuelGaugeGet } from './getters';
+import { FuelGaugeSet } from './setters';
+
+const ratedMinBatteryCapacityRange: Range = {
+    decimals: 1,
+    max: 1000,
+    min: 0.1,
+    step: 0.1,
+};
+
+const samplingIntervalRange: Range = {
+    decimals: 1,
+    max: 3600,
+    min: 0.1,
+    step: 0.1,
+};
+
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable class-methods-use-this */
+
+export default class Module implements FuelGaugeModuleBase {
+    private _actions: FuelGaugeActions;
+    private _callbacks: (() => void)[];
+    private _get: FuelGaugeGet;
+    private _set: FuelGaugeSet;
+
+    batteryHealthProfileLoadInProgress = false;
+    batteryHealthProfileLoadAborting = false;
+    profileDownloadInProgress = false;
+    profileDownloadAborting = false;
+
+    constructor({
+        sendCommand,
+        eventEmitter,
+        shellParser,
+        offlineMode,
+    }: ModuleParams) {
+        this._get = new FuelGaugeGet(sendCommand);
+        this._set = new FuelGaugeSet(eventEmitter, offlineMode, sendCommand);
+        this._actions = new FuelGaugeActions(eventEmitter, sendCommand, this);
+        this._callbacks = fuelGaugeCallbacks(
+            eventEmitter,
+            shellParser,
+            this._get,
+            this,
+        );
+    }
+
+    get actions() {
+        return this._actions;
+    }
+
+    get callbacks() {
+        return this._callbacks;
+    }
+
+    get defaults(): FuelGauge {
+        return {
+            actualCapacity: Number.NaN,
+            batteryHealthEnabled: false,
+            batteryReplacementDetection: false,
+            chargingSamplingRate: 500,
+            cycleCount: Number.NaN,
+            enabled: false,
+            estimatedBatteryResistance: Number.NaN,
+            notChargingSamplingRate: 1000,
+            quickConvergenceMode: false,
+            ratedMinBatteryCapacity: ratedMinBatteryCapacityRange.min,
+            reportingRate: 2000,
+        };
+    }
+
+    get get() {
+        return this._get;
+    }
+
+    get ranges() {
+        return {
+            ratedMinBatteryCapacity: ratedMinBatteryCapacityRange,
+            samplingInterval: samplingIntervalRange,
+        };
+    }
+
+    get set() {
+        return this._set;
+    }
+}

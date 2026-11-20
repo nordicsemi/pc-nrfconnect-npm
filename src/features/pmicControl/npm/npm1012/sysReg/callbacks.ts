@@ -14,7 +14,11 @@ import {
     toRegex,
     toValueRegex,
 } from '../../pmicHelpers';
-import { type SysReg, type VBusDpm, type VBusILim } from '../../types';
+import {
+    type SysReg,
+    type SysRegVBusDpm,
+    type SysRegVBusILim,
+} from '../../types';
 import { vBusDpmKeys, vBusILimKeys } from './types';
 
 export default (
@@ -37,7 +41,7 @@ export default (
             ),
             res => {
                 eventEmitter.emitPartialEvent<SysReg>('onSysRegUpdate', {
-                    vBusDpm: parseColonBasedAnswer(res) as VBusDpm,
+                    vBusDpm: parseColonBasedAnswer(res) as SysRegVBusDpm,
                 });
             },
             noop,
@@ -54,7 +58,7 @@ export default (
             ),
             res => {
                 eventEmitter.emitPartialEvent<SysReg>('onSysRegUpdate', {
-                    vBusILim: parseColonBasedAnswer(res) as VBusILim,
+                    vBusILim: parseColonBasedAnswer(res) as SysRegVBusILim,
                 });
             },
             noop,

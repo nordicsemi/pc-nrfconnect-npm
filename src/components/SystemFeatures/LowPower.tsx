@@ -67,6 +67,149 @@ export default ({
                         disabled={disabled}
                     />
                 )}
+
+            {lowPowerModule.values.shpHldType !== undefined && (
+                <Dropdown
+                    disabled={disabled}
+                    items={lowPowerModule.values.shpHldType}
+                    label={
+                        <DocumentationTooltip card={card} item="ShpHldType">
+                            <div>
+                                <span className="overline-text">EN</span>
+                                /SHPHLD Pin Configuration
+                            </div>
+                        </DocumentationTooltip>
+                    }
+                    onSelect={item =>
+                        lowPowerModule.set.shpHldType?.(item.value)
+                    }
+                    selectedItem={
+                        lowPowerModule.values.shpHldType.find(
+                            item => item.value === lowPower.shpHldType,
+                        ) ?? lowPowerModule.values.shpHldType[0]
+                    }
+                />
+            )}
+            {lowPowerModule.values.shipVBusFilt !== undefined && (
+                <Dropdown
+                    disabled={
+                        disabled || lowPower.shipVBusFiltDisabled === true
+                    }
+                    items={lowPowerModule.values.shipVBusFilt}
+                    label={
+                        <DocumentationTooltip card={card} item="ShipVBusFilt">
+                            Push Button VBUS Filtering
+                        </DocumentationTooltip>
+                    }
+                    onSelect={item =>
+                        lowPowerModule.set.shipVBusFilt?.(item.value)
+                    }
+                    selectedItem={
+                        lowPowerModule.values.shipVBusFilt.find(
+                            item => item.value === lowPower.shipVBusFilt,
+                        ) ?? lowPowerModule.values.shipVBusFilt[0]
+                    }
+                />
+            )}
+            {lowPowerModule.values.shipVBusFiltTime !== undefined && (
+                <Dropdown
+                    disabled={disabled}
+                    items={lowPowerModule.values.shipVBusFiltTime}
+                    label={
+                        <DocumentationTooltip
+                            card={card}
+                            item="ShipVBusFiltTime"
+                        >
+                            Push Button and Slide Switch VBUS Filtering Time
+                        </DocumentationTooltip>
+                    }
+                    onSelect={item =>
+                        lowPowerModule.set.shipVBusFiltTime?.(item.value)
+                    }
+                    selectedItem={
+                        lowPowerModule.values.shipVBusFiltTime.find(
+                            item => item.value === lowPower.shipVBusFiltTime,
+                        ) ?? lowPowerModule.values.shipVBusFiltTime[0]
+                    }
+                />
+            )}
+            {lowPowerModule.values.shpHldSlider !== undefined && (
+                <Dropdown
+                    disabled={
+                        disabled || lowPower.shpHldSliderDisabled === true
+                    }
+                    items={lowPowerModule.values.shpHldSlider}
+                    label={
+                        <DocumentationTooltip card={card} item="ShpHldSlider">
+                            Slide Switch Pull-Up Behavior
+                        </DocumentationTooltip>
+                    }
+                    onSelect={item =>
+                        lowPowerModule.set.shpHldSlider?.(item.value)
+                    }
+                    selectedItem={
+                        lowPowerModule.values.shpHldSlider.find(
+                            item => item.value === lowPower.shpHldSlider,
+                        ) ?? lowPowerModule.values.shpHldSlider[0]
+                    }
+                />
+            )}
+            {lowPowerModule.values.shpHldSlideSwitchPollTime !== undefined && (
+                <Dropdown
+                    disabled={
+                        disabled ||
+                        lowPower.shpHldSlideSwitchPollTimeDisabled === true
+                    }
+                    items={lowPowerModule.values.shpHldSlideSwitchPollTime}
+                    label={
+                        <DocumentationTooltip
+                            card={card}
+                            item="ShpHldSlideSwitchPollTime"
+                        >
+                            Slide Switch Polling Interval
+                        </DocumentationTooltip>
+                    }
+                    onSelect={item =>
+                        lowPowerModule.set.shpHldSlideSwitchPollTime?.(
+                            item.value,
+                        )
+                    }
+                    selectedItem={
+                        lowPowerModule.values.shpHldSlideSwitchPollTime.find(
+                            item =>
+                                item.value ===
+                                lowPower.shpHldSlideSwitchPollTime,
+                        ) ?? lowPowerModule.values.shpHldSlideSwitchPollTime[0]
+                    }
+                />
+            )}
+            {lowPowerModule.values.shpHldSlideSwitchDelay !== undefined && (
+                <Dropdown
+                    disabled={
+                        disabled ||
+                        lowPower.shpHldSlideSwitchDelayDisabled === true
+                    }
+                    items={lowPowerModule.values.shpHldSlideSwitchDelay}
+                    label={
+                        <DocumentationTooltip
+                            card={card}
+                            item="ShpHldSlideSwitchDelay"
+                        >
+                            Slide Switch Ship Mode Entry Delay
+                        </DocumentationTooltip>
+                    }
+                    onSelect={item =>
+                        lowPowerModule.set.shpHldSlideSwitchDelay?.(item.value)
+                    }
+                    selectedItem={
+                        lowPowerModule.values.shpHldSlideSwitchDelay.find(
+                            item =>
+                                item.value === lowPower.shpHldSlideSwitchDelay,
+                        ) ?? lowPowerModule.values.shpHldSlideSwitchDelay[0]
+                    }
+                />
+            )}
+
             <Dropdown
                 label={
                     <DocumentationTooltip card={card} item="TimeToActive">
@@ -138,6 +281,64 @@ export default ({
                         lowPowerModule.set.vbusHibernateWait?.(value)
                     }
                     disabled={disabled}
+                />
+            )}
+            {lowPower.suspendPinPullDown !== undefined && (
+                <Toggle
+                    disabled={disabled}
+                    isToggled={lowPower.suspendPinPullDown}
+                    label={
+                        <DocumentationTooltip
+                            card={card}
+                            item="SuspendPinPullDown"
+                        >
+                            Enable SUSPEND Pin Pull-Down
+                        </DocumentationTooltip>
+                    }
+                    onToggle={value =>
+                        lowPowerModule.set.suspendPinPullDown?.(value)
+                    }
+                />
+            )}
+            {lowPowerModule.values.vbusStandbyCtrl !== undefined && (
+                <Dropdown
+                    disabled={disabled}
+                    items={lowPowerModule.values.vbusStandbyCtrl}
+                    label={
+                        <DocumentationTooltip
+                            card={card}
+                            item="VbusStandbyCtrl"
+                        >
+                            Enter Standby Control
+                        </DocumentationTooltip>
+                    }
+                    onSelect={item =>
+                        lowPowerModule.set.vbusStandbyCtrl?.(item.value)
+                    }
+                    selectedItem={
+                        lowPowerModule.values.vbusStandbyCtrl.find(
+                            item => item.value === lowPower.vbusStandbyCtrl,
+                        ) ?? lowPowerModule.values.vbusStandbyCtrl[0]
+                    }
+                />
+            )}
+            {lowPowerModule.values.vbusStandbySel !== undefined && (
+                <Dropdown
+                    disabled={disabled}
+                    items={lowPowerModule.values.vbusStandbySel}
+                    label={
+                        <DocumentationTooltip card={card} item="VbusStandbySel">
+                            Enter Standby Selection
+                        </DocumentationTooltip>
+                    }
+                    onSelect={item =>
+                        lowPowerModule.set.vbusStandbySel?.(item.value)
+                    }
+                    selectedItem={
+                        lowPowerModule.values.vbusStandbySel.find(
+                            item => item.value === lowPower.vbusStandbySel,
+                        ) ?? lowPowerModule.values.vbusStandbySel[0]
+                    }
                 />
             )}
             <div className="tw-flex tw-flex-col tw-gap-1">

@@ -31,12 +31,14 @@ export default ({ ledModule, led, disabled }: LEDProperties) => {
     const [internalBlinkTimeOn, setInternalBlinkTimeOn] = useState(
         led.blinkTimeOn,
     );
+    const [internalDutyCycle, setInternalDutyCycle] = useState(led.dutyCycle);
 
     // NumberInputSliderWithUnit do not use led.<prop> as value as we send only at on change complete
     useEffect(() => {
         setInternalBlinkTimeOff(led.blinkTimeOff);
         setInternalBlinkTimeOn(led.blinkTimeOn);
-    }, [led]);
+        setInternalDutyCycle(led.dutyCycle);
+    }, [led.blinkTimeOff, led.blinkTimeOn, led.dutyCycle]);
 
     return (
         <Card
@@ -61,6 +63,39 @@ export default ({ ledModule, led, disabled }: LEDProperties) => {
                         ) ?? ledModule.values.mode[0]
                     }
                     disabled={disabled}
+                />
+            )}
+            {ledModule.values.drive && (
+                <Dropdown
+                    disabled={disabled}
+                    items={ledModule.values.drive}
+                    label={
+                        <DocumentationTooltip card={card} item="LEDDrive">
+                            <span>Drive</span>
+                        </DocumentationTooltip>
+                    }
+                    onSelect={item => ledModule.set.drive?.(item.value)}
+                    selectedItem={
+                        ledModule.values.drive.find(
+                            item => item.value === led.drive,
+                        ) ?? ledModule.values.drive[0]
+                    }
+                />
+            )}
+            {internalDutyCycle !== undefined && ledModule.ranges.dutyCycle && (
+                <NumberInput
+                    disabled={disabled || !led.dutyCycleEnabled}
+                    label={
+                        <DocumentationTooltip card={card} item="LEDDutyCycle">
+                            <span>Duty Cycle</span>
+                        </DocumentationTooltip>
+                    }
+                    onChange={setInternalDutyCycle}
+                    onChangeComplete={v => ledModule.set.dutyCycle?.(v)}
+                    range={ledModule.ranges.dutyCycle}
+                    showSlider
+                    unit="ms"
+                    value={internalDutyCycle}
                 />
             )}
             {ledModule.values.pwmFrequency && (
@@ -165,7 +200,7 @@ export default ({ ledModule, led, disabled }: LEDProperties) => {
                         showSlider
                     />
                 )}
-            {ledModule.actions.blink && (
+            {led.blinkActionEnabled && (
                 <Button
                     variant="secondary"
                     className="tw-w-full"

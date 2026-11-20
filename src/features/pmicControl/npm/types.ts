@@ -46,6 +46,7 @@ import type {
     SoftStartILimLdsw as LdoSoftStartCurrent1012,
     SoftStartTime as LdoSoftStartTime1012,
 } from './npm1012/ldo/types';
+import type { PwmFreq as LEDPwmFreq1012 } from './npm1012/led/types';
 import type { TimeToActive as TimeToActive1012 } from './npm1012/lowPower/types';
 import type {
     LongPressResetDebounce as LongPressResetDebounce1012,
@@ -53,8 +54,8 @@ import type {
     PowerDownWait as PowerDownWait1012,
 } from './npm1012/reset/types';
 import type {
-    VBusDpm as VBusDpm1012,
-    VBusILim as VBusILim1012,
+    VBusDpm as SysRegVBusDpm1012,
+    VBusILim as SysRegVBusILim1012,
 } from './npm1012/sysReg/types';
 import type { Mode as TimerMode1012 } from './npm1012/timerConfig/types';
 import type {
@@ -72,6 +73,101 @@ import type {
     ConfigSysFeatTwiSlaveAddress as npm1012UserOtpConfigSysFeatTwiSlaveAddress,
     ConfigSysFeatVBusILimLvl as npm1012UserOtpConfigSysFeatVBusILimLvl,
 } from './npm1012/userOtp/types';
+import type {
+    AlternateVOutControl as BuckAlternateVOutControl1210,
+    ILimFicrLvl as BuckPeakCurrentLimitFicr1210,
+    ILimLvl as BuckPeakCurrentLimit1210,
+    ILimStartFicrLvl as BuckSoftStartPeakCurrentLimitFicr1210,
+    ILimStartLvl as BuckSoftStartPeakCurrentLimit1210,
+    ModeControl as BuckModeControl1210,
+    OnOffControl as BuckOnOffControl1210,
+    PullDownRes as BuckActiveDischargeResistance1210,
+    VOutCompBiasLPMode as BuckVOutComparatorBiasCurrentLPMode1210,
+    VOutCompBiasLPModeFicr as BuckVOutComparatorBiasCurrentLPModeFicr1210,
+    VOutCompBiasULPMode as BuckVOutComparatorBiasCurrentULPMode1210,
+    VOutCompBiasULPModeFicr as BuckVOutComparatorBiasCurrentULPModeFicr1210,
+    VOutRippleControl as BuckVOutRippleControl1210,
+} from './npm1210/buck/types';
+import {
+    type DropoutRecovery as ChargerDropoutRecovery1210,
+    type IBatLimLvl as ChargerIBatLim1210,
+    type ITermLvl as ChargerITerm1210,
+    type ITrickleLvl as ChargerITrickle1210,
+    type SoftstartCurrent as ChargerSoftstartCurrent1210,
+    type StartupMode as ChargerStartupMode1210,
+    type VBatLowLvl as ChargerVBatLow1210,
+    type VTrickleLvl as ChargerVTrickleFast1210,
+} from './npm1210/charger/types';
+import type {
+    Drive as GPIODrive1210,
+    Mode as GPIOMode1210,
+    Polarity as GPIOPolarity1210,
+    Pull as GPIOPull1210,
+} from './npm1210/gpio/types';
+import type {
+    Drive as LEDDrive1210,
+    Mode as LEDMode1210,
+    PwmFreq as LEDPwmFreq1210,
+} from './npm1210/led/types';
+import type {
+    ShipVBusFilt as LowPowerConfigShipVBusFilt1210,
+    ShipVBusFiltTime as LowPowerConfigShipVBusFiltTime1210,
+    ShpHldSlider as LowPowerConfigShpHldSlider1210,
+    ShpHldSlideSwitchDelay as LowPowerConfigShpHldSlideSwitchDelay1210,
+    ShpHldSlideSwitchPollTime as LowPowerConfigShpHldSlideSwitchPollTime1210,
+    ShpHldType as LowPowerConfigShpHldType1210,
+    TimeToActive as TimeToActive1210,
+    VBusStandbyCtrl as LowPowerConfigVBusStandbyCtrl1210,
+    VBusStandbySel as LowPowerConfigVBusStandbySel1210,
+} from './npm1210/lowPower/types';
+import type {
+    LongPressResetDebounce as LongPressResetDebounce1210,
+    LongPressResetPinSel as LongPressResetPinSel1210,
+    PowerDownWait as PowerDownWait1210,
+} from './npm1210/reset/types';
+import type {
+    VBusDpm as SysRegVBusDpm1210,
+    VBusILim as SysRegVBusILim1210,
+    VBusILim0And1PinGndSel as SysRegVBusILim0And1PinGndSel1210,
+    VBusILim0And1PinMap as SysRegVBusILim0And1PinMap1210,
+    VBusILimControl as SysRegVBusILimControl1210,
+    VBusPGPinSel as SysRegVBusPGPinSel1210,
+} from './npm1210/sysReg/types';
+import type { Mode as TimerMode1210 } from './npm1210/timerConfig/types';
+import {
+    type ConfigChargerDropoutRecovery as npm1210UserOtpConfigChargerDropoutRecovery,
+    type ConfigChargerIBatLimLvl as npm1210UserOtpConfigChargerIBatLimLvl,
+    type ConfigChargerITermLvl as npm1210UserOtpConfigChargerITermLvl,
+    type ConfigChargerITrickleLvl as npm1210UserOtpConfigChargerITrickleLvl,
+    type ConfigChargerSoftstartCurrent as npm1210UserOtpConfigChargerSoftstartCurrent,
+    type ConfigChargerStartupMode as npm1210UserOtpConfigChargerStartupMode,
+    type ConfigChargerVBatLowLvl as npm1210UserOtpConfigChargerVBatLowLvl,
+    type ConfigChargerVTrickleLvl as npm1210UserOtpConfigChargerVTrickleLvl,
+    type ConfigRegulatorsBuckILimLvl as npm1210UserOtpConfigRegulatorsBuckILimLvl,
+    type ConfigRegulatorsBuckPowerModeControl as npm1210UserOtpConfigRegulatorsBuckPowerModeControl,
+    type ConfigRegulatorsBuckStartupILimLvl as npm1210UserOtpConfigRegulatorsBuckStartupILimLvl,
+    type ConfigRegulatorsBuckVOutCompBiasLPMode as npm1210UserOtpConfigRegulatorsBuckVOutComparatorBiasCurrentLPMode,
+    type ConfigRegulatorsBuckVOutCompBiasULPMode as npm1210UserOtpConfigRegulatorsBuckVOutComparatorBiasCurrentULPMode,
+    type ConfigRegulatorsBuckVOutSel as npm1210UserOtpConfigRegulatorsBuckVOutSel,
+    type ConfigSysFeatLongPressResetDebounce as npm1210UserOtpConfigSysFeatLongPressResetDebounce,
+    type ConfigSysFeatLongPressResetPinSel as npm1210UserOtpConfigSysFeatLongPressResetPinSel,
+    type ConfigSysFeatPGPinSel as npm1210UserOtpConfigSysFeatPGPinSel,
+    type ConfigSysFeatPwrWait as npm1210UserOtpConfigSysFeatPwrWait,
+    type ConfigSysFeatShipVBusFilt as npm1210UserOtpConfigSysFeatShipVBusFilt,
+    type ConfigSysFeatShipVBusFiltTime as npm1210UserOtpConfigSysFeatShipVBusFiltTime,
+    type ConfigSysFeatShpHldDebounce as npm1210UserOtpConfigSysFeatShpHldDebounce,
+    type ConfigSysFeatShpHldSlider as npm1210UserOtpConfigSysFeatShpHldSlider,
+    type ConfigSysFeatShpHldSlideSwitchPollTime as npm1210UserOtpConfigSysFeatShpHldSlideSwitchPollTime,
+    type ConfigSysFeatShpHldType as npm1210UserOtpConfigSysFeatShpHldType,
+    type ConfigSysFeatTwiTargetId0Addr as npm1210UserOtpConfigSysFeatTwiTargetId0Addr,
+    type ConfigSysFeatTwiTargetId1Addr as npm1210UserOtpConfigSysFeatTwiTargetId1Addr,
+    type ConfigSysFeatVBusDpmLvl as npm1210UserOtpConfigSysFeatVBusDpmLvl,
+    type ConfigSysFeatVBusILim0And1GndSel as npm1210UserOtpConfigSysFeatVBusILim0And1GndSel,
+    type ConfigSysFeatVBusILim0And1PinMap as npm1210UserOtpConfigSysFeatVBusILim0And1PinMap,
+    type ConfigSysFeatVBusILimControl as npm1210UserOtpConfigSysFeatVBusILimControl,
+    type ConfigSysFeatVBusILimLvl as npm1210UserOtpConfigSysFeatVBusILimLvl,
+    type ConfigSysFeatVBusStandbySel as npm1210UserOtpConfigSysFeatVBusStandbyMode,
+} from './npm1210/userOtp/types';
 import {
     type ITermNpm1300 as ChargerITermNpm1300,
     type VTrickleFast1300 as ChargerVTrickleFast1300,
@@ -176,35 +272,61 @@ export type BuckMode = 'vSet' | 'software';
 export type BuckModeControl =
     | (typeof BuckModeControlValues)[number]
     | GPIONames
-    | BuckModeControl1012;
+    | BuckModeControl1012
+    | BuckModeControl1210;
 export type BuckOnOffControl =
     | (typeof BuckOnOffControlValues)[number]
     | GPIONames
     | (typeof VSETValues)[number]
-    | BuckOnOffControl1012;
+    | BuckOnOffControl1012
+    | BuckOnOffControl1210;
 export type BuckRetentionControl =
     | (typeof BuckRetentionControlValues)[number]
     | GPIONames;
-export type BuckAlternateVOutControl = BuckAlternateVOutControl1012;
-export type BuckVOutRippleControl = BuckVOutRippleControl1012;
-export type BuckPeakCurrentLimit = BuckPeakCurrentLimit1012;
-export type BuckSoftStartPeakCurrentLimit = BuckSoftStartPeakCurrentLimit1012;
-export type BuckActiveDischargeResistance = BuckActiveDischargeResistance1012;
+export type BuckAlternateVOutControl =
+    | BuckAlternateVOutControl1012
+    | BuckAlternateVOutControl1210;
+export type BuckVOutRippleControl =
+    | BuckVOutRippleControl1012
+    | BuckVOutRippleControl1210;
+export type BuckPeakCurrentLimit =
+    | BuckPeakCurrentLimit1012
+    | BuckPeakCurrentLimit1210;
+export type BuckPeakCurrentLimitFicr = BuckPeakCurrentLimitFicr1210;
+export type BuckSoftStartPeakCurrentLimit =
+    | BuckSoftStartPeakCurrentLimit1012
+    | BuckSoftStartPeakCurrentLimit1210;
+export type BuckSoftStartPeakCurrentLimitFicr =
+    BuckSoftStartPeakCurrentLimitFicr1210;
+export type BuckActiveDischargeResistance =
+    | BuckActiveDischargeResistance1012
+    | BuckActiveDischargeResistance1210;
 export type BuckVOutComparatorBiasLPCurrent =
-    BuckVOutComparatorBiasCurrentLPMode1012;
+    | BuckVOutComparatorBiasCurrentLPMode1012
+    | BuckVOutComparatorBiasCurrentLPMode1210;
+export type BuckVOutComparatorBiasLPCurrentFicr =
+    BuckVOutComparatorBiasCurrentLPModeFicr1210;
 export type BuckVOutComparatorBiasULPCurrent =
-    BuckVOutComparatorBiasCurrentULPMode1012;
+    | BuckVOutComparatorBiasCurrentULPMode1012
+    | BuckVOutComparatorBiasCurrentULPMode1210;
+export type BuckVOutComparatorBiasULPCurrentFicr =
+    BuckVOutComparatorBiasCurrentULPModeFicr1210;
 
-export type ChargerIBatLim = number;
+export type ChargerDropoutRecovery = ChargerDropoutRecovery1210;
+export type ChargerIBatLim = number | ChargerIBatLim1210;
 export type ChargerITerm =
     | ChargerITerm1012
+    | ChargerITerm1210
     | ChargerITermNpm1300
     | ChargerITermNpm1304;
-export type ChargerITrickle = ChargerITrickle1012;
+export type ChargerITrickle = ChargerITrickle1012 | ChargerITrickle1210;
+export type ChargerSoftstartCurrent = ChargerSoftstartCurrent1210;
+export type ChargerStartupMode = ChargerStartupMode1210;
 export type ChargerVTrickleFast =
     | ChargerVTrickleFast1012
+    | ChargerVTrickleFast1210
     | ChargerVTrickleFast1300;
-export type ChargerVBatLow = ChargerVBatLow1012;
+export type ChargerVBatLow = ChargerVBatLow1012 | ChargerVBatLow1210;
 
 export const NTCValues = ['Ignore NTC', '10 kΩ', '47 kΩ', '100 kΩ'] as const;
 export type NTCThermistor = (typeof NTCValues)[number];
@@ -292,10 +414,14 @@ export type Charger = {
     tWarm: number;
     tHot: number;
 
+    dropoutRecovery?: ChargerDropoutRecovery;
     enableAdvancedChargingProfile?: boolean;
     enableBatteryDischargeCurrentLimit?: boolean;
     enableChargeCurrentThrottling?: boolean;
+    enableChgEnPinControl?: boolean;
+    enableChgEnPinPullDown?: boolean;
     enableNtcMonitoring?: boolean;
+    enableSafetyTimersResetByChgEnPin?: boolean;
     enableWeakBatteryCharging?: boolean;
     iBatLim?: ChargerIBatLim;
     iChgCool?: number;
@@ -305,6 +431,8 @@ export type Charger = {
     iTrickle?: ChargerITrickle;
     ntcBeta?: number;
     ntcThermistor?: NTCThermistor;
+    softstartCurrent?: ChargerSoftstartCurrent;
+    startupMode?: ChargerStartupMode;
     tChgReduce?: number;
     tChgStop?: number;
     tOutCharge?: number;
@@ -350,12 +478,16 @@ export type Buck = {
     automaticPassthrough?: boolean;
     enabledWhenProfiling?: boolean;
     peakCurrentLimit?: BuckPeakCurrentLimit;
+    peakCurrentLimitFicr?: BuckPeakCurrentLimitFicr;
     quickVOutDischarge?: boolean;
     retentionControl?: BuckRetentionControl;
     shortCircuitProtection?: boolean;
     softStartPeakCurrentLimit?: BuckSoftStartPeakCurrentLimit;
+    softStartPeakCurrentLimitFicr?: BuckSoftStartPeakCurrentLimitFicr;
     vOutComparatorBiasCurrentLPMode?: BuckVOutComparatorBiasLPCurrent;
+    vOutComparatorBiasCurrentLPModeFicr?: BuckVOutComparatorBiasLPCurrentFicr;
     vOutComparatorBiasCurrentULPMode?: BuckVOutComparatorBiasULPCurrent;
+    vOutComparatorBiasCurrentULPModeFicr?: BuckVOutComparatorBiasULPCurrentFicr;
     vOutRetention?: number;
     vOutRippleControl?: BuckVOutRippleControl;
 };
@@ -387,36 +519,46 @@ export type Ldo = {
     weakPullDown?: boolean;
 };
 
+export type GPIODrive = GPIODrive1210 | GPIODrive1300 | GPIODrive2100;
+export type GPIOMode = GPIOMode1210 | GPIOMode1300 | GPIOMode2100;
+export type GPIOPolarity = GPIOPolarity1210;
+export type GPIOPull = GPIOPull1210 | GPIOPull1300 | GPIOPull2100;
 export type GPIOState = GPIOState2100;
-export type GPIOMode = GPIOMode1300 | GPIOMode2100;
-export type GPIOPull = GPIOPull1300 | GPIOPull2100;
-export type GPIODrive = GPIODrive1300 | GPIODrive2100;
 
 export type GPIO = {
-    mode: GPIOMode;
-    state?: GPIOState;
-    stateShown?: boolean;
-    pull: GPIOPull;
-    pullEnabled: boolean;
-    drive: GPIODrive;
-    driveEnabled: boolean;
-    openDrain: boolean;
-    openDrainEnabled: boolean;
     debounce: boolean;
     debounceEnabled: boolean;
+    drive: GPIODrive;
+    driveEnabled: boolean;
+    mode: GPIOMode;
+    openDrain: boolean;
+    openDrainEnabled: boolean;
+    pull: GPIOPull;
+    pullEnabled: boolean;
+
+    polarity?: GPIOPolarity;
+    polarityEnabled?: boolean;
+    state?: GPIOState;
+    stateShown?: boolean;
 };
 
-export type LEDMode = LEDMode1300;
+export type LEDMode = LEDMode1210 | LEDMode1300;
+export type LEDDrive = LEDDrive1210;
+export type LEDPwmFreq = LEDPwmFreq1012 | LEDPwmFreq1210;
 
 export type LED = {
     cardLabel: string;
 
+    blinkActionEnabled?: boolean;
     blinkContinuous?: boolean;
     blinkDouble?: boolean;
     blinkTimeOff?: number;
     blinkTimeOn?: number;
+    drive?: LEDDrive;
+    dutyCycle?: number;
+    dutyCycleEnabled?: boolean;
     mode?: LEDMode;
-    pwmFrequency?: number;
+    pwmFrequency?: LEDPwmFreq;
     rgbPhaseShifting?: boolean;
 };
 
@@ -464,8 +606,12 @@ export type POF = {
     warnThreshold?: number;
 };
 
-export type VBusDpm = VBusDpm1012;
-export type VBusILim = VBusILim1012;
+export type SysRegVBusDpm = SysRegVBusDpm1012 | SysRegVBusDpm1210;
+export type SysRegVBusILim = SysRegVBusILim1012 | SysRegVBusILim1210;
+export type SysRegVBusILimControl = SysRegVBusILimControl1210;
+export type SysRegVBusILim0And1PinGndSel = SysRegVBusILim0And1PinGndSel1210;
+export type SysRegVBusILim0And1PinMap = SysRegVBusILim0And1PinMap1210;
+export type SysRegVBusPGPinSel = SysRegVBusPGPinSel1210;
 
 export const vBusStatusValues = [
     'Good',
@@ -476,13 +622,25 @@ export const vBusStatusValues = [
 export type VBusStatus = (typeof vBusStatusValues)[number];
 
 export type SysReg = {
-    vBusDpm: VBusDpm;
+    vBusDpm: SysRegVBusDpm;
     vBusGood: boolean;
-    vBusILim: VBusILim;
+    vBusILim: SysRegVBusILim;
     vBusPresent: boolean;
+
+    vBusILimControl?: SysRegVBusILimControl;
+    vBusILim0And1PinGndSel?: SysRegVBusILim0And1PinGndSel;
+    vBusILim0And1PinMap?: SysRegVBusILim0And1PinMap;
+    vBusILim0PinPullDownEnable?: boolean;
+    vBusILim1PinPullDownEnable?: boolean;
+    vBusILimSoftwareControlDisabled?: boolean;
+    vBusPGPinSel?: SysRegVBusPGPinSel;
 };
 
-export type TimerMode = TimerMode1012 | npm1300TimerMode | npm2100TimerMode;
+export type TimerMode =
+    | TimerMode1012
+    | TimerMode1210
+    | npm1300TimerMode
+    | npm2100TimerMode;
 
 export const TimerPrescalerValues = ['Slow', 'Fast'] as const;
 export type TimerPrescaler = (typeof TimerPrescalerValues)[number];
@@ -527,6 +685,7 @@ export enum ChargerJeitaVLabel {
 
 export type TimeToActive =
     | TimeToActive1012
+    | TimeToActive1210
     | TimeToActive1300
     | TimeToActive2100;
 
@@ -538,6 +697,17 @@ export type OperatingMode =
     | 'vbusStandby1'
     | 'vbusStandby2';
 
+export type LowPowerConfigShipVBusFilt = LowPowerConfigShipVBusFilt1210;
+export type LowPowerConfigShipVBusFiltTime = LowPowerConfigShipVBusFiltTime1210;
+export type LowPowerConfigShpHldSlideSwitchDelay =
+    LowPowerConfigShpHldSlideSwitchDelay1210;
+export type LowPowerConfigShpHldSlideSwitchPollTime =
+    LowPowerConfigShpHldSlideSwitchPollTime1210;
+export type LowPowerConfigShpHldSlider = LowPowerConfigShpHldSlider1210;
+export type LowPowerConfigShpHldType = LowPowerConfigShpHldType1210;
+export type LowPowerConfigVBusStandbyCtrl = LowPowerConfigVBusStandbyCtrl1210;
+export type LowPowerConfigVBusStandbySel = LowPowerConfigVBusStandbySel1210;
+
 export type LowPowerConfig = {
     timeToActive: TimeToActive;
 
@@ -545,8 +715,21 @@ export type LowPowerConfig = {
     invPolarity?: boolean;
     operatingMode?: OperatingMode;
     powerButtonEnable?: boolean;
+    shipVBusFilt?: LowPowerConfigShipVBusFilt;
+    shipVBusFiltDisabled?: boolean;
+    shipVBusFiltTime?: LowPowerConfigShipVBusFiltTime;
+    shpHldSlideSwitchDelay?: LowPowerConfigShpHldSlideSwitchDelay;
+    shpHldSlideSwitchDelayDisabled?: boolean;
+    shpHldSlideSwitchPollTime?: LowPowerConfigShpHldSlideSwitchPollTime;
+    shpHldSlideSwitchPollTimeDisabled?: boolean;
+    shpHldSlider?: LowPowerConfigShpHldSlider;
+    shpHldSliderDisabled?: boolean;
+    shpHldType?: LowPowerConfigShpHldType;
+    suspendPinPullDown?: boolean;
     vbusHibernateWait?: boolean;
     vbusHibernateWaitingForChargeComplete?: boolean;
+    vbusStandbyCtrl?: LowPowerConfigVBusStandbyCtrl;
+    vbusStandbySel?: LowPowerConfigVBusStandbySel;
     vbusStandbyWait?: boolean;
     vbusStandbyWaitingForChargeComplete?: boolean;
 };
@@ -563,14 +746,16 @@ export type ResetConfig = {
 
 export type LongPressResetPinSel =
     | LongPressResetPinSel1012
+    | LongPressResetPinSel1210
     | LongPressResetPinSel1300
     | LongPressResetPinSel2100;
 
 export type LongPressResetDebounce =
     | LongPressResetDebounce1012
+    | LongPressResetDebounce1210
     | LongPressResetDebounce2100;
 
-export type PowerDownWait = PowerDownWait1012;
+export type PowerDownWait = PowerDownWait1012 | PowerDownWait1210;
 
 export type ResetReason = ResetReason2100;
 
@@ -659,15 +844,39 @@ export interface BatteryHealthProfileLoadUpdate {
     state: 'downloading' | 'aborted' | 'aborting' | 'applied' | 'failed';
 }
 
-export type UserOtpConfigChargerITermLvl = npm1012UserOtpConfigChargerITermLvl;
+export type UserOtpConfigChargerDropoutRecovery =
+    npm1210UserOtpConfigChargerDropoutRecovery;
+export type UserOtpConfigChargerIBatLimLvl =
+    npm1210UserOtpConfigChargerIBatLimLvl;
+export type UserOtpConfigChargerSoftstartCurrent =
+    npm1210UserOtpConfigChargerSoftstartCurrent;
+export type UserOtpConfigChargerStartupMode =
+    npm1210UserOtpConfigChargerStartupMode;
+export type UserOtpConfigChargerITermLvl =
+    | npm1012UserOtpConfigChargerITermLvl
+    | npm1210UserOtpConfigChargerITermLvl;
 export type UserOtpConfigChargerITrickleLvl =
-    npm1012UserOtpConfigChargerITrickleLvl;
+    | npm1012UserOtpConfigChargerITrickleLvl
+    | npm1210UserOtpConfigChargerITrickleLvl;
 export type UserOtpConfigChargerVBatLowLvl =
-    npm1012UserOtpConfigChargerVBatLowLvl;
+    | npm1012UserOtpConfigChargerVBatLowLvl
+    | npm1210UserOtpConfigChargerVBatLowLvl;
 export type UserOtpConfigChargerVTrickleLvl =
-    npm1012UserOtpConfigChargerVTrickleLvl;
+    | npm1012UserOtpConfigChargerVTrickleLvl
+    | npm1210UserOtpConfigChargerVTrickleLvl;
+export type UserOtpConfigRegulatorsBuckILimLvl =
+    npm1210UserOtpConfigRegulatorsBuckILimLvl;
+export type UserOtpConfigRegulatorsBuckPowerModeControl =
+    npm1210UserOtpConfigRegulatorsBuckPowerModeControl;
+export type UserOtpConfigRegulatorsBuckStartupILimLvl =
+    npm1210UserOtpConfigRegulatorsBuckStartupILimLvl;
+export type UserOtpConfigRegulatorsBuckVOutComparatorBiasCurrentLPMode =
+    npm1210UserOtpConfigRegulatorsBuckVOutComparatorBiasCurrentLPMode;
+export type UserOtpConfigRegulatorsBuckVOutComparatorBiasCurrentULPMode =
+    npm1210UserOtpConfigRegulatorsBuckVOutComparatorBiasCurrentULPMode;
 export type UserOtpConfigRegulatorsBuckVOutSel =
-    npm1012UserOtpConfigRegulatorsBuckVOutSel;
+    | npm1012UserOtpConfigRegulatorsBuckVOutSel
+    | npm1210UserOtpConfigRegulatorsBuckVOutSel;
 export type UserOtpConfigRegulatorsLdoSoftStartILimLvl =
     npm1012UserOtpConfigRegulatorsLdoSoftStartILimLvl;
 export type UserOtpConfigRegulatorsLdoSoftStartTime =
@@ -676,13 +885,46 @@ export type UserOtpConfigRegulatorsLdoVOutSel =
     npm1012UserOtpConfigRegulatorsLdoVOutSel;
 export type UserOtpConfigRegulatorsColdStartSel =
     npm1012UserOtpConfigRegulatorsColdStartSel;
-export type UserOtpConfigSysFeatPwrWait = npm1012UserOtpConfigSysFeatPwrWait;
+export type UserOtpConfigSysFeatLongPressResetDebounce =
+    npm1210UserOtpConfigSysFeatLongPressResetDebounce;
+export type UserOtpConfigSysFeatLongPressResetPinSel =
+    npm1210UserOtpConfigSysFeatLongPressResetPinSel;
+export type UserOtpConfigSysFeatPGPinSel = npm1210UserOtpConfigSysFeatPGPinSel;
+export type UserOtpConfigSysFeatPwrWait =
+    | npm1012UserOtpConfigSysFeatPwrWait
+    | npm1210UserOtpConfigSysFeatPwrWait;
+export type UserOtpConfigSysFeatShipVBusFilt =
+    npm1210UserOtpConfigSysFeatShipVBusFilt;
+export type UserOtpConfigSysFeatShipVBusFiltTime =
+    npm1210UserOtpConfigSysFeatShipVBusFiltTime;
 export type UserOtpConfigSysFeatShpHldDebounce =
-    npm1012UserOtpConfigSysFeatShpHldDebounce;
+    | npm1012UserOtpConfigSysFeatShpHldDebounce
+    | npm1210UserOtpConfigSysFeatShpHldDebounce;
+export type UserOtpConfigSysFeatShpHldSlideSwitchPollTime =
+    npm1210UserOtpConfigSysFeatShpHldSlideSwitchPollTime;
+export type UserOtpConfigSysFeatShpHldSlider =
+    npm1210UserOtpConfigSysFeatShpHldSlider;
+export type UserOtpConfigSysFeatShpHldType =
+    npm1210UserOtpConfigSysFeatShpHldType;
 export type UserOtpConfigSysFeatTwiSlaveAddress =
     npm1012UserOtpConfigSysFeatTwiSlaveAddress;
+export type UserOtpConfigSysFeatTwiTargetId0Addr =
+    npm1210UserOtpConfigSysFeatTwiTargetId0Addr;
+export type UserOtpConfigSysFeatTwiTargetId1Addr =
+    npm1210UserOtpConfigSysFeatTwiTargetId1Addr;
+export type UserOtpConfigSysFeatVBusDpmLvl =
+    npm1210UserOtpConfigSysFeatVBusDpmLvl;
+export type UserOtpConfigSysFeatVBusILim0And1GndSel =
+    npm1210UserOtpConfigSysFeatVBusILim0And1GndSel;
+export type UserOtpConfigSysFeatVBusILim0And1PinMap =
+    npm1210UserOtpConfigSysFeatVBusILim0And1PinMap;
+export type UserOtpConfigSysFeatVBusILimControl =
+    npm1210UserOtpConfigSysFeatVBusILimControl;
 export type UserOtpConfigSysFeatVBusILimLvl =
-    npm1012UserOtpConfigSysFeatVBusILimLvl;
+    | npm1012UserOtpConfigSysFeatVBusILimLvl
+    | npm1210UserOtpConfigSysFeatVBusILimLvl;
+export type UserOtpConfigSysFeatVBusStandbyMode =
+    npm1210UserOtpConfigSysFeatVBusStandbyMode;
 
 export type UserOtpConfig = {
     charger: boolean;
@@ -720,11 +962,40 @@ export type UserOtpConfig = {
     sysFeatShpHldDebounceEnable: boolean;
     sysFeatVBusILimLvl: UserOtpConfigSysFeatVBusILimLvl;
 
+    chargerChgEnPinSafetyTimersResetEnable?: boolean;
+    chargerDropoutRecovery?: UserOtpConfigChargerDropoutRecovery;
+    chargerIBatLimLvl?: UserOtpConfigChargerIBatLimLvl;
+    chargerSoftstartCurrent?: UserOtpConfigChargerSoftstartCurrent;
+    chargerStartupMode?: UserOtpConfigChargerStartupMode;
+    gpio3InputBufferAndPullDownEnable?: boolean;
+    gpio4InputBufferAndPullDownEnable?: boolean;
+    gpio4PinResetEnable?: boolean;
+    regulatorsBuckILimLvl?: UserOtpConfigRegulatorsBuckILimLvl;
+    regulatorsBuckPowerModeControl?: UserOtpConfigRegulatorsBuckPowerModeControl;
+    regulatorsBuckStartupILimLvl?: UserOtpConfigRegulatorsBuckStartupILimLvl;
+    regulatorsBuckVOutComparatorBiasCurrentLPMode?: UserOtpConfigRegulatorsBuckVOutComparatorBiasCurrentLPMode;
+    regulatorsBuckVOutComparatorBiasCurrentULPMode?: UserOtpConfigRegulatorsBuckVOutComparatorBiasCurrentULPMode;
     regulatorsColdStartSel?: UserOtpConfigRegulatorsColdStartSel;
     regulatorsLdoSoftStartILimLvl?: UserOtpConfigRegulatorsLdoSoftStartILimLvl;
     regulatorsLdoSoftStartTime?: UserOtpConfigRegulatorsLdoSoftStartTime;
     regulatorsLdoVOutSel?: UserOtpConfigRegulatorsLdoVOutSel;
+    sysFeatLongPressResetDebounce?: UserOtpConfigSysFeatLongPressResetDebounce;
+    sysFeatLongPressResetPinSel?: UserOtpConfigSysFeatLongPressResetPinSel;
+    sysFeatPGPinSel?: UserOtpConfigSysFeatPGPinSel;
+    sysFeatShipVBusFilt?: UserOtpConfigSysFeatShipVBusFilt;
+    sysFeatShipVBusFiltTime?: UserOtpConfigSysFeatShipVBusFiltTime;
+    sysFeatShpHldSlideSwitchPollTime?: UserOtpConfigSysFeatShpHldSlideSwitchPollTime;
+    sysFeatShpHldSlider?: UserOtpConfigSysFeatShpHldSlider;
+    sysFeatShpHldType?: UserOtpConfigSysFeatShpHldType;
     sysFeatTwiSlaveAddress?: UserOtpConfigSysFeatTwiSlaveAddress;
+    sysFeatTwiTargetId0Addr?: UserOtpConfigSysFeatTwiTargetId0Addr;
+    sysFeatTwiTargetId1Addr?: UserOtpConfigSysFeatTwiTargetId1Addr;
+    sysFeatVBusDpmEnable?: boolean;
+    sysFeatVBusDpmLvl?: UserOtpConfigSysFeatVBusDpmLvl;
+    sysFeatVBusILim0And1GndSel?: UserOtpConfigSysFeatVBusILim0And1GndSel;
+    sysFeatVBusILim0And1PinMap?: UserOtpConfigSysFeatVBusILim0And1PinMap;
+    sysFeatVBusILimControl?: UserOtpConfigSysFeatVBusILimControl;
+    sysFeatVBusStandbyMode?: UserOtpConfigSysFeatVBusStandbyMode;
 };
 
 export type UserOtpConfigKey = keyof UserOtpConfig;
@@ -843,6 +1114,42 @@ export interface UserOtpModule {
             value: UserOtpConfigSysFeatVBusILimLvl;
         }[];
 
+        configChargerDropoutRecovery?: {
+            label: string;
+            value: UserOtpConfigChargerDropoutRecovery;
+        }[];
+        configChargerIBatLimLvl?: {
+            label: string;
+            value: UserOtpConfigChargerIBatLimLvl;
+        }[];
+        configChargerSoftstartCurrent?: {
+            label: string;
+            value: UserOtpConfigChargerSoftstartCurrent;
+        }[];
+        configChargerStartupMode?: {
+            label: string;
+            value: UserOtpConfigChargerStartupMode;
+        }[];
+        configRegulatorsBuckILimLvl?: {
+            label: string;
+            value: UserOtpConfigRegulatorsBuckILimLvl;
+        }[];
+        configRegulatorsBuckPowerModeControl?: {
+            label: string;
+            value: UserOtpConfigRegulatorsBuckPowerModeControl;
+        }[];
+        configRegulatorsBuckStartupILimLvl?: {
+            label: string;
+            value: UserOtpConfigRegulatorsBuckStartupILimLvl;
+        }[];
+        configRegulatorsBuckVOutComparatorBiasCurrentLPMode?: {
+            label: string;
+            value: UserOtpConfigRegulatorsBuckVOutComparatorBiasCurrentLPMode;
+        }[];
+        configRegulatorsBuckVOutComparatorBiasCurrentULPMode?: {
+            label: string;
+            value: UserOtpConfigRegulatorsBuckVOutComparatorBiasCurrentULPMode;
+        }[];
         configRegulatorsColdStartSel?: {
             label: string;
             value: UserOtpConfigRegulatorsColdStartSel;
@@ -859,9 +1166,69 @@ export interface UserOtpModule {
             label: string;
             value: UserOtpConfigRegulatorsLdoSoftStartTime;
         }[];
+        configSysFeatLongPressResetDebounce?: {
+            label: string;
+            value: UserOtpConfigSysFeatLongPressResetDebounce;
+        }[];
+        configSysFeatLongPressResetPinSel?: {
+            label: string;
+            value: UserOtpConfigSysFeatLongPressResetPinSel;
+        }[];
+        configSysFeatPGPinSel?: {
+            label: string;
+            value: UserOtpConfigSysFeatPGPinSel;
+        }[];
+        configSysFeatShipVBusFilt?: {
+            label: string;
+            value: UserOtpConfigSysFeatShipVBusFilt;
+        }[];
+        configSysFeatShipVBusFiltTime?: {
+            label: string;
+            value: UserOtpConfigSysFeatShipVBusFiltTime;
+        }[];
+        configSysFeatShpHldSlideSwitchPollTime?: {
+            label: string;
+            value: UserOtpConfigSysFeatShpHldSlideSwitchPollTime;
+        }[];
+        configSysFeatShpHldSlider?: {
+            label: string;
+            value: UserOtpConfigSysFeatShpHldSlider;
+        }[];
+        configSysFeatShpHldType?: {
+            label: string;
+            value: UserOtpConfigSysFeatShpHldType;
+        }[];
         configSysFeatTwiSlaveAddress?: {
             label: string;
             value: UserOtpConfigSysFeatTwiSlaveAddress;
+        }[];
+        configSysFeatTwiTargetId0Addr?: {
+            label: string;
+            value: UserOtpConfigSysFeatTwiTargetId0Addr;
+        }[];
+        configSysFeatTwiTargetId1Addr?: {
+            label: string;
+            value: UserOtpConfigSysFeatTwiTargetId0Addr;
+        }[];
+        configSysFeatVBusDpmLvl?: {
+            label: string;
+            value: UserOtpConfigSysFeatVBusDpmLvl;
+        }[];
+        configSysFeatVBusILim0And1GndSel?: {
+            label: string;
+            value: UserOtpConfigSysFeatVBusILim0And1GndSel;
+        }[];
+        configSysFeatVBusILim0And1PinMap?: {
+            label: string;
+            value: UserOtpConfigSysFeatVBusILim0And1PinMap;
+        }[];
+        configSysFeatVBusILimControl?: {
+            label: string;
+            value: UserOtpConfigSysFeatVBusILimControl;
+        }[];
+        configSysFeatVBusStandbyMode?: {
+            label: string;
+            value: UserOtpConfigSysFeatVBusStandbyMode;
         }[];
     };
 }
@@ -1007,10 +1374,14 @@ export abstract class ChargerModuleSetBase {
     abstract tWarm(value: number): Promise<void>;
     abstract tHot(value: number): Promise<void>;
 
+    dropoutRecovery?(value: ChargerDropoutRecovery): Promise<void>;
     enableAdvancedChargingProfile?(value: boolean): Promise<void>;
     enableBatteryDischargeCurrentLimit?(value: boolean): Promise<void>;
     enableChargeCurrentThrottling?(value: boolean): Promise<void>;
+    enableChgEnPinControl?(value: boolean): Promise<void>;
+    enableChgEnPinPullDown?(value: boolean): Promise<void>;
     enableNtcMonitoring?(value: boolean): Promise<void>;
+    enableSafetyTimersResetByChgEnPin?(value: boolean): Promise<void>;
     enabledWeakBatteryCharging?(value: boolean): Promise<void>;
     iBatLim?(value: ChargerIBatLim): Promise<void>;
     iChgCool?(
@@ -1027,6 +1398,8 @@ export abstract class ChargerModuleSetBase {
     iTrickle?(value: ChargerITrickle): Promise<void>;
     nTCBeta?(value: number): Promise<void>;
     nTCThermistor?(mode: NTCThermistor, autoSetBeta?: boolean): Promise<void>;
+    softstartCurrent?(value: ChargerSoftstartCurrent): Promise<void>;
+    startupMode?(value: ChargerStartupMode): Promise<void>;
     tChgReduce?(value: number): Promise<void>;
     tChgStop?(value: number): Promise<void>;
     tOutCharge?(value: number): Promise<void>;
@@ -1071,10 +1444,14 @@ export abstract class ChargerModuleGetBase {
     abstract tWarm(): void;
     abstract tHot(): void;
 
+    dropoutRecovery?(): void;
     enabledAdvancedChargingProfile?(): void;
     enabledBatteryDischargeCurrentLimit?(): void;
     enabledChargeCurrentThrottling?(): void;
+    enableChgEnPinControl?(): void;
+    enableChgEnPinPullDown?(): void;
     enabledNtcMonitoring?(): void;
+    enableSafetyTimersResetByChgEnPin?(): void;
     enabledWeakBatteryCharging?(): void;
     iBatLim?(): void;
     iChgCool?(): void;
@@ -1085,6 +1462,8 @@ export abstract class ChargerModuleGetBase {
     iTrickle?(): void;
     nTCBeta?(): void;
     nTCThermistor?(): void;
+    softstartCurrent?(): void;
+    startupMode?(): void;
     tChgReduce?(): void;
     tChgStop?(): void;
     tOutCharge?(): void;
@@ -1115,9 +1494,12 @@ export type ChargerModuleValues = {
     iTerm: { label: string; value: ChargerITerm }[];
     vTrickleFast: { label: string; value: ChargerVTrickleFast }[];
 
+    dropoutRecovery?: { label: string; value: ChargerDropoutRecovery }[];
     iBatLim?: { label: string; value: ChargerIBatLim }[];
     iThrottle?: { label: string; value: number }[];
     iTrickle?: { label: string; value: ChargerITrickle }[];
+    softstartCurrent?: { label: string; value: ChargerSoftstartCurrent }[];
+    startupMode?: { label: string; value: ChargerStartupMode }[];
     tOutCharge?: { label: string; value: number }[];
     tOutTrickle?: { label: string; value: number }[];
     vBatLow?: { label: string; value: ChargerVBatLow }[];
@@ -1241,20 +1623,22 @@ export interface BuckModule {
         onOffControl: (
             mode: BuckMode,
         ) => { label: string; value: BuckOnOffControl }[];
-        peakCurrentLimit?: { label: string; value: BuckPeakCurrentLimit }[];
+        peakCurrentLimit?: (
+            iLimFicr?: BuckPeakCurrentLimitFicr,
+        ) => { label: string; value: BuckPeakCurrentLimit }[];
         retentionControl?: { label: string; value: BuckRetentionControl }[];
-        softStartPeakCurrentLimit?: {
+        softStartPeakCurrentLimit?: (
+            iLimFicr?: BuckSoftStartPeakCurrentLimitFicr,
+        ) => {
             label: string;
             value: BuckSoftStartPeakCurrentLimit;
         }[];
-        vOutComparatorBiasCurrentLPMode?: {
-            label: string;
-            value: BuckVOutComparatorBiasLPCurrent;
-        }[];
-        vOutComparatorBiasCurrentULPMode?: {
-            label: string;
-            value: BuckVOutComparatorBiasULPCurrent;
-        }[];
+        vOutComparatorBiasCurrentLPMode?: (
+            ficrVal?: BuckVOutComparatorBiasLPCurrentFicr,
+        ) => { label: string; value: BuckVOutComparatorBiasLPCurrent }[];
+        vOutComparatorBiasCurrentULPMode?: (
+            ficrVal?: BuckVOutComparatorBiasULPCurrentFicr,
+        ) => { label: string; value: BuckVOutComparatorBiasULPCurrent }[];
         vOutRippleControl?: { label: string; value: BuckVOutRippleControl }[];
     };
     defaults: Buck;
@@ -1438,27 +1822,33 @@ export type GpioModule = {
     index: number;
     get: {
         all: () => void;
-        mode: () => void;
-        state?: () => void;
-        pull: () => void;
-        drive: () => void;
-        openDrain: () => void;
         debounce: () => void;
+        drive: () => void;
+        mode: () => void;
+        openDrain: () => void;
+        pull: () => void;
+
+        polarity?: () => void;
+        state?: () => void;
     };
     set: {
         all: (gpio: GPIOExport) => Promise<void>;
-        mode: (mode: GPIOMode) => Promise<void>;
-        state?: (state: GPIOState) => Promise<void>;
-        pull: (pull: GPIOPull) => Promise<void>;
-        drive: (drive: GPIODrive) => Promise<void>;
-        openDrain: (openDrain: boolean) => Promise<void>;
         debounce: (debounce: boolean) => Promise<void>;
+        drive: (drive: GPIODrive) => Promise<void>;
+        mode: (mode: GPIOMode) => Promise<void>;
+        openDrain: (openDrain: boolean) => Promise<void>;
+        pull: (pull: GPIOPull) => Promise<void>;
+
+        polarity?: (value: GPIOPolarity) => Promise<void>;
+        state?: (state: GPIOState) => Promise<void>;
     };
     values: {
-        mode: { label: string; value: GPIOMode }[];
-        state?: { label: string; value: GPIOState }[];
-        pull: { label: string; value: GPIOPull }[];
         drive: { label: string; value: GPIODrive }[];
+        mode: { label: string; value: GPIOMode }[];
+        pull: { label: string; value: GPIOPull }[];
+
+        polarity?: { label: string; value: GPIOPolarity }[];
+        state?: { label: string; value: GPIOState }[];
     };
     callbacks: (() => void)[];
     defaults: GPIO;
@@ -1479,12 +1869,15 @@ export interface LedModule {
         blinkDouble?: () => void;
         blinkTimeOff?: () => void;
         blinkTimeOn?: () => void;
+        drive?: () => void;
+        dutyCycle?: () => void;
         mode?: () => void;
         pwmFrequency?: () => void;
         rgbPhaseShifting?: () => void;
     };
     ranges: {
         blinkTime?: Range;
+        dutyCycle?: Range;
     };
     set: {
         all: (config: LedExport) => Promise<void>;
@@ -1493,13 +1886,16 @@ export interface LedModule {
         blinkDouble?: (value: boolean) => Promise<void>;
         blinkTimeOff?: (value: number) => Promise<void>;
         blinkTimeOn?: (value: number) => Promise<void>;
-        mode?: (mode: LEDMode) => Promise<void>;
-        pwmFrequency?: (freq: number) => Promise<void>;
+        drive?: (value: LEDDrive) => Promise<void>;
+        dutyCycle?: (value: number) => Promise<void>;
+        mode?: (value: LEDMode) => Promise<void>;
+        pwmFrequency?: (value: LEDPwmFreq) => Promise<void>;
         rgbPhaseShifting?: (value: boolean) => Promise<void>;
     };
     values: {
+        drive?: { label: string; value: LEDDrive }[];
         mode?: { label: string; value: LEDMode }[];
-        pwmFrequency?: { label: string; value: number }[];
+        pwmFrequency?: { label: string; value: LEDPwmFreq }[];
     };
 }
 
@@ -1543,12 +1939,34 @@ export interface SysRegModule {
     };
     set: {
         all: (config: SysReg) => Promise<void>;
-        vBusDpm: (value: VBusDpm) => Promise<void>;
-        vBusILim: (value: VBusILim) => Promise<void>;
+        vBusDpm: (value: SysRegVBusDpm) => Promise<void>;
+        vBusILim: (value: SysRegVBusILim) => Promise<void>;
+
+        vBusILim0And1PinGndSel?: (
+            value: SysRegVBusILim0And1PinGndSel,
+        ) => Promise<void>;
+        vBusILim0And1PinMap?: (
+            value: SysRegVBusILim0And1PinMap,
+        ) => Promise<void>;
+        vBusILim0PinPullDownEnable?: (value: boolean) => Promise<void>;
+        vBusILim1PinPullDownEnable?: (value: boolean) => Promise<void>;
+        vBusILimControl?: (value: SysRegVBusILimControl) => Promise<void>;
+        vBusPGPinSel?: (value: SysRegVBusPGPinSel) => Promise<void>;
     };
     values: {
-        vBusDpm: { label: string; value: VBusDpm }[];
-        vBusILim: { label: string; value: VBusILim }[];
+        vBusDpm: { label: string; value: SysRegVBusDpm }[];
+        vBusILim: { label: string; value: SysRegVBusILim }[];
+
+        vBusILim0And1PinGndSel?: {
+            label: string;
+            value: SysRegVBusILim0And1PinGndSel;
+        }[];
+        vBusILim0And1PinMap?: {
+            label: string;
+            value: SysRegVBusILim0And1PinMap;
+        }[];
+        vBusILimControl?: { label: string; value: SysRegVBusILimControl }[];
+        vBusPGPinSel?: { label: string; value: SysRegVBusPGPinSel }[];
     };
 }
 
@@ -1612,7 +2030,16 @@ export type LowPowerModule = {
         timeToActive: () => void;
 
         hibernateWakeupByButton?: () => void;
+        shipVBusFilt?: () => void;
+        shipVBusFiltTime?: () => void;
+        shpHldSlideSwitchDelay?: () => void;
+        shpHldSlideSwitchPollTime?: () => void;
+        shpHldSlider?: () => void;
+        shpHldType?: () => void;
+        suspendPinPullDown?: () => void;
         vbusHibernateWait?: () => void;
+        vbusStandbyCtrl?: () => void;
+        vbusStandbySel?: () => void;
         vbusStandbyWait?: () => void;
         vbusStatus?: () => void;
     };
@@ -1622,11 +2049,52 @@ export type LowPowerModule = {
 
         hibernateWakeupByButton?: (value: boolean) => Promise<void>;
         powerButtonEnable?: (powerButtonEnable: boolean) => Promise<void>;
+        shipVBusFilt?: (value: LowPowerConfigShipVBusFilt) => Promise<void>;
+        shipVBusFiltTime?: (
+            value: LowPowerConfigShipVBusFiltTime,
+        ) => Promise<void>;
+        shpHldSlideSwitchDelay?: (
+            value: LowPowerConfigShpHldSlideSwitchDelay,
+        ) => Promise<void>;
+        shpHldSlideSwitchPollTime?: (
+            value: LowPowerConfigShpHldSlideSwitchPollTime,
+        ) => Promise<void>;
+        shpHldSlider?: (value: LowPowerConfigShpHldSlider) => Promise<void>;
+        shpHldType?: (value: LowPowerConfigShpHldType) => Promise<void>;
+        suspendPinPullDown?: (value: boolean) => Promise<void>;
         vbusHibernateWait?: (value: boolean) => Promise<void>;
+        vbusStandbyCtrl?: (
+            value: LowPowerConfigVBusStandbyCtrl,
+        ) => Promise<void>;
+        vbusStandbySel?: (value: LowPowerConfigVBusStandbySel) => Promise<void>;
         vbusStandbyWait?: (value: boolean) => Promise<void>;
     };
     values: {
         timeToActive: { label: string; value: TimeToActive }[];
+
+        shipVBusFilt?: { label: string; value: LowPowerConfigShipVBusFilt }[];
+        shipVBusFiltTime?: {
+            label: string;
+            value: LowPowerConfigShipVBusFiltTime;
+        }[];
+        shpHldSlideSwitchDelay?: {
+            label: string;
+            value: LowPowerConfigShpHldSlideSwitchDelay;
+        }[];
+        shpHldSlideSwitchPollTime?: {
+            label: string;
+            value: LowPowerConfigShpHldSlideSwitchPollTime;
+        }[];
+        shpHldSlider?: { label: string; value: LowPowerConfigShpHldSlider }[];
+        shpHldType?: { label: string; value: LowPowerConfigShpHldType }[];
+        vbusStandbyCtrl?: {
+            label: string;
+            value: LowPowerConfigVBusStandbyCtrl;
+        }[];
+        vbusStandbySel?: {
+            label: string;
+            value: LowPowerConfigVBusStandbySel;
+        }[];
     };
     callbacks: (() => void)[];
     defaults: LowPowerConfig;
@@ -1705,6 +2173,7 @@ export interface PmicDialog {
 
 export const zodSchemaNpmMode = z.union([
     z.literal('npm1012'),
+    z.literal('npm1210'),
     z.literal('npm1300'),
     z.literal('npm1304'),
     z.literal('npm2100'),
@@ -1770,7 +2239,7 @@ export interface NpmExportV2 {
     boosts: BoostExport[];
     charger?: Charger;
     bucks?: BuckExport[];
-    ldos: LdoExport[];
+    ldos?: LdoExport[];
     gpios: GPIOExport[];
     gpioLedDrvs?: GPIOLEDDrvExport[];
     leds?: LedExport[];
