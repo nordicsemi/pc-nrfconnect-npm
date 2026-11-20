@@ -7,10 +7,14 @@
 import { type LowPowerConfig, type ModuleParams } from '../../types';
 import { parseOnOffFromCmdReply, parseValueFromCmdReply } from '../helpers';
 import {
+    shipVBusFiltDisable,
     shipVBusFiltKeys,
     shipVBusFiltTimeKeys,
+    shpHldSliderDisable,
     shpHldSliderKeys,
+    shpHldSlideSwitchDelayDisable,
     shpHldSlideSwitchDelayKeys,
+    shpHldSlideSwitchPollTimeDisable,
     shpHldSlideSwitchPollTimeKeys,
     shpHldTypeKeys,
     timeToActiveKeys,
@@ -206,16 +210,20 @@ export default (
             'npm12xx low_power_ctrl shphld type (get|set)',
             msg => {
                 const res = parseValueFromCmdReply(msg)?.toLowerCase();
-                const shpHldType = shpHldTypeKeys.find(
-                    v => v.toLowerCase() === res,
-                );
-                if (shpHldType === undefined) {
+                const value = shpHldTypeKeys.find(v => v.toLowerCase() === res);
+                if (value === undefined) {
                     return;
                 }
                 eventEmitter.emitPartialEvent<LowPowerConfig>(
                     'onLowPowerUpdate',
                     {
-                        shpHldType,
+                        shipVBusFiltDisabled: shipVBusFiltDisable(value),
+                        shpHldSlideSwitchDelayDisabled:
+                            shpHldSlideSwitchDelayDisable(value),
+                        shpHldSlideSwitchPollTimeDisabled:
+                            shpHldSlideSwitchPollTimeDisable(value),
+                        shpHldSliderDisabled: shpHldSliderDisable(value),
+                        shpHldType: value,
                     },
                 );
             },

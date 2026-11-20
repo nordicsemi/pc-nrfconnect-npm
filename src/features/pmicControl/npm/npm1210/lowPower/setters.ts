@@ -18,6 +18,12 @@ import {
     type TimeToActive,
 } from '../../types';
 import { LowPowerGet } from './getters';
+import {
+    shipVBusFiltDisable,
+    shpHldSliderDisable,
+    shpHldSlideSwitchDelayDisable,
+    shpHldSlideSwitchPollTimeDisable,
+} from './types';
 
 export class LowPowerSet {
     private get: LowPowerGet;
@@ -192,6 +198,12 @@ export class LowPowerSet {
                 this.eventEmitter.emitPartialEvent<LowPowerConfig>(
                     'onLowPowerUpdate',
                     {
+                        shipVBusFiltDisabled: shipVBusFiltDisable(value),
+                        shpHldSlideSwitchDelayDisabled:
+                            shpHldSlideSwitchDelayDisable(value),
+                        shpHldSlideSwitchPollTimeDisabled:
+                            shpHldSlideSwitchPollTimeDisable(value),
+                        shpHldSliderDisabled: shpHldSliderDisable(value),
                         shpHldType: value,
                     },
                 );

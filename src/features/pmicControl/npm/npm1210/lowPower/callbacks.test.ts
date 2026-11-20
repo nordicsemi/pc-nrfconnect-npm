@@ -7,10 +7,14 @@
 import { type LowPowerConfig } from '../../types';
 import { setupMocksWithShellParser } from '../tests/helpers';
 import {
+    shipVBusFiltDisable,
     shipVBusFiltKeys,
     shipVBusFiltTimeKeys,
+    shpHldSliderDisable,
     shpHldSliderKeys,
+    shpHldSlideSwitchDelayDisable,
     shpHldSlideSwitchDelayKeys,
+    shpHldSlideSwitchPollTimeDisable,
     shpHldSlideSwitchPollTimeKeys,
     shpHldTypeKeys,
     timeToActiveKeys,
@@ -165,6 +169,12 @@ describe('PMIC 1210 - Command callbacks', () => {
 
         expect(mockOnLowPowerUpdate).toBeCalledTimes(1);
         expect(mockOnLowPowerUpdate).toBeCalledWith({
+            shipVBusFiltDisabled: shipVBusFiltDisable(expected),
+            shpHldSlideSwitchDelayDisabled:
+                shpHldSlideSwitchDelayDisable(expected),
+            shpHldSlideSwitchPollTimeDisabled:
+                shpHldSlideSwitchPollTimeDisable(expected),
+            shpHldSliderDisabled: shpHldSliderDisable(expected),
             shpHldType: expected,
         } satisfies Partial<LowPowerConfig>);
     });

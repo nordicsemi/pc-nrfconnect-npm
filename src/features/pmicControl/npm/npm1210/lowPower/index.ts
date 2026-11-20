@@ -15,10 +15,15 @@ import shipModeCallbacks from './callbacks';
 import { LowPowerGet } from './getters';
 import { LowPowerSet } from './setters';
 import {
+    defaultValues,
+    shipVBusFiltDisable,
     shipVBusFiltKV,
     shipVBusFiltTimeKV,
+    shpHldSliderDisable,
     shpHldSliderKV,
+    shpHldSlideSwitchDelayDisable,
     shpHldSlideSwitchDelayKV,
+    shpHldSlideSwitchPollTimeDisable,
     shpHldSlideSwitchPollTimeKV,
     shpHldTypeKV,
     timeToActiveKV,
@@ -68,22 +73,32 @@ export default class Module implements LowPowerModule {
 
     get defaults(): LowPowerConfig {
         return {
-            hibernateWakeupByButton: false,
+            hibernateWakeupByButton: defaultValues.hibernateWakeupByButton,
             operatingMode: 'active',
-            shipVBusFilt: 'default',
-            shipVBusFiltTime: '5ms',
-            shpHldSlideSwitchDelay: '200ms',
-            shpHldSlideSwitchPollTime: '50ms',
-            shpHldSlider: 'continuous',
-            shpHldType: 'button',
-            suspendPinPullDown: false,
-            timeToActive: 'off',
-            vbusHibernateWait: false,
-            vbusHibernateWaitingForChargeComplete: false,
-            vbusStandbyCtrl: 'pin',
-            vbusStandbySel: 'standby1',
-            vbusStandbyWait: false,
-            vbusStandbyWaitingForChargeComplete: false,
+            shipVBusFilt: defaultValues.shipVBusFilt,
+            shipVBusFiltDisabled: shipVBusFiltDisable(defaultValues.shpHldType),
+            shipVBusFiltTime: defaultValues.shipVBusFiltTime,
+            shpHldSlideSwitchDelay: defaultValues.shpHldSlideSwitchDelay,
+            shpHldSlideSwitchDelayDisabled: shpHldSlideSwitchDelayDisable(
+                defaultValues.shpHldType,
+            ),
+            shpHldSlideSwitchPollTime: defaultValues.shpHldSlideSwitchPollTime,
+            shpHldSlideSwitchPollTimeDisabled: shpHldSlideSwitchPollTimeDisable(
+                defaultValues.shpHldType,
+            ),
+            shpHldSlider: defaultValues.shpHldSlider,
+            shpHldSliderDisabled: shpHldSliderDisable(defaultValues.shpHldType),
+            shpHldType: defaultValues.shpHldType,
+            suspendPinPullDown: defaultValues.suspendPinPullDown,
+            timeToActive: defaultValues.timeToActive,
+            vbusHibernateWait: defaultValues.vbusHibernateWait,
+            vbusHibernateWaitingForChargeComplete:
+                defaultValues.vbusHibernateWaitingForChargeComplete,
+            vbusStandbyCtrl: defaultValues.vbusStandbyCtrl,
+            vbusStandbySel: defaultValues.vbusStandbySel,
+            vbusStandbyWait: defaultValues.vbusStandbyWait,
+            vbusStandbyWaitingForChargeComplete:
+                defaultValues.vbusStandbyWaitingForChargeComplete,
         };
     }
 

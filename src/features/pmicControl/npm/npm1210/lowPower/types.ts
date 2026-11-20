@@ -75,3 +75,47 @@ export const vBusStandbySelKV = [
 ] as const;
 export const vBusStandbySelKeys = vBusStandbySelKV.map(([key, _]) => key);
 export type VBusStandbySel = (typeof vBusStandbySelKeys)[number];
+
+export const shipVBusFiltDisable = (shpHld: ShpHldType) =>
+    shpHld === 'slideswitch';
+export const shpHldSlideSwitchDelayDisable = (shpHld: ShpHldType) =>
+    shpHld === 'button';
+export const shpHldSlideSwitchPollTimeDisable = (shpHld: ShpHldType) =>
+    shpHld === 'button';
+export const shpHldSliderDisable = (shpHld: ShpHldType) => shpHld === 'button';
+
+type DefaultValues = {
+    hibernateWakeupByButton: boolean;
+    shipVBusFilt: ShipVBusFilt;
+    shipVBusFiltTime: ShipVBusFiltTime;
+    shpHldSlideSwitchDelay: ShpHldSlideSwitchDelay;
+    shpHldSlideSwitchPollTime: ShpHldSlideSwitchPollTime;
+    shpHldSlider: ShpHldSlider;
+    shpHldType: ShpHldType;
+    suspendPinPullDown: boolean;
+    timeToActive: TimeToActive;
+    vbusHibernateWait: boolean;
+    vbusHibernateWaitingForChargeComplete: boolean;
+    vbusStandbyCtrl: VBusStandbyCtrl;
+    vbusStandbySel: VBusStandbySel;
+    vbusStandbyWait: boolean;
+    vbusStandbyWaitingForChargeComplete: boolean;
+};
+
+export const defaultValues: DefaultValues = {
+    hibernateWakeupByButton: false,
+    shipVBusFilt: 'default',
+    shipVBusFiltTime: '5ms',
+    shpHldSlideSwitchDelay: '200ms',
+    shpHldSlideSwitchPollTime: '50ms',
+    shpHldSlider: 'continuous',
+    shpHldType: 'button',
+    suspendPinPullDown: false,
+    timeToActive: 'off',
+    vbusHibernateWait: false,
+    vbusHibernateWaitingForChargeComplete: false,
+    vbusStandbyCtrl: 'pin',
+    vbusStandbySel: 'standby1',
+    vbusStandbyWait: false,
+    vbusStandbyWaitingForChargeComplete: false,
+};
