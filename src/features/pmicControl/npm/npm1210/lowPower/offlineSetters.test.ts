@@ -6,6 +6,12 @@
 
 import { type LowPowerConfig } from '../../types';
 import { setupMocksBase } from '../tests/helpers';
+import {
+    shipVBusFiltDisable,
+    shpHldSliderDisable,
+    shpHldSlideSwitchDelayDisable,
+    shpHldSlideSwitchPollTimeDisable,
+} from './types';
 
 // UI should get update events immediately and not wait for feedback from shell responses when offline as there is no shell
 describe('PMIC 1210 - Setters Offline tests', () => {
@@ -70,11 +76,18 @@ describe('PMIC 1210 - Setters Offline tests', () => {
     });
 
     test('Set shpHldType', async () => {
-        await pmic.lowPowerModule?.set.shpHldType?.('slideswitch');
+        const testVal = 'slideswitch';
+        await pmic.lowPowerModule?.set.shpHldType?.(testVal);
 
         expect(mockOnLowPowerUpdate).toBeCalledTimes(1);
         expect(mockOnLowPowerUpdate).toBeCalledWith({
-            shpHldType: 'slideswitch',
+            shipVBusFiltDisabled: shipVBusFiltDisable(testVal),
+            shpHldSlideSwitchDelayDisabled:
+                shpHldSlideSwitchDelayDisable(testVal),
+            shpHldSlideSwitchPollTimeDisabled:
+                shpHldSlideSwitchPollTimeDisable(testVal),
+            shpHldSliderDisabled: shpHldSliderDisable(testVal),
+            shpHldType: testVal,
         } satisfies Partial<LowPowerConfig>);
     });
 
