@@ -32,14 +32,18 @@ describe('PMIC 1012 - Static getters', () => {
 
     test('Charger Chip Thermal Range', () =>
         expect(pmic.chargerModule?.ranges.chipThermal).toStrictEqual({
+            decimals: 0,
             min: 50,
             max: 110,
+            step: 1,
         }));
 
     test('Charger Jeita Range', () =>
         expect(pmic.chargerModule?.ranges.jeita).toStrictEqual({
+            decimals: 0,
             min: -20,
             max: 60,
+            step: 1,
         }));
 
     test('Charger Current Range', () =>

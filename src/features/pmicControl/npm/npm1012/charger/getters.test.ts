@@ -18,7 +18,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
-            'npm1012 charger voltage termination get',
+            `npm1012 charger voltage termination get`,
             expect.anything(),
             undefined,
             true,
@@ -30,7 +30,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
-            'npm1012 charger current charge get',
+            `npm1012 charger current charge get`,
             expect.anything(),
             undefined,
             true,
@@ -42,7 +42,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
-            'npm1012 charger enable get',
+            `npm1012 charger enable get`,
             expect.anything(),
             undefined,
             true,
@@ -54,7 +54,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
-            'npm1012 charger voltage trickle get',
+            `npm1012 charger voltage trickle get`,
             expect.anything(),
             undefined,
             true,
@@ -66,7 +66,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
-            'npm1012 charger current termination get',
+            `npm1012 charger current termination get`,
             expect.anything(),
             undefined,
             true,
@@ -78,7 +78,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
-            'npm1012 charger recharge get',
+            `npm1012 charger recharge get`,
             expect.anything(),
             undefined,
             true,
@@ -90,7 +90,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
-            'npm1012 charger lowbat_charging get',
+            `npm1012 charger lowbat_charging get`,
             expect.anything(),
             undefined,
             true,
@@ -102,7 +102,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
-            'npm1012 charger dietemp reduce get',
+            `npm1012 charger dietemp reduce get`,
             expect.anything(),
             undefined,
             true,
@@ -114,7 +114,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
-            'npm1012 charger dietemp resume get',
+            `npm1012 charger dietemp resume get`,
             expect.anything(),
             undefined,
             true,
@@ -126,7 +126,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
-            'npm1012 charger ntc cold get',
+            `npm1012 charger ntc cold get`,
             expect.anything(),
             undefined,
             true,
@@ -138,7 +138,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
-            'npm1012 charger ntc cool get',
+            `npm1012 charger ntc cool get`,
             expect.anything(),
             undefined,
             true,
@@ -150,7 +150,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
-            'npm1012 charger ntc warm get',
+            `npm1012 charger ntc warm get`,
             expect.anything(),
             undefined,
             true,
@@ -162,7 +162,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
-            'npm1012 charger ntc hot get',
+            `npm1012 charger ntc hot get`,
             expect.anything(),
             undefined,
             true,
@@ -174,7 +174,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
-            'npm1012 charger voltage termination_cool get',
+            `npm1012 charger voltage termination_cool get`,
             expect.anything(),
             undefined,
             true,
@@ -186,7 +186,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
         expect(mockEnqueueRequest).toBeCalledTimes(1);
         expect(mockEnqueueRequest).toBeCalledWith(
-            'npm1012 charger voltage termination_warm get',
+            `npm1012 charger voltage termination_warm get`,
             expect.anything(),
             undefined,
             true,

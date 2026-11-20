@@ -71,6 +71,9 @@ import {
     type TimerConfigModule,
     type UsbCurrentLimiterModule,
     type USBPower,
+    type UserOtp,
+    type UserOtpConfigSettingUpdatePayload,
+    type UserOtpModule,
 } from './types';
 
 /* eslint-disable no-underscore-dangle */
@@ -311,6 +314,18 @@ export default abstract class BaseNpmDevice {
         this.#onBoardLoadModule = onBoardLoadModule;
     }
 
+    #userOtpModule?: UserOtpModule;
+    get userOtpModule() {
+        return this.#userOtpModule;
+    }
+
+    protected set userOtpModule(userOtpModule: UserOtpModule | undefined) {
+        if (userOtpModule) {
+            this.releaseAll.push(...userOtpModule.callbacks);
+        }
+        this.#userOtpModule = userOtpModule;
+    }
+
     private initPeripherals() {
         const args: ModuleParams = {
             index: 0,
@@ -445,6 +460,12 @@ export default abstract class BaseNpmDevice {
 
         if (this.peripherals.LowPowerModule) {
             this.#lowPowerModule = new this.peripherals.LowPowerModule({
+                ...args,
+            });
+        }
+
+        if (this.peripherals.UserOtpModule) {
+            this.#userOtpModule = new this.peripherals.UserOtpModule({
                 ...args,
             });
         }
@@ -612,6 +633,8 @@ export default abstract class BaseNpmDevice {
         this.resetModule?.get.all();
         this.sysRegModule?.get.all();
         this.fuelGaugeModule?.get.all();
+
+        this.userOtpModule?.actions.read();
     }
 
     protected sendCommand(
@@ -867,6 +890,25 @@ export default abstract class BaseNpmDevice {
         return this.setupHandler<Partial<ErrorLogs>, true>('onErrorLogs')(
             handler,
         );
+    }
+
+    onUserOtpUpdate(
+        handler: (payload: Partial<UserOtp>, error: string) => void,
+    ) {
+        return this.setupHandler<Partial<UserOtp>, true>('onUserOtpUpdate')(
+            handler,
+        );
+    }
+
+    onUserOtpConfigSettingUpdate(
+        handler: (
+            payload: UserOtpConfigSettingUpdatePayload,
+            error: string,
+        ) => void,
+    ) {
+        return this.setupHandler<UserOtpConfigSettingUpdatePayload, true>(
+            'onUserOtpConfigSettingUpdate',
+        )(handler);
     }
 
     clearErrorLogs(errorOnly?: boolean) {

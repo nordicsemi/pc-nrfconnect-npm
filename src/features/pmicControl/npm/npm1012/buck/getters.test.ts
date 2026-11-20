@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { type BuckModeControl } from '../../types';
 import { PMIC_1012_BUCKS, setupMocksWithShellParser } from '../tests/helpers';
 
 describe('PMIC 1012 - Request update commands', () => {
@@ -105,7 +104,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
             expect(mockEnqueueRequest).toBeCalledTimes(1);
             expect(mockEnqueueRequest).toBeCalledWith(
-                'npm1012 buck pulldown get',
+                `npm1012 buck pulldown get`,
                 expect.anything(),
                 undefined,
                 true,
@@ -120,7 +119,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
             expect(mockEnqueueRequest).toBeCalledTimes(1);
             expect(mockEnqueueRequest).toBeCalledWith(
-                'npm1012 buck vout software get 1',
+                `npm1012 buck vout software get 1`,
                 expect.anything(),
                 undefined,
                 true,
@@ -135,7 +134,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
             expect(mockEnqueueRequest).toBeCalledTimes(1);
             expect(mockEnqueueRequest).toBeCalledWith(
-                'npm1012 buck voutselctrl get',
+                `npm1012 buck voutselctrl get`,
                 expect.anything(),
                 undefined,
                 true,
@@ -150,7 +149,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
             expect(mockEnqueueRequest).toBeCalledTimes(1);
             expect(mockEnqueueRequest).toBeCalledWith(
-                'npm1012 buck passthrough get',
+                `npm1012 buck passthrough get`,
                 expect.anything(),
                 undefined,
                 true,
@@ -165,7 +164,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
             expect(mockEnqueueRequest).toBeCalledTimes(1);
             expect(mockEnqueueRequest).toBeCalledWith(
-                'npm1012 buck autopull get',
+                `npm1012 buck autopull get`,
                 expect.anything(),
                 undefined,
                 true,
@@ -180,7 +179,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
             expect(mockEnqueueRequest).toBeCalledTimes(1);
             expect(mockEnqueueRequest).toBeCalledWith(
-                'npm1012 buck peakilim get',
+                `npm1012 buck peakilim get`,
                 expect.anything(),
                 undefined,
                 true,
@@ -195,7 +194,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
             expect(mockEnqueueRequest).toBeCalledTimes(1);
             expect(mockEnqueueRequest).toBeCalledWith(
-                'npm1012 buck scprotect get',
+                `npm1012 buck scprotect get`,
                 expect.anything(),
                 undefined,
                 true,
@@ -210,7 +209,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
             expect(mockEnqueueRequest).toBeCalledTimes(1);
             expect(mockEnqueueRequest).toBeCalledWith(
-                'npm1012 buck softstartilim get',
+                `npm1012 buck softstartilim get`,
                 expect.anything(),
                 undefined,
                 true,
@@ -218,30 +217,35 @@ describe('PMIC 1012 - Request update commands', () => {
         },
     );
 
-    test.each(
-        PMIC_1012_BUCKS.map(index => [
-            {
-                index,
-                mode: 'LP',
-            },
-            {
-                index,
-                mode: 'ULP',
-            },
-        ]).flat(),
-    )('Request update vOutComparatorBiasCurrent %p', ({ index, mode }) => {
-        pmic.buckModule[index].get.vOutComparatorBiasCurrent?.(
-            mode as BuckModeControl,
-        );
+    test.each(PMIC_1012_BUCKS)(
+        'Request update vOutComparatorBiasCurrentLPMode %p',
+        index => {
+            pmic.buckModule[index].get.vOutComparatorBiasCurrentLPMode?.();
 
-        expect(mockEnqueueRequest).toBeCalledTimes(1);
-        expect(mockEnqueueRequest).toBeCalledWith(
-            `npm1012 buck bias ${mode.toLowerCase()} get`,
-            expect.anything(),
-            undefined,
-            true,
-        );
-    });
+            expect(mockEnqueueRequest).toBeCalledTimes(1);
+            expect(mockEnqueueRequest).toBeCalledWith(
+                `npm1012 buck bias lp get`,
+                expect.anything(),
+                undefined,
+                true,
+            );
+        },
+    );
+
+    test.each(PMIC_1012_BUCKS)(
+        'Request update vOutComparatorBiasCurrentULPMode %p',
+        index => {
+            pmic.buckModule[index].get.vOutComparatorBiasCurrentULPMode?.();
+
+            expect(mockEnqueueRequest).toBeCalledTimes(1);
+            expect(mockEnqueueRequest).toBeCalledWith(
+                `npm1012 buck bias ulp get`,
+                expect.anything(),
+                undefined,
+                true,
+            );
+        },
+    );
 
     test.each(PMIC_1012_BUCKS)(
         'Request update vOutRippleControl index: %p',
@@ -250,7 +254,7 @@ describe('PMIC 1012 - Request update commands', () => {
 
             expect(mockEnqueueRequest).toBeCalledTimes(1);
             expect(mockEnqueueRequest).toBeCalledWith(
-                'npm1012 buck ripple get',
+                `npm1012 buck ripple get`,
                 expect.anything(),
                 undefined,
                 true,

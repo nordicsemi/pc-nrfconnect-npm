@@ -28,17 +28,17 @@ export default ({ disabled }: BatteryCardProperties) => {
     const charger = useSelector(getCharger);
 
     const [internalSamplingRate, setInternalSamplingRate] = useState(
-        fuelGaugeSettings.notChargingSamplingRate,
+        fuelGaugeSettings.notChargingSamplingRate / 1000,
     );
 
     // NumberInputSliderWithUnit do not use fuelGauge.<prop> as value as we send only at on change complete
     useEffect(() => {
-        setInternalSamplingRate(
+        const samplingRateSec =
             charger?.enabled === true &&
-                fuelGaugeSettings.chargingSamplingRate !== undefined
+            fuelGaugeSettings.chargingSamplingRate !== undefined
                 ? fuelGaugeSettings.chargingSamplingRate / 1000
-                : fuelGaugeSettings.notChargingSamplingRate / 1000,
-        );
+                : fuelGaugeSettings.notChargingSamplingRate / 1000;
+        setInternalSamplingRate(samplingRateSec);
     }, [
         charger?.enabled,
         fuelGaugeSettings.chargingSamplingRate,
@@ -97,7 +97,7 @@ export default ({ disabled }: BatteryCardProperties) => {
                                         !Number.isNaN(
                                             fuelGaugeSettings.actualCapacity,
                                         )
-                                            ? `${fuelGaugeSettings.actualCapacity.toFixed(1)}%`
+                                            ? `${fuelGaugeSettings.actualCapacity.toFixed(1)} %`
                                             : 'N/A'}
                                     </div>
                                 </div>
@@ -112,6 +112,20 @@ export default ({ disabled }: BatteryCardProperties) => {
                                             : 'N/A'}
                                     </div>
                                 </div>
+                                {fuelGaugeSettings.estimatedBatteryResistance !==
+                                    undefined && (
+                                    <div className="tw-flex">
+                                        <div>ESR:</div>
+                                        <div className="tw-ml-auto">
+                                            {fuelGaugeSettings.enabled &&
+                                            !Number.isNaN(
+                                                fuelGaugeSettings.estimatedBatteryResistance,
+                                            )
+                                                ? `${fuelGaugeSettings.estimatedBatteryResistance.toFixed(3)} Ω`
+                                                : 'N/A'}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )

@@ -32,6 +32,8 @@ import type {
     SysReg,
     TimerConfig,
     USBPower,
+    UserOtp,
+    UserOtpConfigSettingUpdatePayload,
 } from './npm/types';
 
 interface pmicControlState {
@@ -63,6 +65,7 @@ interface pmicControlState {
     storedBatterModel?: BatteryModel[];
     usbPower?: USBPower;
     errorLogs?: ErrorLogs;
+    userOtp?: UserOtp;
 }
 
 const initialState: pmicControlState = {
@@ -298,6 +301,31 @@ const pmicControlSlice = createSlice({
                 };
             }
         },
+        setUserOtp(state, action: PayloadAction<UserOtp | undefined>) {
+            state.userOtp = action.payload;
+        },
+        updateUserOtp(
+            state,
+            action: PayloadAction<Partial<UserOtp | undefined>>,
+        ) {
+            if (state.npmDevice?.userOtpModule) {
+                state.userOtp = {
+                    ...state.npmDevice.userOtpModule.defaults,
+                    ...state.userOtp,
+                    ...(action.payload as UserOtp),
+                };
+            }
+        },
+        updateUserOtpConfigSetting(
+            state,
+            action: PayloadAction<UserOtpConfigSettingUpdatePayload>,
+        ) {
+            const { key, update } = action.payload;
+
+            if (state.userOtp && state.userOtp.settings[key]) {
+                Object.assign(state.userOtp.settings[key], update);
+            }
+        },
         setBatteryConnected(state, action: PayloadAction<boolean>) {
             state.batteryConnected = action.payload;
         },
@@ -477,6 +505,7 @@ export const getFuelGaugeReportingRate = (state: RootState) =>
     state.app.pmicControl.fuelGaugeSettings.reportingRate;
 export const getErrorLogs = (state: RootState) =>
     state.app.pmicControl.errorLogs;
+export const getUserOtp = (state: RootState) => state.app.pmicControl.userOtp;
 
 export const {
     setNpmDevice,
@@ -525,5 +554,8 @@ export const {
     setUsbPower,
     updateUsbPower,
     setErrorLogs,
+    setUserOtp,
+    updateUserOtp,
+    updateUserOtpConfigSetting,
 } = pmicControlSlice.actions;
 export default pmicControlSlice.reducer;

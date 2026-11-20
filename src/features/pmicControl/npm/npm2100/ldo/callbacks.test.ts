@@ -8,7 +8,7 @@ import { PMIC_2100_LDOS, setupMocksWithShellParser } from '../tests/helpers';
 import {
     nPM2100GPIOControlPinSelectValues,
     nPM2100LdoModeControlValues,
-    softStartCurrentLDOModeValues,
+    softStartCurrentLdoModeValues,
     softStartCurrentLoadSwitchModeValues,
 } from '../types';
 
@@ -190,7 +190,7 @@ describe('PMIC 2100 - Command callbacks', () => {
     describe('LDO soft start', () => {
         test.each(
             PMIC_2100_LDOS.map(index => [
-                ...softStartCurrentLDOModeValues.map(current => [
+                ...softStartCurrentLdoModeValues.map(current => [
                     {
                         index,
                         append: `get `,
@@ -214,7 +214,7 @@ describe('PMIC 2100 - Command callbacks', () => {
 
                 expect(mockOnLdoUpdate).toBeCalledTimes(1);
                 expect(mockOnLdoUpdate).toBeCalledWith({
-                    data: { softStartCurrentLDOMode: current },
+                    data: { softStartCurrentLdoMode: current },
                     index,
                 });
             },

@@ -4,15 +4,20 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { type NpmEventEmitter } from '../../pmicHelpers';
 import {
     type Buck,
+    type BuckActiveDischargeResistance,
     type BuckAlternateVOutControl,
     type BuckExport,
     type BuckMode,
     type BuckModeControl,
     type BuckOnOffControl,
+    type BuckPeakCurrentLimit,
+    type BuckSoftStartPeakCurrentLimit,
+    type BuckVOutComparatorBiasLPCurrent,
+    type BuckVOutComparatorBiasULPCurrent,
     type BuckVOutRippleControl,
+    type ModuleParams,
     type PmicDialog,
 } from '../../types';
 import { BuckGet } from './getters';
@@ -21,14 +26,10 @@ export class BuckSet {
     private get: BuckGet;
 
     constructor(
-        private dialogHandler: ((dialog: PmicDialog) => void) | null,
-        private eventEmitter: NpmEventEmitter,
-        private sendCommand: (
-            command: string,
-            onSuccess?: (response: string, command: string) => void,
-            onError?: (response: string, command: string) => void,
-        ) => void,
-        private offlineMode: boolean,
+        private dialogHandler: ModuleParams['dialogHandler'],
+        private eventEmitter: ModuleParams['eventEmitter'],
+        private offlineMode: ModuleParams['offlineMode'],
+        private sendCommand: ModuleParams['sendCommand'],
         private index: number,
     ) {
         this.get = new BuckGet(sendCommand);
@@ -82,16 +83,14 @@ export class BuckSet {
         }
         if (config.vOutComparatorBiasCurrentLPMode !== undefined) {
             promises.push(
-                this.vOutComparatorBiasCurrent(
-                    'LP',
+                this.vOutComparatorBiasCurrentLPMode(
                     config.vOutComparatorBiasCurrentLPMode,
                 ),
             );
         }
         if (config.vOutComparatorBiasCurrentULPMode !== undefined) {
             promises.push(
-                this.vOutComparatorBiasCurrent(
-                    'ULP',
+                this.vOutComparatorBiasCurrentULPMode(
                     config.vOutComparatorBiasCurrentULPMode,
                 ),
             );
@@ -173,7 +172,7 @@ export class BuckSet {
                     `npm1012 buck voutselctrl set ${mode.toUpperCase()}`,
                     () =>
                         this.onOffControl(
-                            mode === 'software' ? 'Software' : 'VSET',
+                            mode === 'software' ? 'SOFTWARE' : 'VSET',
                         )
                             .then(resolve)
                             .catch(reject),
@@ -291,7 +290,7 @@ export class BuckSet {
         return action();
     }
 
-    activeDischargeResistance(value: number) {
+    activeDischargeResistance(value: BuckActiveDischargeResistance) {
         return new Promise<void>((resolve, reject) => {
             if (this.offlineMode) {
                 this.eventEmitter.emitPartialEvent<Buck>(
@@ -305,7 +304,7 @@ export class BuckSet {
                 resolve();
             } else {
                 this.sendCommand(
-                    `npm1012 buck pulldown set ${value === 0 ? 'off' : `${value}Ohm`}`,
+                    `npm1012 buck pulldown set ${value}`,
                     () => resolve(),
                     () => {
                         this.get.activeDischargeResistance();
@@ -360,11 +359,11 @@ export class BuckSet {
                         cmd = 'voutselctrl set GPIO';
                         break;
                     }
-                    case 'Off': {
+                    case 'OFF': {
                         cmd = 'voutsel set VOUT1';
                         break;
                     }
-                    case 'Software': {
+                    case 'SOFTWARE': {
                         cmd = 'voutsel set VOUT2';
                         break;
                     }
@@ -432,7 +431,7 @@ export class BuckSet {
         });
     }
 
-    peakCurrentLimit(value: number) {
+    peakCurrentLimit(value: BuckPeakCurrentLimit) {
         return new Promise<void>((resolve, reject) => {
             if (this.offlineMode) {
                 this.eventEmitter.emitPartialEvent<Buck>(
@@ -446,7 +445,7 @@ export class BuckSet {
                 resolve();
             } else {
                 this.sendCommand(
-                    `npm1012 buck peakilim set ${value}mA`,
+                    `npm1012 buck peakilim set ${value}`,
                     () => resolve(),
                     () => {
                         this.get.peakCurrentLimit();
@@ -482,7 +481,7 @@ export class BuckSet {
         });
     }
 
-    softStartPeakCurrentLimit(value: number) {
+    softStartPeakCurrentLimit(value: BuckSoftStartPeakCurrentLimit) {
         return new Promise<void>((resolve, reject) => {
             if (this.offlineMode) {
                 this.eventEmitter.emitPartialEvent<Buck>(
@@ -496,7 +495,7 @@ export class BuckSet {
                 resolve();
             } else {
                 this.sendCommand(
-                    `npm1012 buck softstartilim set ${value}mA`,
+                    `npm1012 buck softstartilim set ${value}`,
                     () => resolve(),
                     () => {
                         this.get.softStartPeakCurrentLimit();
@@ -507,39 +506,45 @@ export class BuckSet {
         });
     }
 
-    vOutComparatorBiasCurrent(mode: BuckModeControl, value: number) {
+    vOutComparatorBiasCurrentLPMode(value: BuckVOutComparatorBiasLPCurrent) {
         return new Promise<void>((resolve, reject) => {
-            let update: Partial<Buck> = {};
-            let unit = '';
-
-            switch (mode) {
-                case 'LP':
-                    update = { vOutComparatorBiasCurrentLPMode: value };
-                    unit = 'uA';
-                    break;
-                case 'ULP':
-                    update = { vOutComparatorBiasCurrentULPMode: value };
-                    unit = 'nA';
-                    break;
-                default:
-                    reject();
-                    return;
-            }
-
             if (this.offlineMode) {
                 this.eventEmitter.emitPartialEvent<Buck>(
                     'onBuckUpdate',
-                    update,
+                    { vOutComparatorBiasCurrentLPMode: value },
                     this.index,
                 );
 
                 resolve();
             } else {
                 this.sendCommand(
-                    `npm1012 buck bias ${mode.toLowerCase()} set ${value}${unit}`,
+                    `npm1012 buck bias lp set ${value}`,
                     () => resolve(),
                     () => {
-                        this.get.vOutComparatorBiasCurrent(mode);
+                        this.get.vOutComparatorBiasCurrentLPMode();
+                        reject();
+                    },
+                );
+            }
+        });
+    }
+
+    vOutComparatorBiasCurrentULPMode(value: BuckVOutComparatorBiasULPCurrent) {
+        return new Promise<void>((resolve, reject) => {
+            if (this.offlineMode) {
+                this.eventEmitter.emitPartialEvent<Buck>(
+                    'onBuckUpdate',
+                    { vOutComparatorBiasCurrentULPMode: value },
+                    this.index,
+                );
+
+                resolve();
+            } else {
+                this.sendCommand(
+                    `npm1012 buck bias ulp set ${value}`,
+                    () => resolve(),
+                    () => {
+                        this.get.vOutComparatorBiasCurrentULPMode();
                         reject();
                     },
                 );

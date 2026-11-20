@@ -94,7 +94,8 @@ describe('PMIC 1304 - Apply Config ', () => {
         retentionControl: 'GPIO0',
         activeDischarge: false,
         cardLabel: 'Buck',
-        vSetLabel: 'Vset',
+        vOutSubscriptLabel: 'OUT',
+        vSetSubscriptLabel: 'SET',
     };
 
     const initLdo: Ldo = {

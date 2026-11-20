@@ -5,8 +5,9 @@
  */
 
 import { helpers } from '../../tests/helpers';
-import { type BuckModeControl, type PmicDialog } from '../../types';
+import { type PmicDialog } from '../../types';
 import { PMIC_1012_BUCKS, setupMocksWithShellParser } from '../tests/helpers';
+import { vOutCompBiasLPModeKeys, vOutCompBiasULPModeKeys } from './types';
 
 describe('PMIC 1012 - Setters Online tests', () => {
     const { mockDialogHandler, mockOnBuckUpdate, mockEnqueueRequest, pmic } =
@@ -174,7 +175,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
         test.each(PMIC_1012_BUCKS)(
             'Set buckOnOffControl index: %p',
             async index => {
-                await pmic.buckModule[index].set.onOffControl('Software');
+                await pmic.buckModule[index].set.onOffControl('SOFTWARE');
 
                 expect(mockEnqueueRequest).toBeCalledTimes(1);
                 expect(mockEnqueueRequest).toBeCalledWith(
@@ -278,7 +279,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
             'Set buckActiveDischargeResistance index: %p',
             async index => {
                 await pmic.buckModule[index].set.activeDischargeResistance?.(
-                    250,
+                    '250Ohm',
                 );
 
                 expect(mockEnqueueRequest).toBeCalledTimes(1);
@@ -296,11 +297,13 @@ describe('PMIC 1012 - Setters Online tests', () => {
         test.each(PMIC_1012_BUCKS)(
             'Set buckActiveDischargeResistance index: %p - off',
             async index => {
-                await pmic.buckModule[index].set.activeDischargeResistance?.(0);
+                await pmic.buckModule[index].set.activeDischargeResistance?.(
+                    'OFF',
+                );
 
                 expect(mockEnqueueRequest).toBeCalledTimes(1);
                 expect(mockEnqueueRequest).toBeCalledWith(
-                    `npm1012 buck pulldown set off`,
+                    `npm1012 buck pulldown set OFF`,
                     expect.anything(),
                     undefined,
                     true,
@@ -314,7 +317,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
             'Set buckAlternateVOutControl index: %p',
             async index => {
                 await pmic.buckModule[index].set.alternateVOutControl?.(
-                    'Software',
+                    'SOFTWARE',
                 );
 
                 expect(mockEnqueueRequest).toBeCalledTimes(1);
@@ -366,7 +369,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
         test.each(PMIC_1012_BUCKS)(
             'Set buckPeakCurrentLimit index: %p',
             async index => {
-                await pmic.buckModule[index].set.peakCurrentLimit?.(142);
+                await pmic.buckModule[index].set.peakCurrentLimit?.('142mA');
 
                 expect(mockEnqueueRequest).toBeCalledTimes(1);
                 expect(mockEnqueueRequest).toBeCalledWith(
@@ -401,7 +404,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
             'Set buckSoftStartPeakCurrentLimit index: %p',
             async index => {
                 await pmic.buckModule[index].set.softStartPeakCurrentLimit?.(
-                    142,
+                    '142mA',
                 );
 
                 expect(mockEnqueueRequest).toBeCalledTimes(1);
@@ -417,29 +420,50 @@ describe('PMIC 1012 - Setters Online tests', () => {
         );
 
         test.each(
-            PMIC_1012_BUCKS.map(index => [
-                {
-                    index,
-                    mode: 'LP',
-                    value: 1.4,
-                },
-                {
-                    index,
-                    mode: 'ULP',
-                    value: 28,
-                },
-            ]).flat(),
+            PMIC_1012_BUCKS.map(index =>
+                vOutCompBiasLPModeKeys.map(key => [
+                    {
+                        index,
+                        value: key,
+                    },
+                ]),
+            ).flat(),
         )(
-            'Set vOutComparatorBiasCurrent %p',
-            async ({ index, mode, value }) => {
-                await pmic.buckModule[index].set.vOutComparatorBiasCurrent?.(
-                    mode as BuckModeControl,
-                    value,
-                );
+            'Set vOutComparatorBiasCurrentLPMode %p',
+            async ({ index, value }) => {
+                await pmic.buckModule[
+                    index
+                ].set.vOutComparatorBiasCurrentLPMode?.(value);
 
                 expect(mockEnqueueRequest).toBeCalledTimes(1);
                 expect(mockEnqueueRequest).toBeCalledWith(
-                    `npm1012 buck bias ${mode.toLowerCase()} set ${value}${mode === 'LP' ? 'uA' : 'nA'}`,
+                    `npm1012 buck bias lp set ${value}`,
+                    expect.anything(),
+                    undefined,
+                    true,
+                );
+            },
+        );
+
+        test.each(
+            PMIC_1012_BUCKS.map(index =>
+                vOutCompBiasULPModeKeys.map(key => [
+                    {
+                        index,
+                        value: key,
+                    },
+                ]),
+            ).flat(),
+        )(
+            'Set vOutComparatorBiasCurrentULPMode %p',
+            async ({ index, value }) => {
+                await pmic.buckModule[
+                    index
+                ].set.vOutComparatorBiasCurrentULPMode?.(value);
+
+                expect(mockEnqueueRequest).toBeCalledTimes(1);
+                expect(mockEnqueueRequest).toBeCalledWith(
+                    `npm1012 buck bias ulp set ${value}`,
                     expect.anything(),
                     undefined,
                     true,
@@ -450,11 +474,11 @@ describe('PMIC 1012 - Setters Online tests', () => {
         test.each(PMIC_1012_BUCKS)(
             'Set buckVOutRippleControl index: %p',
             async index => {
-                await pmic.buckModule[index].set.vOutRippleControl?.('Low');
+                await pmic.buckModule[index].set.vOutRippleControl?.('LOW');
 
                 expect(mockEnqueueRequest).toBeCalledTimes(1);
                 expect(mockEnqueueRequest).toBeCalledWith(
-                    `npm1012 buck ripple set Low`,
+                    `npm1012 buck ripple set LOW`,
                     expect.anything(),
                     undefined,
                     true,

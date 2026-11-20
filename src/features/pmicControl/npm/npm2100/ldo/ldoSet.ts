@@ -9,7 +9,8 @@ import {
     type Ldo,
     type LdoExport,
     type LdoMode,
-    type LdoSoftStartCurrent,
+    type LdoSoftStartCurrentLdoMode,
+    type LdoSoftStartCurrentLoadSwitchMode,
     type PmicDialog,
 } from '../../types';
 import {
@@ -41,9 +42,15 @@ export class LdoSet {
         if (config.modeControl)
             promises.push(this.modeControl(config.modeControl));
         if (config.pinSel) promises.push(this.pinSel(config.pinSel));
-        if (config.softStartCurrent)
+        if (config.softStartCurrentLdoMode)
             promises.push(
-                this.softStartCurrent(config.softStartCurrent, config.mode),
+                this.softStartCurrentLdoMode(config.softStartCurrentLdoMode),
+            );
+        if (config.softStartCurrentLoadSwitchMode)
+            promises.push(
+                this.softStartCurrentLoadSwitchMode(
+                    config.softStartCurrentLoadSwitchMode,
+                ),
             );
         if (config.pinMode) promises.push(this.pinMode(config.pinMode));
         if (config.overcurrentProtection)
@@ -155,28 +162,43 @@ export class LdoSet {
         });
     }
 
-    softStartCurrent(value: LdoSoftStartCurrent, mode?: LdoMode) {
+    softStartCurrentLdoMode(value: LdoSoftStartCurrentLdoMode) {
         return new Promise<void>((resolve, reject) => {
-            if (mode === undefined) {
-                resolve();
-                return;
-            }
-
             if (this.offlineMode) {
                 this.eventEmitter.emitPartialEvent<Ldo>(
                     'onLdoUpdate',
-                    mode === 'LDO'
-                        ? { softStartCurrentLDOMode: value }
-                        : { softStartCurrentLoadSwitchMode: value },
+                    { softStartCurrentLdoMode: value },
                     0,
                 );
                 resolve();
             } else {
                 this.sendCommand(
-                    `npm2100 ldosw softstart ${mode === 'LDO' ? 'LDO' : 'LOADSW'} set ${value}mA`,
+                    `npm2100 ldosw softstart LDO set ${value}mA`,
                     () => resolve(),
                     () => {
-                        this.get.softStartCurrent(mode);
+                        this.get.softStartCurrentLdoMode();
+                        reject();
+                    },
+                );
+            }
+        });
+    }
+
+    softStartCurrentLoadSwitchMode(value: LdoSoftStartCurrentLoadSwitchMode) {
+        return new Promise<void>((resolve, reject) => {
+            if (this.offlineMode) {
+                this.eventEmitter.emitPartialEvent<Ldo>(
+                    'onLdoUpdate',
+                    { softStartCurrentLoadSwitchMode: value },
+                    0,
+                );
+                resolve();
+            } else {
+                this.sendCommand(
+                    `npm2100 ldosw softstart LOADSW set ${value}mA`,
+                    () => resolve(),
+                    () => {
+                        this.get.softStartCurrentLoadSwitchMode();
                         reject();
                     },
                 );

@@ -18,9 +18,6 @@ import {
     type Charger,
     type ChargerModule,
     isFixedListRangeWithLabel,
-    type ITerm,
-    type ITrickle,
-    type VTrickleFast,
 } from '../../../features/pmicControl/npm/types';
 
 interface PowerCardProperties {
@@ -42,23 +39,25 @@ const IBatLimUI = ({
     charger: Charger;
     disabled: boolean;
 }) => {
-    const [internalBatLim, setInternalBatLim] = useState(charger.iBatLim);
+    const [internalIBatLim, setInternalIBatLim] = useState(charger.iBatLim);
 
     useEffect(() => {
-        setInternalBatLim(charger.iBatLim);
+        setInternalIBatLim(charger.iBatLim);
     }, [charger]);
 
     const chargerIBatLimRange = chargerModule.ranges.iBatLim;
 
     if (
         !chargerIBatLimRange ||
-        !chargerModule.set.batLim ||
+        !chargerModule.set.iBatLim ||
         charger.iBatLim === undefined ||
-        internalBatLim === undefined
+        internalIBatLim === undefined ||
+        typeof charger.iBatLim !== 'number' ||
+        typeof internalIBatLim !== 'number'
     )
         return null;
 
-    const setBatLim = chargerModule.set.batLim.bind(chargerModule.set);
+    const setIBatLim = chargerModule.set.iBatLim.bind(chargerModule.set);
 
     if (
         isFixedListRangeWithLabel(chargerIBatLimRange) &&
@@ -91,7 +90,7 @@ const IBatLimUI = ({
                     </DocumentationTooltip>
                 }
                 disabled={disabled}
-                onSelect={v => setBatLim(v.value)}
+                onSelect={v => setIBatLim(v.value)}
                 selectedItem={{
                     value: charger.iBatLim,
                     label: chargerIBatLimRange.toLabel(charger.iBatLim),
@@ -113,9 +112,9 @@ const IBatLimUI = ({
             unit="mA"
             disabled={disabled}
             range={chargerIBatLimRange}
-            value={internalBatLim}
-            onChange={setInternalBatLim}
-            onChangeComplete={v => setBatLim(v)}
+            value={internalIBatLim}
+            onChange={setInternalIBatLim}
+            onChangeComplete={v => setIBatLim(v)}
             showSlider
         />
     );
@@ -187,7 +186,9 @@ export default ({
                 range={chargerModule.ranges.voltage}
                 value={internalVTerm}
                 onChange={setInternalVTerm}
-                onChangeComplete={v => chargerModule.set.vTerm(v)}
+                onChangeComplete={v =>
+                    chargerModule.set.vTerm(v, charger.enabled)
+                }
                 showSlider
             />
             <NumberInput
@@ -204,7 +205,13 @@ export default ({
                 range={chargerModule.ranges.current}
                 value={internalIChg}
                 onChange={setInternalIChg}
-                onChangeComplete={v => chargerModule.set.iChg(v)}
+                onChangeComplete={v =>
+                    chargerModule.set.iChg(
+                        v,
+                        charger.iChgDouble,
+                        charger.enabled,
+                    )
+                }
                 showSlider
             />
             <Dropdown
@@ -217,7 +224,9 @@ export default ({
                     </DocumentationTooltip>
                 }
                 items={chargerModule.values.iTerm}
-                onSelect={item => chargerModule.set.iTerm(item.value as ITerm)}
+                onSelect={item =>
+                    chargerModule.set.iTerm(item.value, charger.enabled)
+                }
                 selectedItem={
                     chargerModule.values.iTerm.find(
                         item => item.value === charger.iTerm,
@@ -265,7 +274,8 @@ export default ({
                         items={chargerModule.values.vTrickleFast}
                         onSelect={item =>
                             chargerModule.set.vTrickleFast(
-                                item.value as VTrickleFast,
+                                item.value,
+                                charger.enabled,
                             )
                         }
                         selectedItem={
@@ -292,9 +302,7 @@ export default ({
                             }
                             items={chargerModule.values.iTrickle}
                             onSelect={item =>
-                                chargerModule.set.iTrickle?.(
-                                    item.value as ITrickle,
-                                )
+                                chargerModule.set.iTrickle?.(item.value)
                             }
                             selectedItem={
                                 chargerModule.values.iTrickle.find(

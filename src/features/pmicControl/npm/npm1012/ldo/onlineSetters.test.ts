@@ -5,12 +5,22 @@
  */
 
 import { helpers } from '../../tests/helpers';
+import { type LdoSetExtraArgs } from '../../types';
 import { PMIC_1012_LDOS, setupMocksWithShellParser } from '../tests/helpers';
 import { onOffControlValues } from './types';
 
 describe('PMIC 1012 - Setters Online tests', () => {
     const { mockOnLdoUpdate, mockEnqueueRequest, pmic } =
         setupMocksWithShellParser();
+
+    const extraArgs: LdoSetExtraArgs = {
+        currState: {
+            mode: 'LDO',
+            onOffControl: 'Software',
+            vOutSel: 'Software',
+        },
+    };
+
     describe('Setters and effects state - success', () => {
         beforeEach(() => {
             jest.clearAllMocks();
@@ -21,43 +31,25 @@ describe('PMIC 1012 - Setters Online tests', () => {
         });
 
         test.each(PMIC_1012_LDOS)('Set ldoVoltage index: %p', async index => {
-            await pmic.ldoModule[index].set.voltage?.(1.5);
+            const res = pmic.ldoModule[index].set.voltage?.(1.5, extraArgs);
 
             if (index === 1) {
-                expect(mockEnqueueRequest).toBeCalledTimes(0); // Disabled for Load Switch 2
+                // Disabled for Load Switch 2
+                await expect(res).rejects.toBeUndefined();
+                expect(mockEnqueueRequest).toBeCalledTimes(0);
                 expect(mockOnLdoUpdate).toBeCalledTimes(0);
-            } else {
-                expect(mockOnLdoUpdate).toBeCalledTimes(1);
-                expect(mockOnLdoUpdate).toBeCalledWith({
-                    data: { voltage: 1.5 },
-                    index,
-                });
-
-                expect(mockEnqueueRequest).toBeCalledTimes(3);
-                expect(mockEnqueueRequest).nthCalledWith(
-                    1,
-                    `npm1012 ldosw mode set ${index} LDO`,
-                    expect.anything(),
-                    undefined,
-                    true,
-                );
-                expect(mockEnqueueRequest).nthCalledWith(
-                    2,
-                    `npm1012 ldosw vout software set ${index} 1.5`,
-                    expect.anything(),
-                    undefined,
-                    true,
-                );
-                expect(mockEnqueueRequest).nthCalledWith(
-                    3,
-                    `npm1012 ldosw voutselctrl set ${index} SOFTWARE`,
-                    expect.anything(),
-                    undefined,
-                    true,
-                );
-
-                expect(mockOnLdoUpdate).toBeCalledTimes(1);
+                return;
             }
+
+            await res;
+            expect(mockEnqueueRequest).toBeCalledTimes(1);
+            expect(mockEnqueueRequest).nthCalledWith(
+                1,
+                `npm1012 ldosw vout software set ${index} 1.5`,
+                expect.anything(),
+                undefined,
+                true,
+            );
         });
 
         test.each(
@@ -68,69 +60,40 @@ describe('PMIC 1012 - Setters Online tests', () => {
                 })),
             ).flat(),
         )('Set ldoEnabled %p', async ({ index, enabled }) => {
-            await pmic.ldoModule[index].set.enabled(enabled);
-
-            // Load Switch 2
-            if (index === 1) {
-                expect(mockEnqueueRequest).toBeCalledTimes(2);
-                expect(mockEnqueueRequest).nthCalledWith(
-                    1,
-                    `npm1012 ldosw enablectrl set ${index} Software`,
-                    expect.anything(),
-                    undefined,
-                    true,
-                );
-                expect(mockEnqueueRequest).nthCalledWith(
-                    2,
-                    `npm1012 ldosw enable set ${index} ${enabled ? 'on' : 'off'}`,
-                    expect.anything(),
-                    undefined,
-                    true,
-                );
-            } else {
-                expect(mockEnqueueRequest).toBeCalledTimes(3);
-                expect(mockEnqueueRequest).nthCalledWith(
-                    1,
-                    `npm1012 ldosw enablectrl set ${index} Software`,
-                    expect.anything(),
-                    undefined,
-                    true,
-                );
-                expect(mockEnqueueRequest).nthCalledWith(
-                    2,
-                    `npm1012 ldosw voutselctrl set ${index} SOFTWARE`,
-                    expect.anything(),
-                    undefined,
-                    true,
-                );
-                expect(mockEnqueueRequest).nthCalledWith(
-                    3,
-                    `npm1012 ldosw enable set ${index} ${enabled ? 'on' : 'off'}`,
-                    expect.anything(),
-                    undefined,
-                    true,
-                );
-            }
+            await pmic.ldoModule[index].set.enabled(enabled, extraArgs);
+            expect(mockEnqueueRequest).toBeCalledTimes(1);
+            expect(mockEnqueueRequest).toBeCalledWith(
+                `npm1012 ldosw enable set ${index} ${enabled ? 'on' : 'off'}`,
+                expect.anything(),
+                undefined,
+                true,
+            );
 
             // Updates should only be emitted when we get response
             expect(mockOnLdoUpdate).toBeCalledTimes(0);
         });
 
         test.each(PMIC_1012_LDOS)('Set ldoMode index: %p', async index => {
-            await pmic.ldoModule[index].set.mode?.('Load_switch');
-
+            const res = pmic.ldoModule[index].set.mode?.(
+                'Load_switch',
+                extraArgs,
+            );
             if (index === 1) {
-                expect(mockEnqueueRequest).toBeCalledTimes(0); // Disabled for Load Switch 2
-            } else {
-                expect(mockEnqueueRequest).toBeCalledTimes(1);
-                expect(mockEnqueueRequest).toBeCalledWith(
-                    `npm1012 ldosw mode set ${index} Load_switch`,
-                    expect.anything(),
-                    undefined,
-                    true,
-                );
+                // Disabled for Load Switch 2
+                await expect(res).rejects.toBeUndefined();
+                expect(mockEnqueueRequest).toBeCalledTimes(0);
+                expect(mockOnLdoUpdate).toBeCalledTimes(0);
+                return;
             }
 
+            await res;
+            expect(mockEnqueueRequest).toBeCalledTimes(1);
+            expect(mockEnqueueRequest).toBeCalledWith(
+                `npm1012 ldosw mode set ${index} Load_switch`,
+                expect.anything(),
+                undefined,
+                true,
+            );
             expect(mockOnLdoUpdate).toBeCalledTimes(0);
         });
 
@@ -158,27 +121,15 @@ describe('PMIC 1012 - Setters Online tests', () => {
         test.each(PMIC_1012_LDOS)(
             'Set ldoSoftStartCurrentLimit index: %p',
             async index => {
-                await pmic.ldoModule[index].set.softStartCurrent?.(20, 'LDO');
+                await pmic.ldoModule[index].set.softStartCurrent?.('10mA');
+                expect(mockEnqueueRequest).toBeCalledTimes(1);
                 expect(mockEnqueueRequest).nthCalledWith(
                     1,
-                    `npm1012 ldosw softstartilim set ${index} 20mA`,
+                    `npm1012 ldosw softstartilim set ${index} 10mA`,
                     expect.anything(),
                     undefined,
                     true,
                 );
-
-                await pmic.ldoModule[index].set.softStartCurrent?.(
-                    20,
-                    'Load_switch',
-                );
-                expect(mockEnqueueRequest).nthCalledWith(
-                    2,
-                    `npm1012 ldosw softstartilim set ${index} 20mA`,
-                    expect.anything(),
-                    undefined,
-                    true,
-                );
-
                 expect(mockOnLdoUpdate).toBeCalledTimes(0);
             },
         );
@@ -186,7 +137,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
         test.each(PMIC_1012_LDOS)(
             'Set ldoSoftStartTime index: %p',
             async index => {
-                await pmic.ldoModule[index].set.softStartTime?.(4.5);
+                await pmic.ldoModule[index].set.softStartTime?.('4.5ms');
 
                 expect(mockEnqueueRequest).toBeCalledTimes(1);
                 expect(mockEnqueueRequest).toBeCalledWith(
@@ -265,6 +216,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
             expect(mockOnLdoUpdate).toBeCalledTimes(0);
         });
     });
+
     describe('Setters and effects state - error', () => {
         beforeEach(() => {
             jest.clearAllMocks();
@@ -277,101 +229,32 @@ describe('PMIC 1012 - Setters Online tests', () => {
         test.each(PMIC_1012_LDOS)(
             'Set ldoVoltage onError case 1 - Fail immediately - index: %p',
             async index => {
-                // Disabled for Load Switch 2
-                if (index === 1) {
-                    await pmic.ldoModule[index].set.voltage?.(1.5);
+                await expect(
+                    pmic.ldoModule[index].set.voltage?.(1.5, extraArgs),
+                ).rejects.toBeUndefined();
 
+                if (index === 1) {
+                    // Disabled for Load Switch 2
                     expect(mockEnqueueRequest).toBeCalledTimes(0);
                     expect(mockOnLdoUpdate).toBeCalledTimes(0);
-                } else {
-                    await expect(
-                        pmic.ldoModule[index].set.voltage?.(1.5),
-                    ).rejects.toBeUndefined();
-
-                    expect(mockOnLdoUpdate).toBeCalledTimes(1);
-                    expect(mockOnLdoUpdate).toBeCalledWith({
-                        data: { voltage: 1.5 },
-                        index,
-                    });
-
-                    expect(mockEnqueueRequest).toBeCalledTimes(3);
-                    expect(mockEnqueueRequest).nthCalledWith(
-                        1,
-                        `npm1012 ldosw mode set ${index} LDO`,
-                        expect.anything(),
-                        undefined,
-                        true,
-                    );
-
-                    expect(mockEnqueueRequest).nthCalledWith(
-                        2,
-                        `npm1012 ldosw mode get ${index}`,
-                        expect.anything(),
-                        undefined,
-                        true,
-                    );
-
-                    expect(mockEnqueueRequest).nthCalledWith(
-                        3,
-                        `npm1012 ldosw vout software get ${index}`,
-                        expect.anything(),
-                        undefined,
-                        true,
-                    );
+                    return;
                 }
-            },
-        );
 
-        test.each(PMIC_1012_LDOS)(
-            'Set ldoVoltage onError case 2 - Fail on second command - index: %p',
-            async index => {
-                // Disabled for Load Switch 2
-                if (index === 1) {
-                    await pmic.ldoModule[index].set.voltage?.(1.5);
-
-                    expect(mockEnqueueRequest).toBeCalledTimes(0);
-                    expect(mockOnLdoUpdate).toBeCalledTimes(0);
-                } else {
-                    mockEnqueueRequest.mockImplementationOnce(
-                        helpers.registerCommandCallbackSuccess,
-                    );
-
-                    await expect(
-                        pmic.ldoModule[index].set.voltage?.(1.5),
-                    ).rejects.toBeUndefined();
-
-                    expect(mockOnLdoUpdate).toBeCalledTimes(1);
-                    expect(mockOnLdoUpdate).toBeCalledWith({
-                        data: { voltage: 1.5 },
-                        index,
-                    });
-
-                    expect(mockEnqueueRequest).toBeCalledTimes(3);
-                    expect(mockEnqueueRequest).nthCalledWith(
-                        1,
-                        `npm1012 ldosw mode set ${index} LDO`,
-                        expect.anything(),
-                        undefined,
-                        true,
-                    );
-
-                    expect(mockEnqueueRequest).nthCalledWith(
-                        2,
-                        `npm1012 ldosw vout software set ${index} 1.5`,
-                        expect.anything(),
-                        undefined,
-                        true,
-                    );
-
-                    // Request update on error
-                    expect(mockEnqueueRequest).nthCalledWith(
-                        3,
-                        `npm1012 ldosw vout software get ${index}`,
-                        expect.anything(),
-                        undefined,
-                        true,
-                    );
-                }
+                expect(mockEnqueueRequest).toBeCalledTimes(2);
+                expect(mockEnqueueRequest).nthCalledWith(
+                    1,
+                    `npm1012 ldosw vout software set ${index} 1.5`,
+                    expect.anything(),
+                    undefined,
+                    true,
+                );
+                expect(mockEnqueueRequest).nthCalledWith(
+                    2,
+                    `npm1012 ldosw vout software get ${index}`,
+                    expect.anything(),
+                    undefined,
+                    true,
+                );
             },
         );
 
@@ -386,26 +269,19 @@ describe('PMIC 1012 - Setters Online tests', () => {
             'Set ldoEnabled - Fail immediately - index: %p',
             async ({ index, enabled }) => {
                 await expect(
-                    pmic.ldoModule[index].set.enabled(enabled),
+                    pmic.ldoModule[index].set.enabled(enabled, extraArgs),
                 ).rejects.toBeUndefined();
 
-                expect(mockEnqueueRequest).toBeCalledTimes(3);
+                expect(mockEnqueueRequest).toBeCalledTimes(2);
                 expect(mockEnqueueRequest).nthCalledWith(
                     1,
-                    `npm1012 ldosw enablectrl set ${index} Software`,
+                    `npm1012 ldosw enable set ${index} ${enabled ? 'on' : 'off'}`,
                     expect.anything(),
                     undefined,
                     true,
                 );
                 expect(mockEnqueueRequest).nthCalledWith(
                     2,
-                    `npm1012 ldosw enablectrl get ${index}`,
-                    expect.anything(),
-                    undefined,
-                    true,
-                );
-                expect(mockEnqueueRequest).nthCalledWith(
-                    3,
                     `npm1012 ldosw enable get ${index}`,
                     expect.anything(),
                     undefined,
@@ -419,32 +295,31 @@ describe('PMIC 1012 - Setters Online tests', () => {
         test.each(PMIC_1012_LDOS)(
             'Set ldoMode - Fail immediately - index: %p',
             async index => {
+                await expect(
+                    pmic.ldoModule[index].set.mode?.('Load_switch', extraArgs),
+                ).rejects.toBeUndefined();
+
                 // Disabled for Load Switch 2
                 if (index === 1) {
-                    pmic.ldoModule[index].set.mode?.('Load_switch');
-
                     expect(mockEnqueueRequest).toBeCalledTimes(0);
-                } else {
-                    await expect(
-                        pmic.ldoModule[index].set.mode?.('Load_switch'),
-                    ).rejects.toBeUndefined();
-
-                    expect(mockEnqueueRequest).toBeCalledTimes(2);
-                    expect(mockEnqueueRequest).toBeCalledWith(
-                        `npm1012 ldosw mode set ${index} Load_switch`,
-                        expect.anything(),
-                        undefined,
-                        true,
-                    );
-
-                    expect(mockEnqueueRequest).nthCalledWith(
-                        2,
-                        `npm1012 ldosw mode get ${index}`,
-                        expect.anything(),
-                        undefined,
-                        true,
-                    );
+                    return;
                 }
+
+                expect(mockEnqueueRequest).toBeCalledTimes(2);
+                expect(mockEnqueueRequest).toBeCalledWith(
+                    `npm1012 ldosw mode set ${index} Load_switch`,
+                    expect.anything(),
+                    undefined,
+                    true,
+                );
+
+                expect(mockEnqueueRequest).nthCalledWith(
+                    2,
+                    `npm1012 ldosw mode get ${index}`,
+                    expect.anything(),
+                    undefined,
+                    true,
+                );
 
                 expect(mockOnLdoUpdate).toBeCalledTimes(0);
             },
@@ -488,12 +363,12 @@ describe('PMIC 1012 - Setters Online tests', () => {
             'Set ldoSoftStartCurrentLimit - Fail immediately - index: %p',
             async index => {
                 await expect(
-                    pmic.ldoModule[index].set.softStartCurrent?.(20, 'LDO'),
+                    pmic.ldoModule[index].set.softStartCurrent?.('10mA'),
                 ).rejects.toBeUndefined();
 
                 expect(mockEnqueueRequest).toBeCalledTimes(2);
                 expect(mockEnqueueRequest).toBeCalledWith(
-                    `npm1012 ldosw softstartilim set ${index} 20mA`,
+                    `npm1012 ldosw softstartilim set ${index} 10mA`,
                     expect.anything(),
                     undefined,
                     true,
@@ -515,7 +390,7 @@ describe('PMIC 1012 - Setters Online tests', () => {
             'Set ldoSoftStartTime - Fail immediately - index: %p',
             async index => {
                 await expect(
-                    pmic.ldoModule[index].set.softStartTime?.(4.5),
+                    pmic.ldoModule[index].set.softStartTime?.('4.5ms'),
                 ).rejects.toBeUndefined();
 
                 expect(mockEnqueueRequest).toBeCalledTimes(2);
