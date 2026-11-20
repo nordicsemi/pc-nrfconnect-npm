@@ -716,10 +716,14 @@ export type LowPowerConfig = {
     operatingMode?: OperatingMode;
     powerButtonEnable?: boolean;
     shipVBusFilt?: LowPowerConfigShipVBusFilt;
+    shipVBusFiltDisabled?: boolean;
     shipVBusFiltTime?: LowPowerConfigShipVBusFiltTime;
     shpHldSlideSwitchDelay?: LowPowerConfigShpHldSlideSwitchDelay;
+    shpHldSlideSwitchDelayDisabled?: boolean;
     shpHldSlideSwitchPollTime?: LowPowerConfigShpHldSlideSwitchPollTime;
+    shpHldSlideSwitchPollTimeDisabled?: boolean;
     shpHldSlider?: LowPowerConfigShpHldSlider;
+    shpHldSliderDisabled?: boolean;
     shpHldType?: LowPowerConfigShpHldType;
     suspendPinPullDown?: boolean;
     vbusHibernateWait?: boolean;
