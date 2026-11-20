@@ -76,7 +76,7 @@ describe('PMIC 1210 - Setters Online tests', () => {
 
             expect(mockEnqueueRequest).toBeCalledTimes(1);
             expect(mockEnqueueRequest).toBeCalledWith(
-                'npm12xx low_power_ctrl shphld delay set 8s',
+                'npm12xx low_power_ctrl shphld delaysel set 8s',
                 expect.anything(),
                 undefined,
                 true,
@@ -132,7 +132,7 @@ describe('PMIC 1210 - Setters Online tests', () => {
 
             expect(mockEnqueueRequest).toBeCalledTimes(1);
             expect(mockEnqueueRequest).toBeCalledWith(
-                `npm12xx low_power_ctrl suspend_pin pull_down set ${value ? 'on' : 'off'}`,
+                `npm12xx sysreg suspendpin pull set ${value ? 'pulldown' : 'nopull'}`,
                 expect.anything(),
                 undefined,
                 true,
@@ -173,12 +173,26 @@ describe('PMIC 1210 - Setters Online tests', () => {
             } satisfies Partial<LowPowerConfig>);
         });
 
-        test('Set vbusStandbyPinSel', async () => {
-            await pmic.lowPowerModule?.set.vbusStandbyPinSel?.('standby2');
+        test('Set vbusStandbyCtrl', async () => {
+            await pmic.lowPowerModule?.set.vbusStandbyCtrl?.('software');
 
             expect(mockEnqueueRequest).toBeCalledTimes(1);
             expect(mockEnqueueRequest).toBeCalledWith(
-                'npm12xx low_power_ctrl vbus standby_pinsel set standby2',
+                'npm12xx low_power_ctrl vbus standbyctrl set software',
+                expect.anything(),
+                undefined,
+                true,
+            );
+
+            expect(mockOnLowPowerUpdate).toBeCalledTimes(0);
+        });
+
+        test('Set vbusStandbySel', async () => {
+            await pmic.lowPowerModule?.set.vbusStandbySel?.('standby2');
+
+            expect(mockEnqueueRequest).toBeCalledTimes(1);
+            expect(mockEnqueueRequest).toBeCalledWith(
+                'npm12xx low_power_ctrl vbus standbysel set standby2',
                 expect.anything(),
                 undefined,
                 true,
@@ -349,7 +363,7 @@ describe('PMIC 1210 - Setters Online tests', () => {
             expect(mockEnqueueRequest).toBeCalledTimes(2);
             expect(mockEnqueueRequest).nthCalledWith(
                 1,
-                'npm12xx low_power_ctrl shphld delay set 8s',
+                'npm12xx low_power_ctrl shphld delaysel set 8s',
                 expect.anything(),
                 undefined,
                 true,
@@ -357,7 +371,7 @@ describe('PMIC 1210 - Setters Online tests', () => {
 
             expect(mockEnqueueRequest).nthCalledWith(
                 2,
-                'npm12xx low_power_ctrl shphld delay get',
+                'npm12xx low_power_ctrl shphld delaysel get',
                 expect.anything(),
                 undefined,
                 true,
@@ -399,7 +413,7 @@ describe('PMIC 1210 - Setters Online tests', () => {
             expect(mockEnqueueRequest).toBeCalledTimes(2);
             expect(mockEnqueueRequest).nthCalledWith(
                 1,
-                'npm12xx low_power_ctrl suspend_pin pull_down set on',
+                'npm12xx sysreg suspendpin pull set pulldown',
                 expect.anything(),
                 undefined,
                 true,
@@ -407,7 +421,7 @@ describe('PMIC 1210 - Setters Online tests', () => {
 
             expect(mockEnqueueRequest).nthCalledWith(
                 2,
-                'npm12xx low_power_ctrl suspend_pin pull_down get',
+                'npm12xx sysreg suspendpin pull get',
                 expect.anything(),
                 undefined,
                 true,
@@ -468,22 +482,46 @@ describe('PMIC 1210 - Setters Online tests', () => {
             expect(mockOnLowPowerUpdate).toBeCalledTimes(0);
         });
 
-        test('Set vbusStandbyPinSel - Fail immediately', async () => {
+        test('Set vbusStandbyCtrl - Fail immediately', async () => {
             await expect(
-                pmic.lowPowerModule?.set.vbusStandbyPinSel?.('standby2'),
+                pmic.lowPowerModule?.set.vbusStandbyCtrl?.('software'),
             ).rejects.toBeUndefined();
 
             expect(mockEnqueueRequest).toBeCalledTimes(2);
             expect(mockEnqueueRequest).nthCalledWith(
                 1,
-                'npm12xx low_power_ctrl vbus standby_pinsel set standby2',
+                'npm12xx low_power_ctrl vbus standbyctrl set software',
                 expect.anything(),
                 undefined,
                 true,
             );
             expect(mockEnqueueRequest).nthCalledWith(
                 2,
-                'npm12xx low_power_ctrl vbus standby_pinsel get',
+                'npm12xx low_power_ctrl vbus standbyctrl get',
+                expect.anything(),
+                undefined,
+                true,
+            );
+
+            expect(mockOnLowPowerUpdate).toBeCalledTimes(0);
+        });
+
+        test('Set vbusStandbySel - Fail immediately', async () => {
+            await expect(
+                pmic.lowPowerModule?.set.vbusStandbySel?.('standby2'),
+            ).rejects.toBeUndefined();
+
+            expect(mockEnqueueRequest).toBeCalledTimes(2);
+            expect(mockEnqueueRequest).nthCalledWith(
+                1,
+                'npm12xx low_power_ctrl vbus standbysel set standby2',
+                expect.anything(),
+                undefined,
+                true,
+            );
+            expect(mockEnqueueRequest).nthCalledWith(
+                2,
+                'npm12xx low_power_ctrl vbus standbysel get',
                 expect.anything(),
                 undefined,
                 true,

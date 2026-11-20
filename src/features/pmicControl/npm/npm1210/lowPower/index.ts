@@ -22,7 +22,8 @@ import {
     shpHldSlideSwitchPollTimeKV,
     shpHldTypeKV,
     timeToActiveKV,
-    vBusStandbyPinSelKV,
+    vBusStandbyCtrlKV,
+    vBusStandbySelKV,
 } from './types';
 
 export const toLowPowerExport = (config: LowPowerConfig): LowPowerExport => ({
@@ -79,7 +80,8 @@ export default class Module implements LowPowerModule {
             timeToActive: 'off',
             vbusHibernateWait: false,
             vbusHibernateWaitingForChargeComplete: false,
-            vbusStandbyPinSel: 'standby1',
+            vbusStandbyCtrl: 'pin',
+            vbusStandbySel: 'standby1',
             vbusStandbyWait: false,
             vbusStandbyWaitingForChargeComplete: false,
         };
@@ -127,7 +129,11 @@ export default class Module implements LowPowerModule {
                 label: val,
                 value: key,
             })),
-            vbusStandbyPinSel: vBusStandbyPinSelKV.map(([key, val]) => ({
+            vbusStandbyCtrl: vBusStandbyCtrlKV.map(([key, val]) => ({
+                label: val,
+                value: key,
+            })),
+            vbusStandbySel: vBusStandbySelKV.map(([key, val]) => ({
                 label: val,
                 value: key,
             })),

@@ -14,7 +14,8 @@ import {
     shpHldSlideSwitchPollTimeKeys,
     shpHldTypeKeys,
     timeToActiveKeys,
-    vBusStandbyPinSelKeys,
+    vBusStandbyCtrlKeys,
+    vBusStandbySelKeys,
 } from './types';
 
 export default (
@@ -135,7 +136,7 @@ export default (
 
     cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            'npm12xx low_power_ctrl shphld delay (get|set)',
+            'npm12xx low_power_ctrl shphld delaysel (get|set)',
             msg => {
                 const res = parseValueFromCmdReply(msg)?.toLowerCase();
                 const shpHldSlideSwitchDelay = shpHldSlideSwitchDelayKeys.find(
@@ -224,17 +225,23 @@ export default (
 
     cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            'npm12xx low_power_ctrl suspend_pin pull_down (get|set)',
+            'npm12xx sysreg suspendpin pull (get|set)',
             msg => {
-                const suspendPinPullDown = parseOnOffFromCmdReply(msg);
-                if (suspendPinPullDown === undefined) {
-                    return;
+                const value = parseValueFromCmdReply(msg)?.toLowerCase();
+                const update: Partial<LowPowerConfig> = {};
+                switch (value) {
+                    case 'nopull':
+                        update.suspendPinPullDown = false;
+                        break;
+                    case 'pulldown':
+                        update.suspendPinPullDown = true;
+                        break;
+                    default:
+                        return;
                 }
                 eventEmitter.emitPartialEvent<LowPowerConfig>(
                     'onLowPowerUpdate',
-                    {
-                        suspendPinPullDown,
-                    },
+                    update,
                 );
             },
             () => {},
@@ -284,19 +291,41 @@ export default (
 
     cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            'npm12xx low_power_ctrl vbus standby_pinsel (get|set)',
+            'npm12xx low_power_ctrl vbus standbyctrl (get|set)',
             msg => {
                 const res = parseValueFromCmdReply(msg)?.toLowerCase();
-                const vbusStandbyPinSel = vBusStandbyPinSelKeys.find(
+                const vbusStandbyCtrl = vBusStandbyCtrlKeys.find(
                     v => v.toLowerCase() === res,
                 );
-                if (vbusStandbyPinSel === undefined) {
+                if (vbusStandbyCtrl === undefined) {
                     return;
                 }
                 eventEmitter.emitPartialEvent<LowPowerConfig>(
                     'onLowPowerUpdate',
                     {
-                        vbusStandbyPinSel,
+                        vbusStandbyCtrl,
+                    },
+                );
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm12xx low_power_ctrl vbus standbysel (get|set)',
+            msg => {
+                const res = parseValueFromCmdReply(msg)?.toLowerCase();
+                const vbusStandbySel = vBusStandbySelKeys.find(
+                    v => v.toLowerCase() === res,
+                );
+                if (vbusStandbySel === undefined) {
+                    return;
+                }
+                eventEmitter.emitPartialEvent<LowPowerConfig>(
+                    'onLowPowerUpdate',
+                    {
+                        vbusStandbySel,
                     },
                 );
             },

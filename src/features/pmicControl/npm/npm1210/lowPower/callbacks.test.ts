@@ -14,7 +14,8 @@ import {
     shpHldSlideSwitchPollTimeKeys,
     shpHldTypeKeys,
     timeToActiveKeys,
-    vBusStandbyPinSelKeys,
+    vBusStandbyCtrlKeys,
+    vBusStandbySelKeys,
 } from './types';
 
 describe('PMIC 1210 - Command callbacks', () => {
@@ -101,8 +102,8 @@ describe('PMIC 1210 - Command callbacks', () => {
             { append: 'get', expected: value },
             { append: `set ${value}`, expected: value },
         ]),
-    )('npm12xx low_power_ctrl shphld delay %p', ({ append, expected }) => {
-        const command = `npm12xx low_power_ctrl shphld delay ${append}`;
+    )('npm12xx low_power_ctrl shphld delaysel %p', ({ append, expected }) => {
+        const command = `npm12xx low_power_ctrl shphld delaysel ${append}`;
         const callback =
             eventHandlers.mockRegisterCommandCallbackHandler(command);
 
@@ -171,23 +172,23 @@ describe('PMIC 1210 - Command callbacks', () => {
     test.each(
         [false, true].flatMap(value => [
             { append: 'get', expected: value },
-            { append: `set ${value ? 'on' : 'off'}`, expected: value },
+            { append: `set ${value ? 'pulldown' : 'nopull'}`, expected: value },
         ]),
-    )(
-        'npm12xx low_power_ctrl suspend_pin pull_down %p',
-        ({ append, expected }) => {
-            const command = `npm12xx low_power_ctrl suspend_pin pull_down ${append}`;
-            const callback =
-                eventHandlers.mockRegisterCommandCallbackHandler(command);
+    )('npm12xx sysreg suspendpin pull %p', ({ append, expected }) => {
+        const command = `npm12xx sysreg suspendpin pull ${append}`;
+        const callback =
+            eventHandlers.mockRegisterCommandCallbackHandler(command);
 
-            callback?.onSuccess(`Value: ${expected ? 'on' : 'off'}`, command);
+        callback?.onSuccess(
+            `Value: ${expected ? 'pulldown' : 'nopull'}`,
+            command,
+        );
 
-            expect(mockOnLowPowerUpdate).toBeCalledTimes(1);
-            expect(mockOnLowPowerUpdate).toBeCalledWith({
-                suspendPinPullDown: expected,
-            } satisfies Partial<LowPowerConfig>);
-        },
-    );
+        expect(mockOnLowPowerUpdate).toBeCalledTimes(1);
+        expect(mockOnLowPowerUpdate).toBeCalledWith({
+            suspendPinPullDown: expected,
+        } satisfies Partial<LowPowerConfig>);
+    });
 
     test.each(
         timeToActiveKeys
@@ -231,25 +232,40 @@ describe('PMIC 1210 - Command callbacks', () => {
     );
 
     test.each(
-        vBusStandbyPinSelKeys.flatMap(value => [
+        vBusStandbyCtrlKeys.flatMap(value => [
             { append: 'get', expected: value },
             { append: `set ${value}`, expected: value },
         ]),
-    )(
-        'npm12xx low_power_ctrl vbus standby_pinsel %p',
-        ({ append, expected }) => {
-            const command = `npm12xx low_power_ctrl vbus standby_pinsel ${append}`;
-            const callback =
-                eventHandlers.mockRegisterCommandCallbackHandler(command);
+    )('npm12xx low_power_ctrl vbus standbyctrl %p', ({ append, expected }) => {
+        const command = `npm12xx low_power_ctrl vbus standbyctrl ${append}`;
+        const callback =
+            eventHandlers.mockRegisterCommandCallbackHandler(command);
 
-            callback?.onSuccess(`Value: ${expected}`, command);
+        callback?.onSuccess(`Value: ${expected}`, command);
 
-            expect(mockOnLowPowerUpdate).toBeCalledTimes(1);
-            expect(mockOnLowPowerUpdate).toBeCalledWith({
-                vbusStandbyPinSel: expected,
-            } satisfies Partial<LowPowerConfig>);
-        },
-    );
+        expect(mockOnLowPowerUpdate).toBeCalledTimes(1);
+        expect(mockOnLowPowerUpdate).toBeCalledWith({
+            vbusStandbyCtrl: expected,
+        } satisfies Partial<LowPowerConfig>);
+    });
+
+    test.each(
+        vBusStandbySelKeys.flatMap(value => [
+            { append: 'get', expected: value },
+            { append: `set ${value}`, expected: value },
+        ]),
+    )('npm12xx low_power_ctrl vbus standbysel %p', ({ append, expected }) => {
+        const command = `npm12xx low_power_ctrl vbus standbysel ${append}`;
+        const callback =
+            eventHandlers.mockRegisterCommandCallbackHandler(command);
+
+        callback?.onSuccess(`Value: ${expected}`, command);
+
+        expect(mockOnLowPowerUpdate).toBeCalledTimes(1);
+        expect(mockOnLowPowerUpdate).toBeCalledWith({
+            vbusStandbySel: expected,
+        } satisfies Partial<LowPowerConfig>);
+    });
 
     test.each(
         [false, true].flatMap(value => [

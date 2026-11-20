@@ -12,7 +12,8 @@ import {
     type LowPowerConfigShpHldSlideSwitchDelay,
     type LowPowerConfigShpHldSlideSwitchPollTime,
     type LowPowerConfigShpHldType,
-    type LowPowerConfigVBusStandbyPinSel,
+    type LowPowerConfigVBusStandbyCtrl,
+    type LowPowerConfigVBusStandbySel,
     type ModuleParams,
     type TimeToActive,
 } from '../../types';
@@ -128,7 +129,7 @@ export class LowPowerSet {
                 resolve();
             } else {
                 this.sendCommand(
-                    `npm12xx low_power_ctrl shphld delay set ${value}`,
+                    `npm12xx low_power_ctrl shphld delaysel set ${value}`,
                     () => resolve(),
                     () => {
                         this.get.shpHldSlideSwitchDelay();
@@ -220,7 +221,7 @@ export class LowPowerSet {
                 resolve();
             } else {
                 this.sendCommand(
-                    `npm12xx low_power_ctrl suspend_pin pull_down set ${value ? 'on' : 'off'}`,
+                    `npm12xx sysreg suspendpin pull set ${value ? 'pulldown' : 'nopull'}`,
                     () => resolve(),
                     () => {
                         this.get.suspendPinPullDown();
@@ -282,22 +283,45 @@ export class LowPowerSet {
         });
     }
 
-    vbusStandbyPinSel(value: LowPowerConfigVBusStandbyPinSel) {
+    vbusStandbyCtrl(value: LowPowerConfigVBusStandbyCtrl) {
         return new Promise<void>((resolve, reject) => {
             if (this.offlineMode) {
                 this.eventEmitter.emitPartialEvent<LowPowerConfig>(
                     'onLowPowerUpdate',
                     {
-                        vbusStandbyPinSel: value,
+                        vbusStandbyCtrl: value,
                     },
                 );
                 resolve();
             } else {
                 this.sendCommand(
-                    `npm12xx low_power_ctrl vbus standby_pinsel set ${value}`,
+                    `npm12xx low_power_ctrl vbus standbyctrl set ${value}`,
                     () => resolve(),
                     () => {
-                        this.get.vbusStandbyPinSel();
+                        this.get.vbusStandbyCtrl();
+                        reject();
+                    },
+                );
+            }
+        });
+    }
+
+    vbusStandbySel(value: LowPowerConfigVBusStandbySel) {
+        return new Promise<void>((resolve, reject) => {
+            if (this.offlineMode) {
+                this.eventEmitter.emitPartialEvent<LowPowerConfig>(
+                    'onLowPowerUpdate',
+                    {
+                        vbusStandbySel: value,
+                    },
+                );
+                resolve();
+            } else {
+                this.sendCommand(
+                    `npm12xx low_power_ctrl vbus standbysel set ${value}`,
+                    () => resolve(),
+                    () => {
+                        this.get.vbusStandbySel();
                         reject();
                     },
                 );
