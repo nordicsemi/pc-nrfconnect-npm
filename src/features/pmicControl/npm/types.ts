@@ -132,6 +132,7 @@ import type {
     VBusILimControl as SysRegVBusILimControl1210,
     VBusPGPinSel as SysRegVBusPGPinSel1210,
 } from './npm1210/sysReg/types';
+import type { Mode as TimerMode1210 } from './npm1210/timerConfig/types';
 import {
     type ConfigChargerDropoutRecovery as npm1210UserOtpConfigChargerDropoutRecovery,
     type ConfigChargerIBatLimLvl as npm1210UserOtpConfigChargerIBatLimLvl,
@@ -634,7 +635,11 @@ export type SysReg = {
     vBusPGPinSel?: SysRegVBusPGPinSel;
 };
 
-export type TimerMode = TimerMode1012 | npm1300TimerMode | npm2100TimerMode;
+export type TimerMode =
+    | TimerMode1012
+    | TimerMode1210
+    | npm1300TimerMode
+    | npm2100TimerMode;
 
 export const TimerPrescalerValues = ['Slow', 'Fast'] as const;
 export type TimerPrescaler = (typeof TimerPrescalerValues)[number];
