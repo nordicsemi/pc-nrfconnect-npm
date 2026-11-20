@@ -120,6 +120,11 @@ import type {
     VBusStandbyPinSel as LowPowerConfigVBusStandbyPinSel1210,
 } from './npm1210/lowPower/types';
 import type {
+    LongPressResetDebounce as LongPressResetDebounce1210,
+    LongPressResetPinSel as LongPressResetPinSel1210,
+    PowerDownWait as PowerDownWait1210,
+} from './npm1210/reset/types';
+import type {
     VBusDpm as SysRegVBusDpm1210,
     VBusILim as SysRegVBusILim1210,
     VBusILim0And1PinGndSel as SysRegVBusILim0And1PinGndSel1210,
@@ -730,14 +735,16 @@ export type ResetConfig = {
 
 export type LongPressResetPinSel =
     | LongPressResetPinSel1012
+    | LongPressResetPinSel1210
     | LongPressResetPinSel1300
     | LongPressResetPinSel2100;
 
 export type LongPressResetDebounce =
     | LongPressResetDebounce1012
+    | LongPressResetDebounce1210
     | LongPressResetDebounce2100;
 
-export type PowerDownWait = PowerDownWait1012;
+export type PowerDownWait = PowerDownWait1012 | PowerDownWait1210;
 
 export type ResetReason = ResetReason2100;
 
