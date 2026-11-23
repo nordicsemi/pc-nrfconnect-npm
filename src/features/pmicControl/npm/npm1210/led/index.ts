@@ -82,7 +82,6 @@ export default class Module implements LedModule {
                   cardLabel: `LED${this.index}`,
                   drive: '2.5mA',
                   dutyCycle: 0,
-                  dutyCycleEnabled: false,
                   mode: 'off',
               };
     }

@@ -5,12 +5,7 @@
  */
 
 import { PMIC_1210_LEDS, setupMocksWithShellParser } from '../tests/helpers';
-import {
-    configCardIndex,
-    driveKeys,
-    dutyCycleDisabled,
-    modeKeys,
-} from './types';
+import { configCardIndex, driveKeys, modeKeys } from './types';
 
 describe('PMIC 1210 - Command callbacks', () => {
     const { eventHandlers, mockOnLEDUpdate } = setupMocksWithShellParser();
@@ -101,7 +96,7 @@ describe('PMIC 1210 - Command callbacks', () => {
 
         expect(mockOnLEDUpdate).toBeCalledTimes(1);
         expect(mockOnLEDUpdate).toBeCalledWith({
-            data: { dutyCycleEnabled: !dutyCycleDisabled(value), mode: value },
+            data: { mode: value },
             index,
         });
     });

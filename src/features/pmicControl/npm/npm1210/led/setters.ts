@@ -13,7 +13,7 @@ import {
     type ModuleParams,
 } from '../../types';
 import { LedGet } from './getters';
-import { dutyCycleDisabled, modeKeys } from './types';
+import { modeKeys } from './types';
 
 export class LedSet {
     private get: LedGet;
@@ -213,7 +213,6 @@ export class LedSet {
                 this.eventEmitter.emitPartialEvent<LED>(
                     'onLEDUpdate',
                     {
-                        dutyCycleEnabled: !dutyCycleDisabled(mode),
                         mode: value,
                     },
                     this.index,

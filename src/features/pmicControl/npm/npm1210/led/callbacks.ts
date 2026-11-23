@@ -10,13 +10,7 @@ import {
     parseOnOffFromCmdReply,
     parseValueFromCmdReply,
 } from '../helpers';
-import {
-    configCardIndex,
-    driveKeys,
-    dutyCycleDisabled,
-    modeKeys,
-    pwmFreqKeys,
-} from './types';
+import { configCardIndex, driveKeys, modeKeys, pwmFreqKeys } from './types';
 
 export default (
     eventEmitter: ModuleParams['eventEmitter'],
@@ -206,7 +200,6 @@ export default (
                     eventEmitter.emitPartialEvent<LED>(
                         'onLEDUpdate',
                         {
-                            dutyCycleEnabled: !dutyCycleDisabled(mode),
                             mode,
                         },
                         index,

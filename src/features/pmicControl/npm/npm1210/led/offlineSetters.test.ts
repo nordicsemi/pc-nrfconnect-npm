@@ -5,7 +5,6 @@
  */
 
 import { PMIC_1210_LEDS, setupMocksBase } from '../tests/helpers';
-import { dutyCycleDisabled } from './types';
 
 // UI should get update events immediately and not wait for feedback from shell responses when offline as there is no shell
 describe('PMIC 1210 - Setters Offline tests', () => {
@@ -84,7 +83,6 @@ describe('PMIC 1210 - Setters Offline tests', () => {
         expect(mockOnLEDUpdate).toBeCalledTimes(1);
         expect(mockOnLEDUpdate).toBeCalledWith({
             data: {
-                dutyCycleEnabled: !dutyCycleDisabled('blink'),
                 mode: 'blink',
             },
             index,
