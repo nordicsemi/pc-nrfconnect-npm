@@ -36,6 +36,8 @@ export const modeKV = [
     ['charge', 'Charging Indication'],
     ['error', 'Charging Error Indication'],
     ['vbus', 'VBUS Good Indication'],
+    ['opendrain', 'Open-drain'],
+    ['pwmgpio', 'PWM from GPIO'],
 ] as const;
 export const modeKeys = modeKV.map(kv => kv[0]);
 export const modeValues = modeKV.map(kv => kv[1]);
