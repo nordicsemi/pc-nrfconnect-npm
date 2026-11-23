@@ -84,7 +84,7 @@ export default ({ ledModule, led, disabled }: LEDProperties) => {
             )}
             {internalDutyCycle !== undefined && ledModule.ranges.dutyCycle && (
                 <NumberInput
-                    disabled={disabled || !led.dutyCycleEnabled}
+                    disabled={disabled}
                     label={
                         <DocumentationTooltip card={card} item="LEDDutyCycle">
                             <span>Duty Cycle</span>
