@@ -556,7 +556,6 @@ export type LED = {
     blinkTimeOn?: number;
     drive?: LEDDrive;
     dutyCycle?: number;
-    dutyCycleEnabled?: boolean;
     mode?: LEDMode;
     pwmFrequency?: LEDPwmFreq;
     rgbPhaseShifting?: boolean;
