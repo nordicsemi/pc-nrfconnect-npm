@@ -66,21 +66,61 @@ export default ({ isVisible }: { isVisible: boolean }) => {
                         }
                         variant="primary"
                         onClick={async () => {
-                            bucks.forEach((buck, index) => {
-                                if (buck.enabledWhenProfiling !== undefined) {
-                                    npmDevice?.buckModule[index].set.enabled(
-                                        buck.enabledWhenProfiling,
-                                    );
-                                }
-                            });
+                            const setBuckEnabled = () =>
+                                new Promise<void>((resolve, reject) => {
+                                    const promises: Promise<void>[] = [];
+                                    bucks.forEach((buck, index) => {
+                                        if (
+                                            npmDevice &&
+                                            buck.enabledWhenProfiling !==
+                                                undefined
+                                        ) {
+                                            promises.push(
+                                                npmDevice.buckModule[
+                                                    index
+                                                ].set.enabled(
+                                                    buck.enabledWhenProfiling,
+                                                ),
+                                            );
+                                        }
+                                    });
+                                    Promise.all(promises)
+                                        .then(() => resolve())
+                                        .catch(reject);
+                                });
+                            await setBuckEnabled();
 
-                            ldos.forEach((ldo, index) => {
-                                if (ldo.enabledWhenProfiling !== undefined) {
-                                    npmDevice?.ldoModule[index].set.enabled(
-                                        ldo.enabledWhenProfiling,
-                                    );
-                                }
-                            });
+                            const setLdoEnabled = () =>
+                                new Promise<void>((resolve, reject) => {
+                                    const promises: Promise<void>[] = [];
+                                    ldos.forEach((ldo, index) => {
+                                        const ldoSetExtraArgs = {
+                                            currState: {
+                                                mode: ldo.mode,
+                                                onOffControl: ldo.onOffControl,
+                                                vOutSel: ldo.vOutSel,
+                                            },
+                                        };
+                                        if (
+                                            npmDevice &&
+                                            ldo.enabledWhenProfiling !==
+                                                undefined
+                                        ) {
+                                            promises.push(
+                                                npmDevice.ldoModule[
+                                                    index
+                                                ].set.enabled(
+                                                    ldo.enabledWhenProfiling,
+                                                    ldoSetExtraArgs,
+                                                ),
+                                            );
+                                        }
+                                    });
+                                    Promise.all(promises)
+                                        .then(() => resolve())
+                                        .catch(reject);
+                                });
+                            await setLdoEnabled();
 
                             await npmDevice?.fuelGaugeModule?.set.enabled(
                                 false,
@@ -99,7 +139,7 @@ export default ({ isVisible }: { isVisible: boolean }) => {
                                     );
                                 });
                             await npmDevice?.chargerModule?.set
-                                .vTerm(profile.vUpperCutOff)
+                                .vTerm(profile.vUpperCutOff, charger?.enabled)
                                 .catch(message => {
                                     dispatch(
                                         setCompleteStep({
@@ -109,7 +149,11 @@ export default ({ isVisible }: { isVisible: boolean }) => {
                                     );
                                 });
                             await npmDevice?.chargerModule?.set
-                                .iChg(profile.ratedChargingCurrent)
+                                .iChg(
+                                    profile.ratedChargingCurrent,
+                                    charger?.iChgDouble,
+                                    charger?.enabled,
+                                )
                                 .catch(message => {
                                     dispatch(
                                         setCompleteStep({
@@ -119,7 +163,7 @@ export default ({ isVisible }: { isVisible: boolean }) => {
                                     );
                                 });
                             await npmDevice?.chargerModule?.set
-                                .iTerm(profile.iTerm)
+                                .iTerm(profile.iTerm, charger?.enabled)
                                 .catch(message => {
                                     dispatch(
                                         setCompleteStep({
