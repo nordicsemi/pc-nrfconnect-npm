@@ -69,11 +69,11 @@ describe('PMIC 1012 - Setters Offline tests', () => {
     test.each(PMIC_1012_LEDS)(
         'Set setLedPwmFrequency index: %p',
         async index => {
-            await pmic.ledModule[index].set.pwmFrequency?.(488);
+            await pmic.ledModule[index].set.pwmFrequency?.('488Hz');
 
             expect(mockOnLEDUpdate).toBeCalledTimes(1);
             expect(mockOnLEDUpdate).toBeCalledWith({
-                data: { pwmFrequency: 488 },
+                data: { pwmFrequency: '488Hz' },
                 index,
             });
         },

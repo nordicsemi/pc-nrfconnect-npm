@@ -20,6 +20,8 @@ import {
     isFixedListRangeWithLabel,
 } from '../../../features/pmicControl/npm/types';
 
+import '../../Charger/charger.scss';
+
 interface PowerCardProperties {
     chargerModule: ChargerModule;
     charger: Charger;
@@ -339,6 +341,74 @@ export default ({
                                 showSlider
                             />
                         )}
+                    {chargerModule.values.startupMode && (
+                        <Dropdown
+                            disabled={disabled}
+                            items={chargerModule.values.startupMode}
+                            label={
+                                <DocumentationTooltip
+                                    card={card}
+                                    item="StartupMode"
+                                >
+                                    Startup Mode
+                                </DocumentationTooltip>
+                            }
+                            onSelect={item =>
+                                chargerModule.set.startupMode?.(item.value)
+                            }
+                            selectedItem={
+                                chargerModule.values.startupMode.find(
+                                    item => item.value === charger.startupMode,
+                                ) ?? chargerModule.values.startupMode[0]
+                            }
+                        />
+                    )}
+                    {chargerModule.values.dropoutRecovery && (
+                        <Dropdown
+                            disabled={disabled}
+                            items={chargerModule.values.dropoutRecovery}
+                            label={
+                                <DocumentationTooltip
+                                    card={card}
+                                    item="DropdownRecovery"
+                                >
+                                    Dropdown Recovery
+                                </DocumentationTooltip>
+                            }
+                            onSelect={item =>
+                                chargerModule.set.dropoutRecovery?.(item.value)
+                            }
+                            selectedItem={
+                                chargerModule.values.dropoutRecovery.find(
+                                    item =>
+                                        item.value === charger.dropoutRecovery,
+                                ) ?? chargerModule.values.dropoutRecovery[0]
+                            }
+                        />
+                    )}
+                    {chargerModule.values.softstartCurrent && (
+                        <Dropdown
+                            disabled={disabled}
+                            items={chargerModule.values.softstartCurrent}
+                            label={
+                                <DocumentationTooltip
+                                    card={card}
+                                    item="SoftstartCurrent"
+                                >
+                                    Softstart Current
+                                </DocumentationTooltip>
+                            }
+                            onSelect={item =>
+                                chargerModule.set.softstartCurrent?.(item.value)
+                            }
+                            selectedItem={
+                                chargerModule.values.softstartCurrent.find(
+                                    item =>
+                                        item.value === charger.softstartCurrent,
+                                ) ?? chargerModule.values.softstartCurrent[0]
+                            }
+                        />
+                    )}
                     {charger.enableWeakBatteryCharging !== undefined && (
                         <Toggle
                             label={
@@ -356,6 +426,56 @@ export default ({
                                 );
                             }}
                             disabled={disabled}
+                        />
+                    )}
+                    {charger.enableChgEnPinControl !== undefined && (
+                        <Toggle
+                            disabled={disabled}
+                            isToggled={charger.enableChgEnPinControl}
+                            label={
+                                <DocumentationTooltip
+                                    card={card}
+                                    item="EnableChgEnPinControl"
+                                >
+                                    <>
+                                        Enable{' '}
+                                        <span className="overline-text">
+                                            CHGEN
+                                        </span>{' '}
+                                        pin control
+                                    </>
+                                </DocumentationTooltip>
+                            }
+                            onToggle={value => {
+                                chargerModule.set.enableChgEnPinControl?.(
+                                    value,
+                                );
+                            }}
+                        />
+                    )}
+                    {charger.enableChgEnPinPullDown !== undefined && (
+                        <Toggle
+                            disabled={disabled}
+                            isToggled={charger.enableChgEnPinPullDown}
+                            label={
+                                <DocumentationTooltip
+                                    card={card}
+                                    item="EnableChgEnPinPullDown"
+                                >
+                                    <>
+                                        Enable{' '}
+                                        <span className="overline-text">
+                                            CHGEN
+                                        </span>{' '}
+                                        pin Pull-down
+                                    </>
+                                </DocumentationTooltip>
+                            }
+                            onToggle={value => {
+                                chargerModule.set.enableChgEnPinPullDown?.(
+                                    value,
+                                );
+                            }}
                         />
                     )}
                 </>

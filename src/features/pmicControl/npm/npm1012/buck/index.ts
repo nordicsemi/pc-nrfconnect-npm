@@ -151,26 +151,26 @@ export default class Module implements BuckModule {
                 value: key,
             })),
             onOffControl: onOffControlValues,
-            peakCurrentLimit: iLimLvlKV.map(([key, val]) => ({
-                label: val,
-                value: key,
-            })),
-            softStartPeakCurrentLimit: iLimStartLvlKV.map(([key, val]) => ({
-                label: val,
-                value: key,
-            })),
-            vOutComparatorBiasCurrentLPMode: vOutCompBiasLPModeKV.map(
-                ([key, val]) => ({
+            peakCurrentLimit: () =>
+                iLimLvlKV.map(([key, val]) => ({
                     label: val,
                     value: key,
-                }),
-            ),
-            vOutComparatorBiasCurrentULPMode: vOutCompBiasULPModeKV.map(
-                ([key, val]) => ({
+                })),
+            softStartPeakCurrentLimit: () =>
+                iLimStartLvlKV.map(([key, val]) => ({
                     label: val,
                     value: key,
-                }),
-            ),
+                })),
+            vOutComparatorBiasCurrentLPMode: () =>
+                vOutCompBiasLPModeKV.map(([key, val]) => ({
+                    label: val,
+                    value: key,
+                })),
+            vOutComparatorBiasCurrentULPMode: () =>
+                vOutCompBiasULPModeKV.map(([key, val]) => ({
+                    label: val,
+                    value: key,
+                })),
             vOutRippleControl: vOutRippleControlKV.map(([key, val]) => ({
                 label: val,
                 value: key,

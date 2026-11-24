@@ -884,9 +884,36 @@ export default () => {
                 setPaneHidden({
                     name: 'GPIOs & LEDs',
                     hidden:
-                        !npmDevice?.gpioModule?.length &&
-                        !npmDevice?.gpioLedDrvModule?.length &&
-                        !npmDevice?.ledModule?.length,
+                        !npmDevice ||
+                        !npmDevice.gpioLedDrvModule ||
+                        !npmDevice.ledModule ||
+                        !(
+                            npmDevice.gpioLedDrvModule.length > 0 &&
+                            npmDevice.ledModule.length > 0
+                        ),
+                }),
+            );
+            dispatch(
+                setPaneHidden({
+                    name: 'GPIOs',
+                    hidden:
+                        !npmDevice ||
+                        !npmDevice.gpioModule ||
+                        !(npmDevice.gpioModule.length > 0),
+                }),
+            );
+            dispatch(
+                setPaneHidden({
+                    name: 'LEDs',
+                    hidden:
+                        !npmDevice ||
+                        !npmDevice.ledModule ||
+                        !(
+                            npmDevice.ledModule.length > 0 &&
+                            // Show this tab only when the 'GPIOs & LEDs' -tab is hidden:
+                            (!npmDevice.gpioLedDrvModule ||
+                                npmDevice.gpioLedDrvModule.length === 0)
+                        ),
                 }),
             );
             dispatch(
