@@ -87,7 +87,7 @@ const generateCharger = (
             : ''
     }
 		${charger.enabled ? 'charging-enable;' : ''}
-		trickle-microvolt = <${toMicro(charger.vTrickleFast)}>;
+		trickle-microvolt = <${toMicro(Number(charger.vTrickleFast))}>;
 		${charger.enableVBatLow ? 'vbatlow-charge-enable;' : ''}
 		${charger.enableRecharging ? '' : 'disable-recharge;'}
 		dietemp-resume-millidegrees = <${toMilli(charger.tChgResume)}>;
@@ -96,7 +96,7 @@ const generateCharger = (
         ${charger.vTermR !== undefined ? `term-warm-microvolt = <${toMicro(charger.vTermR)}>;` : ''}
 		current-microamp = <${toMicro(charger.iChg / 1000)}>;
 		${
-            charger.iBatLim !== undefined
+            charger.iBatLim !== undefined && typeof charger.iBatLim === 'number'
                 ? `dischg-limit-microamp = <${toMicro(charger.iBatLim / 1000)}>;`
                 : ''
         }
@@ -188,7 +188,7 @@ const generateLDO = (
                   )} GPIO_ACTIVE_HIGH>;` // Is this correct?
                 : ''
         }
-		${ldo.softStartCurrent !== undefined ? `soft-start-microamp = <${toMicro(ldo.softStartCurrent)}>;` : ''}
+		${typeof ldo.softStartCurrent === 'number' ? `soft-start-microamp = <${toMicro(ldo.softStartCurrent)}>;` : ''}
 		${ldo.activeDischarge ? 'active-discharge;' : ''}
 	};
 `;

@@ -4,39 +4,37 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { type ShellParser } from '@nordicsemiconductor/pc-nrfconnect-shared';
-
+import { parseLogData } from '../../pmicHelpers';
+import { type Buck, type ModuleParams } from '../../types';
 import {
-    noop,
-    type NpmEventEmitter,
-    onOffRegex,
-    parseColonBasedAnswer,
-    parseLogData,
-    parseOnOff,
-    parseToFloat,
-    parseToNumber,
-    toRegex,
-} from '../../pmicHelpers';
-import { type Buck } from '../../types';
+    parseFloatFromCmdReply,
+    parseOnOffFromCmdReply,
+    parseValueFromCmdReply,
+} from '../helpers';
 import {
-    type BuckAlternateVOutControl1012,
-    BuckModeControlValues1012,
-    type BuckOnOffControl1012,
-    BuckVOutRippleControlValues1012,
+    type AlternateVOutControl,
+    iLimLvlKeys,
+    iLimStartLvlKeys,
+    modeControlKeys,
+    onOffControlKeys,
+    pullDownResKeys,
+    vOutCompBiasLPModeKeys,
+    vOutCompBiasULPModeKeys,
+    vOutRippleControlKeys,
 } from './types';
 
 export default (
-    shellParser: ShellParser | undefined,
-    eventEmitter: NpmEventEmitter,
+    eventEmitter: ModuleParams['eventEmitter'],
+    shellParser: ModuleParams['shellParser'],
     index: number,
 ) => {
     if (!shellParser) {
         return [];
     }
 
-    const callbacks = [];
+    const cleanupCallbacks = [];
 
-    callbacks.push(
+    cleanupCallbacks.push(
         shellParser.onShellLoggingEvent(logEvent => {
             parseLogData(logEvent, loggingEvent => {
                 if (loggingEvent.module !== 'module_pmic') {
@@ -63,69 +61,80 @@ export default (
         }),
     );
 
-    callbacks.push(
+    cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            toRegex('npm1012 buck vout software', true, 0),
-            res => {
+            'npm1012 buck vout software (get|set) 0',
+            msg => {
+                const vOutNormal = parseFloatFromCmdReply(msg);
+                if (vOutNormal === undefined) {
+                    return;
+                }
                 eventEmitter.emitPartialEvent<Buck>(
                     'onBuckUpdate',
                     {
-                        vOutNormal: parseToFloat(res),
+                        vOutNormal,
                     },
                     index,
                 );
             },
-            noop,
+            () => {},
         ),
     );
 
-    callbacks.push(
+    cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            toRegex('npm1012 buck pulldown', true, undefined, '(\\w+)'),
-            res => {
-                const result = parseToNumber(res);
+            'npm1012 buck pulldown (get|set)',
+            msg => {
+                const res = parseValueFromCmdReply(msg);
+                const activeDischargeResistance = pullDownResKeys.find(
+                    v => v === res,
+                );
+                if (activeDischargeResistance === undefined) return;
+
                 eventEmitter.emitPartialEvent<Buck>(
                     'onBuckUpdate',
                     {
-                        activeDischargeResistance: !Number.isNaN(result)
-                            ? result
-                            : 0,
+                        activeDischargeResistance,
                     },
                     index,
                 );
             },
-            noop,
+            () => {},
         ),
     );
 
-    callbacks.push(
+    cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            toRegex('npm1012 buck vout software', true, 1),
-            res => {
+            'npm1012 buck vout software (get|set) 1',
+            msg => {
+                const alternateVOut = parseFloatFromCmdReply(msg);
+                if (alternateVOut === undefined) {
+                    return;
+                }
                 eventEmitter.emitPartialEvent<Buck>(
                     'onBuckUpdate',
                     {
-                        alternateVOut: parseToFloat(res),
+                        alternateVOut,
                     },
                     index,
                 );
             },
-            noop,
+            () => {},
         ),
     );
 
-    callbacks.push(
+    cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            toRegex('npm1012 buck voutsel', true, undefined, '(\\w+)'),
-            res => {
-                let alternateVOutControl: BuckAlternateVOutControl1012 = 'Off';
+            'npm1012 buck voutsel (get|set)',
+            msg => {
+                let alternateVOutControl: AlternateVOutControl = 'OFF';
 
-                switch (parseColonBasedAnswer(res)) {
-                    case 'VOUT1':
-                        alternateVOutControl = 'Off';
+                switch (parseValueFromCmdReply(msg)?.toLowerCase()) {
+                    case 'vout1':
+                        alternateVOutControl = 'OFF';
                         break;
-                    case 'VOUT2':
-                        alternateVOutControl = 'Software';
+                    case 'vout2':
+                        alternateVOutControl = 'SOFTWARE';
                         break;
                     default:
                         return;
@@ -139,23 +148,23 @@ export default (
                     index,
                 );
             },
-            noop,
+            () => {},
         ),
     );
 
-    callbacks.push(
+    cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            toRegex('npm1012 buck voutselctrl', true, undefined, '(\\w+)'),
-            res => {
+            'npm1012 buck voutselctrl (get|set)',
+            msg => {
                 let update: Partial<Buck> = {};
-                switch (parseColonBasedAnswer(res)) {
-                    case 'GPIO':
+                switch (parseValueFromCmdReply(msg)?.toLowerCase()) {
+                    case 'gpio':
                         update = { alternateVOutControl: 'GPIO' };
                         break;
-                    case 'SOFTWARE':
+                    case 'software':
                         update = { mode: 'software' };
                         break;
-                    case 'VSET':
+                    case 'vset':
                         update = { mode: 'vSet' };
                         break;
                     default:
@@ -168,40 +177,39 @@ export default (
                     index,
                 );
             },
-            noop,
+            () => {},
         ),
     );
 
-    callbacks.push(
+    cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            toRegex('npm1012 buck passthrough', true, undefined, onOffRegex),
-            res => {
+            'npm1012 buck passthrough (get|set)',
+            msg => {
+                const automaticPassthrough = parseOnOffFromCmdReply(msg);
+                if (automaticPassthrough === undefined) {
+                    return;
+                }
                 eventEmitter.emitPartialEvent<Buck>(
                     'onBuckUpdate',
                     {
-                        automaticPassthrough: parseOnOff(res),
+                        automaticPassthrough,
                     },
                     index,
                 );
             },
-            noop,
+            () => {},
         ),
     );
 
-    callbacks.push(
+    cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            toRegex('npm1012 buck pwrmode', true, undefined, '(\\w+)'),
-            res => {
-                const result = parseColonBasedAnswer(res).toUpperCase();
-
-                const modeControl = BuckModeControlValues1012.find(
-                    elem => elem === result,
+            'npm1012 buck pwrmode (get|set)',
+            msg => {
+                const res = parseValueFromCmdReply(msg)?.toLowerCase();
+                const modeControl = modeControlKeys.find(
+                    v => v.toLowerCase() === res,
                 );
-
-                if (modeControl === undefined) {
-                    return;
-                }
-
+                if (modeControl === undefined) return;
                 eventEmitter.emitPartialEvent<Buck>(
                     'onBuckUpdate',
                     {
@@ -210,49 +218,39 @@ export default (
                     index,
                 );
             },
-            noop,
+            () => {},
         ),
     );
 
-    callbacks.push(
+    cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            toRegex('npm1012 buck enable', true, undefined, onOffRegex),
-            res => {
+            'npm1012 buck enable (get|set)',
+            msg => {
+                const enabled = parseOnOffFromCmdReply(msg);
+                if (enabled === undefined) {
+                    return;
+                }
                 eventEmitter.emitPartialEvent<Buck>(
                     'onBuckUpdate',
                     {
-                        enabled: parseOnOff(res),
+                        enabled,
                     },
                     index,
                 );
             },
-            noop,
+            () => {},
         ),
     );
 
-    callbacks.push(
+    cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            toRegex('npm1012 buck enablectrl', true, undefined, '(\\w+)'),
-            res => {
-                const result = parseColonBasedAnswer(res).toLowerCase();
-
-                let onOffControl: BuckOnOffControl1012 | undefined;
-                switch (result) {
-                    case 'gpio':
-                        onOffControl = 'GPIO';
-                        break;
-                    case 'software':
-                        onOffControl = 'Software';
-                        break;
-                    case 'vset':
-                        onOffControl = 'VSET';
-                        break;
-                }
-
-                if (onOffControl === undefined) {
-                    return;
-                }
-
+            'npm1012 buck enablectrl (get|set)',
+            msg => {
+                const res = parseValueFromCmdReply(msg)?.toLowerCase();
+                const onOffControl = onOffControlKeys.find(
+                    v => v.toLowerCase() === res,
+                );
+                if (onOffControl === undefined) return;
                 eventEmitter.emitPartialEvent<Buck>(
                     'onBuckUpdate',
                     {
@@ -261,120 +259,141 @@ export default (
                     index,
                 );
             },
-            noop,
+            () => {},
         ),
     );
 
-    callbacks.push(
+    cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            toRegex('npm1012 buck peakilim', true),
-            res => {
+            'npm1012 buck peakilim (get|set)',
+            msg => {
+                const res = parseValueFromCmdReply(msg)?.toLowerCase();
+                const peakCurrentLimit = iLimLvlKeys.find(
+                    v => v.toLowerCase() === res,
+                );
+                if (peakCurrentLimit === undefined) return;
                 eventEmitter.emitPartialEvent<Buck>(
                     'onBuckUpdate',
                     {
-                        peakCurrentLimit: parseToNumber(res),
+                        peakCurrentLimit,
                     },
                     index,
                 );
             },
-            noop,
+            () => {},
         ),
     );
 
-    callbacks.push(
+    cleanupCallbacks.push(
         shellParser.registerCommandCallback(
-            toRegex('npm1012 buck autopull', true, undefined, onOffRegex),
-            res => {
-                eventEmitter.emitPartialEvent<Buck>(
-                    'onBuckUpdate',
-                    {
-                        quickVOutDischarge: parseOnOff(res),
-                    },
-                    index,
-                );
-            },
-            noop,
-        ),
-    );
-
-    callbacks.push(
-        shellParser.registerCommandCallback(
-            toRegex('npm1012 buck scprotect', true, undefined, onOffRegex),
-            res => {
-                eventEmitter.emitPartialEvent<Buck>(
-                    'onBuckUpdate',
-                    {
-                        shortCircuitProtection: parseOnOff(res),
-                    },
-                    index,
-                );
-            },
-            noop,
-        ),
-    );
-
-    callbacks.push(
-        shellParser.registerCommandCallback(
-            toRegex('npm1012 buck softstartilim', true),
-            res => {
-                eventEmitter.emitPartialEvent<Buck>(
-                    'onBuckUpdate',
-                    {
-                        softStartPeakCurrentLimit: parseToNumber(res),
-                    },
-                    index,
-                );
-            },
-            noop,
-        ),
-    );
-
-    callbacks.push(
-        shellParser.registerCommandCallback(
-            toRegex('npm1012 buck bias lp', true),
-            res => {
-                eventEmitter.emitPartialEvent<Buck>(
-                    'onBuckUpdate',
-                    {
-                        vOutComparatorBiasCurrentLPMode: parseToFloat(res),
-                    },
-                    index,
-                );
-            },
-            noop,
-        ),
-    );
-
-    callbacks.push(
-        shellParser.registerCommandCallback(
-            toRegex('npm1012 buck bias ulp', true),
-            res => {
-                eventEmitter.emitPartialEvent<Buck>(
-                    'onBuckUpdate',
-                    {
-                        vOutComparatorBiasCurrentULPMode: parseToFloat(res),
-                    },
-                    index,
-                );
-            },
-            noop,
-        ),
-    );
-
-    callbacks.push(
-        shellParser.registerCommandCallback(
-            toRegex('npm1012 buck ripple', true, undefined, '(\\w+)'),
-            res => {
-                const result = parseColonBasedAnswer(res).toLowerCase();
-
-                const vOutRippleControl = BuckVOutRippleControlValues1012.find(
-                    elem => elem.toLowerCase() === result,
-                );
-
-                if (vOutRippleControl === undefined) {
+            'npm1012 buck autopull (get|set)',
+            msg => {
+                const quickVOutDischarge = parseOnOffFromCmdReply(msg);
+                if (quickVOutDischarge === undefined) {
                     return;
                 }
+                eventEmitter.emitPartialEvent<Buck>(
+                    'onBuckUpdate',
+                    {
+                        quickVOutDischarge,
+                    },
+                    index,
+                );
+            },
+            () => {},
+        ),
+    );
 
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm1012 buck scprotect (get|set)',
+            msg => {
+                const shortCircuitProtection = parseOnOffFromCmdReply(msg);
+                if (shortCircuitProtection === undefined) {
+                    return;
+                }
+                eventEmitter.emitPartialEvent<Buck>(
+                    'onBuckUpdate',
+                    {
+                        shortCircuitProtection,
+                    },
+                    index,
+                );
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm1012 buck softstartilim (get|set)',
+            msg => {
+                const res = parseValueFromCmdReply(msg)?.toLowerCase();
+                const softStartPeakCurrentLimit = iLimStartLvlKeys.find(
+                    v => v.toLowerCase() === res,
+                );
+                if (softStartPeakCurrentLimit === undefined) return;
+                eventEmitter.emitPartialEvent<Buck>(
+                    'onBuckUpdate',
+                    {
+                        softStartPeakCurrentLimit,
+                    },
+                    index,
+                );
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm1012 buck bias lp (get|set)',
+            msg => {
+                const res = parseValueFromCmdReply(msg)?.toLowerCase();
+                const vOutComparatorBiasCurrentLPMode =
+                    vOutCompBiasLPModeKeys.find(v => v.toLowerCase() === res);
+                if (vOutComparatorBiasCurrentLPMode === undefined) return;
+                eventEmitter.emitPartialEvent<Buck>(
+                    'onBuckUpdate',
+                    {
+                        vOutComparatorBiasCurrentLPMode,
+                    },
+                    index,
+                );
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm1012 buck bias ulp (get|set)',
+            msg => {
+                const res = parseValueFromCmdReply(msg)?.toLowerCase();
+                const vOutComparatorBiasCurrentULPMode =
+                    vOutCompBiasULPModeKeys.find(v => v.toLowerCase() === res);
+                if (vOutComparatorBiasCurrentULPMode === undefined) return;
+                eventEmitter.emitPartialEvent<Buck>(
+                    'onBuckUpdate',
+                    {
+                        vOutComparatorBiasCurrentULPMode,
+                    },
+                    index,
+                );
+            },
+            () => {},
+        ),
+    );
+
+    cleanupCallbacks.push(
+        shellParser.registerCommandCallback(
+            'npm1012 buck ripple (get|set)',
+            msg => {
+                const res = parseValueFromCmdReply(msg)?.toLowerCase();
+                const vOutRippleControl = vOutRippleControlKeys.find(
+                    v => v.toLowerCase() === res,
+                );
+                if (vOutRippleControl === undefined) return;
                 eventEmitter.emitPartialEvent<Buck>(
                     'onBuckUpdate',
                     {
@@ -383,9 +402,9 @@ export default (
                     index,
                 );
             },
-            noop,
+            () => {},
         ),
     );
 
-    return callbacks;
+    return cleanupCallbacks;
 };

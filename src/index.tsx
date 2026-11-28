@@ -24,6 +24,7 @@ import Profiles from './components/Profiling/ProfilingProjects/Profiles';
 import Regulators from './components/Regulators/Regulators';
 import SidePanel from './components/SidePanel/SidePanel';
 import SystemFeatures from './components/SystemFeatures/SystemFeatures';
+import UserOTP from './components/UserOTP/UserOTP';
 import Welcome from './components/Welcome';
 import NpmGenericDialog from './features/pmicControl/npm/NpmGenericDialog';
 
@@ -76,6 +77,10 @@ render(
             {
                 name: 'Fuel Gauge',
                 Main: FuelGauge,
+            },
+            {
+                name: 'User OTP',
+                Main: UserOTP,
             },
             {
                 name: 'Graph',

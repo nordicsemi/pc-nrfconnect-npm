@@ -36,8 +36,9 @@ import PofModule from './pof';
 import ResetModule, { toResetExport } from './reset';
 import SysRegModule from './sysReg';
 import TimerConfigModule from './timerConfig';
+import UserOtpModule from './userOtp';
 
-export const npm1012FWVersion = '0.3.3+0';
+export const npm1012FWVersion = '0.4.3+0';
 
 export default class Npm1012 extends BaseNpmDevice {
     constructor(
@@ -66,6 +67,7 @@ export default class Npm1012 extends BaseNpmDevice {
                 ResetModule,
                 SysRegModule,
                 TimerConfigModule,
+                UserOtpModule,
             },
             1,
             {
@@ -162,32 +164,37 @@ export default class Npm1012 extends BaseNpmDevice {
     }
 
     private processModulePmicAdc({ timestamp, message }: LoggingEvent) {
-        const match = message.match(
-            /ibat=(?<ibat>[^,]+),vbat=(?<vbat>[^,]+),tbat=(?<tbat>[^,]+),soc=(?<soc>[^,]+),tte=(?<tte>[^,]+),ttf=(?<ttf>[^,]+),soh=(?<soh>[^,]+),cycle_count=(?<cycle_count>[^,]+)/,
-        );
+        const cycleCount = message.match(/cycle_count=([^,\s]+)/)?.[1];
+        const iBat = message.match(/ibat=([^,\s]+)/)?.[1];
+        const soc = message.match(/soc=([^,\s]+)/)?.[1];
+        const soh = message.match(/soh=([^,\s]+)/)?.[1];
+        const tBat = message.match(/tbat=([^,\s]+)/)?.[1];
+        const tte = message.match(/tte=([^,\s]+)/)?.[1];
+        const ttf = message.match(/ttf=([^,\s]+)/)?.[1];
+        const vBat = message.match(/vbat=([^,\s]+)/)?.[1];
+        const r0Effective = message.match(/r0_effective=([^,\s]+)/)?.[1];
 
         if (
-            !match?.groups ||
-            !match.groups.cycle_count ||
-            !match.groups.ibat ||
-            !match.groups.soc ||
-            !match.groups.soh ||
-            !match.groups.tbat ||
-            !match.groups.tte ||
-            !match.groups.ttf ||
-            !match.groups.vbat
+            !cycleCount ||
+            !iBat ||
+            !soc ||
+            !soh ||
+            !tBat ||
+            !tte ||
+            !ttf ||
+            !vBat
         ) {
             return;
         }
 
         const adcSample: AdcSample = {
-            iBat: Number(match.groups.ibat) * 1000, // convert to mA
-            soc: Number(match.groups.soc),
-            tBat: Number(match.groups.tbat),
+            iBat: Number(iBat) * 1000, // convert to mA
+            soc: Number(soc),
+            tBat: Number(tBat),
             timestamp,
-            tte: Number(match.groups.tte),
-            ttf: Number(match.groups.ttf),
-            vBat: Number(match.groups.vbat),
+            tte: Number(tte),
+            ttf: Number(ttf),
+            vBat: Number(vBat),
         };
         if (adcSample.timestamp < this.lastUptime) {
             this.uptimeOverflowCounter += 1;
@@ -197,8 +204,10 @@ export default class Npm1012 extends BaseNpmDevice {
         this.eventEmitter.emit('onAdcSample', adcSample);
 
         const fuelGaugeUpdate: Partial<FuelGauge> = {
-            actualCapacity: Number(match.groups.soh),
-            cycleCount: Number(match.groups.cycle_count),
+            actualCapacity: Number(soh),
+            cycleCount: Number(cycleCount),
+            estimatedBatteryResistance:
+                r0Effective !== undefined ? Number(r0Effective) : Number.NaN,
         };
         this.eventEmitter.emitPartialEvent<FuelGauge>(
             'onFuelGauge',

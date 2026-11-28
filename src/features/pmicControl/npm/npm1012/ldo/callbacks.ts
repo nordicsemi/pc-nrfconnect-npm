@@ -13,11 +13,15 @@ import {
     parseColonBasedAnswer,
     parseOnOff,
     parseToFloat,
-    parseToNumber,
     toRegex,
 } from '../../pmicHelpers';
 import { type Ldo, LdoModeValues, LdoVOutSelValues } from '../../types';
-import { onOffControlValues } from './types';
+import { parseValueFromCmdReply } from '../helpers';
+import {
+    onOffControlValues,
+    softStartILimKeysForIndex,
+    softStartTimeKeysForIndex,
+} from './types';
 
 export default (
     shellParser: ShellParser | undefined,
@@ -153,32 +157,42 @@ export default (
 
         cleanupCallbacks.push(
             shellParser.registerCommandCallback(
-                toRegex('npm1012 ldosw softstartilim', true, index, '(\\w+)'),
-                res => {
-                    const result = parseToNumber(res);
-
+                `npm1012 ldosw softstartilim (get|set) ${index}`,
+                msg => {
+                    const res = parseValueFromCmdReply(msg)?.toLowerCase();
+                    const softStartCurrent = softStartILimKeysForIndex(
+                        index,
+                    ).find(v => v.toLowerCase() === res);
+                    if (softStartCurrent === undefined) {
+                        return;
+                    }
                     eventEmitter.emitPartialEvent<Ldo>(
                         'onLdoUpdate',
                         {
-                            softStartCurrent: Number.isNaN(result) ? 0 : result,
+                            softStartCurrent,
                         },
                         index,
                     );
                 },
-                noop,
+                () => {},
             ),
         );
 
         cleanupCallbacks.push(
             shellParser.registerCommandCallback(
-                toRegex('npm1012 ldosw softstarttime', true, index, '(\\w+)'),
-                res => {
-                    const result = parseToFloat(res);
-
+                `npm1012 ldosw softstarttime (get|set) ${index}`,
+                msg => {
+                    const res = parseValueFromCmdReply(msg)?.toLowerCase();
+                    const softStartTime = softStartTimeKeysForIndex(index).find(
+                        v => v.toLowerCase() === res,
+                    );
+                    if (softStartTime === undefined) {
+                        return;
+                    }
                     eventEmitter.emitPartialEvent<Ldo>(
                         'onLdoUpdate',
                         {
-                            softStartTime: Number.isNaN(result) ? 0 : result,
+                            softStartTime,
                         },
                         index,
                     );

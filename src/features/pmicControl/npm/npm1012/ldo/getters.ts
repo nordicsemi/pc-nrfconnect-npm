@@ -40,7 +40,6 @@ export class LdoGet {
         if (this.index === 1) {
             return; // Disabled for Load Switch 2
         }
-
         this.sendCommand(`npm1012 ldosw mode get ${this.index}`);
     }
 

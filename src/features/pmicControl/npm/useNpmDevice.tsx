@@ -60,6 +60,7 @@ import {
     setSysRegConfig,
     setTimerConfig,
     setUsbPower,
+    setUserOtp,
     updateBoost,
     updateBuck,
     updateCharger,
@@ -76,6 +77,8 @@ import {
     updateSysRegConfig,
     updateTimerConfig,
     updateUsbPower,
+    updateUserOtp,
+    updateUserOtpConfigSetting,
 } from '../pmicControlSlice';
 import {
     getProfile,
@@ -367,6 +370,18 @@ export default () => {
             releaseAll.push(
                 npmDevice.onErrorLogs(payload => {
                     dispatch(setErrorLogs(payload));
+                }),
+            );
+
+            releaseAll.push(
+                npmDevice.onUserOtpUpdate(payload => {
+                    dispatch(updateUserOtp(payload));
+                }),
+            );
+
+            releaseAll.push(
+                npmDevice.onUserOtpConfigSettingUpdate(payload => {
+                    dispatch(updateUserOtpConfigSetting(payload));
                 }),
             );
 
@@ -697,6 +712,11 @@ export default () => {
             dispatch(setTimerConfig(npmDevice.timerConfigModule?.defaults));
             dispatch(setResetConfig(npmDevice.resetModule?.defaults));
             dispatch(setSysRegConfig(npmDevice.sysRegModule?.defaults));
+            dispatch(
+                npmDevice.userOtpModule
+                    ? setUserOtp(npmDevice.userOtpModule.defaults)
+                    : noop,
+            );
 
             return () => {
                 releaseAll.forEach(release => release());
@@ -874,13 +894,22 @@ export default () => {
                     name: 'System Features',
                     hidden:
                         !npmDevice ||
-                        (!npmDevice.lowPowerModule &&
-                            !npmDevice.pofModule &&
-                            !npmDevice.resetModule &&
-                            !npmDevice.sysRegModule &&
-                            !npmDevice.timerConfigModule &&
-                            !npmDevice.usbCurrentLimiterModule &&
-                            !SupportsErrorLogs(npmDevice)),
+                        !(
+                            npmDevice.lowPowerModule ||
+                            npmDevice.pofModule ||
+                            npmDevice.resetModule ||
+                            npmDevice.sysRegModule ||
+                            npmDevice.timerConfigModule ||
+                            npmDevice.usbCurrentLimiterModule ||
+                            (SupportsErrorLogs(npmDevice) &&
+                                pmicState === 'pmic-connected')
+                        ),
+                }),
+            );
+            dispatch(
+                setPaneHidden({
+                    name: 'User OTP',
+                    hidden: !npmDevice?.userOtpModule,
                 }),
             );
             dispatch(

@@ -28,14 +28,14 @@ export type GPIOModeInput = (typeof gpioModeInputKeys)[number];
 const gpioModeOutputKV = [
     ['GPIO_OUT_LOW', 'Driven Low'],
     ['GPIO_OUT_HIGH', 'Driven High'],
-    ['BUCKVOUTIND', 'BUCK Power Mode Indication'],
+    ['BUCKMODEIND', 'BUCK Power Mode Indication'],
     ['IRQ', 'Interrupt'],
     ['POF', 'Power Fail Warning'],
     ['PWM', 'PWM'],
     ['TIMER', 'Timer Pre-Warning'],
     ['VBUS', 'VBUS Good Indication'],
     ['VBUSPRESENT', 'VBUS PRESENT Indication'],
-    ['WATCHDOG_SOFT_RESET', 'Watchdog Soft Reset'],
+    ['WATCHDOG_SOFTRESET', 'Watchdog Soft Reset'],
     ['WATCHDOG_WARNING', 'Watchdog Warning'],
 ] as const;
 export const gpioModeOutputKeys = gpioModeOutputKV.map(kv => kv[0]);

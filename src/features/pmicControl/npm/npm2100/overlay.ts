@@ -201,11 +201,11 @@ const generateLDOSW = (
                 }
                 ${
                     ldo.overcurrentProtection &&
-                    ldo.softStartCurrentLDOMode !== undefined &&
-                    ldo.softStartCurrentLoadSwitchMode !== undefined
+                    typeof ldo.softStartCurrentLdoMode === 'number' &&
+                    typeof ldo.softStartCurrentLoadSwitchMode === 'number'
                         ? `regulator-init-microamp = <${milliToMicro(
                               ldo.mode === 'LDO'
-                                  ? ldo.softStartCurrentLDOMode
+                                  ? ldo.softStartCurrentLdoMode
                                   : ldo.softStartCurrentLoadSwitchMode,
                           )}>;`
                         : ''

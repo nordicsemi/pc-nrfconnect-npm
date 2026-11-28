@@ -220,3 +220,21 @@ export const saveBatteryHealthProfileDialog = (profileData: string) => {
             fs.writeFileSync(result.filePath, profileData),
     );
 };
+
+export const saveUserOtpConfiguration = (fileContents: string) => {
+    showSaveDialog({
+        title: 'Save User OTP configuration',
+        defaultPath: 'uicr_bytes.h',
+        filters: [
+            {
+                name: 'C header file',
+                extensions: ['h'],
+            },
+        ],
+    }).then(
+        result =>
+            !result.canceled &&
+            result.filePath &&
+            fs.writeFileSync(result.filePath, fileContents),
+    );
+};

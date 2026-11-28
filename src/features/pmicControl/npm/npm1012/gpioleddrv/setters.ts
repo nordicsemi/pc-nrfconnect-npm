@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { type NpmEventEmitter } from '../../pmicHelpers';
 import {
     type GPIOLEDDrv,
     type GPIOLEDDrvGPIODrive,
@@ -15,6 +14,7 @@ import {
     type GPIOLEDDrvLEDDrive,
     type GPIOLEDDrvLEDMode,
     type GPIOLEDDrvState,
+    type ModuleParams,
 } from '../../types';
 import { GpioLedDrvGet } from './getters';
 import { gpioModeInputKeys, gpioModeOutputKeys } from './types';
@@ -22,13 +22,9 @@ import { gpioModeInputKeys, gpioModeOutputKeys } from './types';
 export class GpioLedDrvSet {
     private get: GpioLedDrvGet;
     constructor(
-        private eventEmitter: NpmEventEmitter,
-        private sendCommand: (
-            command: string,
-            onSuccess?: (response: string, command: string) => void,
-            onError?: (response: string, command: string) => void,
-        ) => void,
-        private offlineMode: boolean,
+        private eventEmitter: ModuleParams['eventEmitter'],
+        private offlineMode: ModuleParams['offlineMode'],
+        private sendCommand: ModuleParams['sendCommand'],
         private index: number,
     ) {
         this.get = new GpioLedDrvGet(sendCommand, index);

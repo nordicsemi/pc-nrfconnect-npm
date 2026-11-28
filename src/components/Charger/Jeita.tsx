@@ -429,6 +429,7 @@ const Default = ({
         internalVTermr === undefined ||
         charger.ntcBeta === undefined ||
         charger.ntcThermistor === undefined ||
+        chargerModule.ranges.nTCBeta === undefined ||
         chargerModule.ranges.vTermR === undefined
     ) {
         return null;
@@ -538,6 +539,19 @@ const AdvancedChargingProfile = ({
         charger.vTermWarm,
     );
 
+    // NumberInputSliderWithUnit do not use charger.<prop> as value as we send only at on change complete
+    useEffect(() => {
+        setInternalIChgCool(charger.iChgCool);
+        setInternalIChgWarm(charger.iChgWarm);
+        setInternalVTermCool(charger.vTermCool);
+        setInternalVTermWarm(charger.vTermWarm);
+    }, [
+        charger.iChgCool,
+        charger.iChgWarm,
+        charger.vTermCool,
+        charger.vTermWarm,
+    ]);
+
     if (
         internalEnableAdvancedChargingProfile === undefined ||
         internalIChgCool === undefined ||
@@ -582,7 +596,13 @@ const AdvancedChargingProfile = ({
                 range={chargerModule.ranges.current}
                 value={internalIChgCool}
                 onChange={setInternalIChgCool}
-                onChangeComplete={v => chargerModule.set.iChgCool?.(v)}
+                onChangeComplete={v =>
+                    chargerModule.set.iChgCool?.(
+                        v,
+                        charger.iChgDouble,
+                        charger.enabled,
+                    )
+                }
                 showSlider
             />
             <NumberInput
@@ -616,7 +636,13 @@ const AdvancedChargingProfile = ({
                 range={chargerModule.ranges.current}
                 value={internalIChgWarm}
                 onChange={setInternalIChgWarm}
-                onChangeComplete={v => chargerModule.set.iChgWarm?.(v)}
+                onChangeComplete={v =>
+                    chargerModule.set.iChgWarm?.(
+                        v,
+                        charger.iChgDouble,
+                        charger.enabled,
+                    )
+                }
                 showSlider
             />
             <NumberInput

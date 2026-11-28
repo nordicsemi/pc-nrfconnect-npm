@@ -89,7 +89,8 @@ describe('PMIC 1300 - Apply Config ', () => {
         retentionControl: 'GPIO0',
         activeDischarge: false,
         cardLabel: 'Buck',
-        vSetLabel: 'Vset',
+        vOutSubscriptLabel: 'OUT',
+        vSetSubscriptLabel: 'SET',
     };
 
     const initLdo: Ldo = {
@@ -97,7 +98,7 @@ describe('PMIC 1300 - Apply Config ', () => {
         mode: 'LDO',
         enabled: true,
         softStart: true,
-        softStartCurrentLoadSwitchMode: 50,
+        softStartCurrent: 50,
         softStartCurrentDropdownDisabled: true,
         activeDischarge: false,
         onOffControl: 'GPIO0',

@@ -46,21 +46,21 @@ export default class Module implements GpioLedDrvModule {
     private _callbacks: (() => void)[];
 
     constructor({
-        index,
-        sendCommand,
         eventEmitter,
+        index,
         offlineMode,
+        sendCommand,
         shellParser,
     }: ModuleParams) {
         this.index = index;
         this._get = new GpioLedDrvGet(sendCommand, index);
         this._set = new GpioLedDrvSet(
             eventEmitter,
-            sendCommand,
             offlineMode,
+            sendCommand,
             index,
         );
-        this._callbacks = gpioCallbacks(shellParser, eventEmitter, index);
+        this._callbacks = gpioCallbacks(eventEmitter, shellParser, index);
     }
 
     get callbacks() {

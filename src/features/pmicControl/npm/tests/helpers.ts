@@ -28,6 +28,8 @@ import {
     type SysReg,
     type TimerConfig,
     type USBPower,
+    type UserOtp,
+    type UserOtpConfigSettingUpdatePayload,
 } from '../types';
 
 export const setupMocksBase = (
@@ -84,6 +86,13 @@ export const setupMocksBase = (
 
     const mockOnSysRegUpdate = jest.fn((_partialUpdate: Partial<SysReg>) => {});
 
+    const mockOnUserOtpUpdate = jest.fn(
+        (_partialUpdate: Partial<UserOtp>) => {},
+    );
+    const mockOnUserOtpConfigSettingUpdate = jest.fn(
+        (_partialUpdate: UserOtpConfigSettingUpdatePayload) => {},
+    );
+
     const mockOnUsbPower = jest.fn((_partialUpdate: Partial<USBPower>) => {});
 
     const mockOnErrorLogs = jest.fn((_msg: Partial<ErrorLogs>) => {});
@@ -117,6 +126,8 @@ export const setupMocksBase = (
     pmic.onErrorLogs(mockOnErrorLogs);
     pmic.onStoredBatteryModelUpdate(mockOnStoredBatteryModelUpdate);
     pmic.onUsbPower(mockOnUsbPower);
+    pmic.onUserOtpUpdate(mockOnUserOtpUpdate);
+    pmic.onUserOtpConfigSettingUpdate(mockOnUserOtpConfigSettingUpdate);
 
     return {
         mockDialogHandler,
@@ -138,6 +149,8 @@ export const setupMocksBase = (
         mockOnLowPowerUpdate,
         mockOnResetUpdate,
         mockOnSysRegUpdate,
+        mockOnUserOtpUpdate,
+        mockOnUserOtpConfigSettingUpdate,
         mockOnLoggingEvent,
         mockOnPmicStateChange,
         mockOnReboot,
